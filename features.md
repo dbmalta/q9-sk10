@@ -14,14 +14,14 @@
 | Registration + Member Management | v1 |
 | Permissions | v1 |
 | User Accounts | v1 |
-| Finance / Ledger | v1 |
-| Communications (portal, email, newsletter, RSS) | v1 |
-| Events + Calendar | v1 |
-| Achievements | v1 |
-| Equipment Inventory | v1 |
-| Resource Library | v1 |
+| Communications (portal + email) | v1 |
+| Events + Calendar | v1 (simplified — see module) |
+| Achievements + Training | v1 (simplified — see module) |
 | Directory / Organogram | v1 |
-| Training | v1 |
+| Finance / Ledger | Dropped |
+| Newsletter | Dropped |
+| Equipment Inventory | Dropped |
+| Resource Library | Dropped |
 | Subscriptions (online payments) | Post-v1 |
 | eShop | Post-v1 |
 
@@ -29,9 +29,11 @@
 
 ## General / Platform
 
-- Web-based, PHP + MySQL, deployable on shared hosting (e.g. SiteGround)
-- Unzip-to-server installation with setup wizard
-- Auto-update from public GitHub repo
+- Web-based, PHP 8.2+ / MySQL 8.0+ (or MariaDB 10.6+), deployable on Linux shared hosting (e.g. SiteGround, cPanel-based hosts)
+- Unzip-to-server installation with setup wizard; pre-flight check verifies write permissions before proceeding
+- Two-phase auto-update: main app upgrades the `/updater/` subsystem; updater then upgrades `/app/` via atomic folder swap (`rename()`); previous versions retained one cycle for rollback
+- Updates chunked into discrete steps with a state file — resumable if interrupted; progress shown in browser
+- Signed release zips (signed in CI via GitHub Actions); updater verifies signature against a static public key in the bootstrap before staging anything — failure aborts the update
 - Fully responsive — mobile, tablet, desktop
 - Dark mode built in from day one
 - Branding: custom logo + choice of one of 3 colour schemes
@@ -45,31 +47,41 @@
 ## Administration Module
 
 - Export all data / settings to CSV or XML
-- Database backup with manual download
-- Scheduled database backup to Google Drive or similar
+- Manual backup download: database + uploaded files packaged into a single zip, downloadable from the admin panel
 - Full restore from fresh install + backup file
+- Post-v1: scheduled automatic backups to S3-compatible storage
 - Configurable data fields for the database (see Member Data Fields below)
 - Organisational structure: unlimited nested and parallel levels, fully user-defined
 - Site-wide search
 - Usage reports and statistics
 - Membership conditions / T&Cs: time-bound, must be acknowledged by all members; new versions trigger re-acknowledgement; refusal results in account blocked and flagged for admin attention
 - Important notices: displayed on login, must be acknowledged before proceeding
-- WOSM census reporting (post-v1): member counts by age group and gender
+- WOSM census reporting (post-v1): total membership broken down by age section and gender
 
 ---
 
 ## Member Data Fields
 
-**Core fixed fields (always present):**
+**Core fixed fields (always present, stored as real columns):**
 - First name, surname, date of birth, gender (male/female/other), membership number (system-assigned)
 
 **Admin-configurable custom fields:**
-- Field types: short text, long text, number, dropdown, date, image attachment, file attachment
-- Each field can be compulsory or optional
-- Basic validation rules per field
-- Some fields are date-bound with full history (e.g. rank changes, appointments, awards) — stored as a timeline, not a single value
-- Member profile UI split into tabs/pages — lazy-loaded for performance
-- System handles schema evolution gracefully as fields are added over time
+- Field types: short text, long text, number, dropdown, date
+- Each field: compulsory or optional, with basic validation rules
+- Values stored as JSON per member — no schema migration needed when fields are added
+- Display order and tab/group assignment configurable per field
+
+**Timeline fields:**
+- Some fields record history rather than overwrite (e.g. rank, qualifications, role eligibility)
+- Each entry carries a value, effective date, recorder, and optional notes
+- Full history visible in the member profile
+
+**File and image attachments:**
+- Stored in a dedicated attachments table (not in the JSON blob)
+- Independent lifecycle: upload, download, delete
+
+**Member profile UI:**
+- Split into tabs/groups, lazy-loaded for performance
 
 ---
 
@@ -79,60 +91,47 @@
 - Admin-added → active immediately
 - Self-registration (name, email, DOB, unit) → pending status → admin approves → active
 - Register by invitation
-- Bulk import from CSV
+- Bulk import from CSV: admin downloads a node-scoped template (core fields + configured custom fields), fills it in, uploads; a preview screen flags row-level errors before any data is written; clean rows import, error rows are skipped for re-upload; role assignments handled separately post-import; org structure must exist first
 - Waiting list: prospective members/parents can register interest; managed by admin
 
 **Member management:**
 - Edit personal details and group affiliation
 - Key detail changes by members require admin approval
-- Medical details: members or parents can update their own medical information
-- Parental consent: ability to collect parental consent for minors attending activities
-- Parent accounts: a parent/guardian login can be linked to one or more member records
+- Medical details: members can update their own medical information; stored encrypted at rest (app-layer encryption, key outside webroot); every access is logged separately from the general audit trail
 - No-login mode: members can exist in the system with no login access (org-level setting)
+- Post-v1: parental consent collection, parent/guardian accounts
 - Management at different organisational levels
 
 ---
 
 ## Permissions Module
 
-- Dual-axis: role defines access level (Read/Write or Read-only); hierarchy position defines scope (own level and below only)
-- A member with multiple roles gets the union of all their permissions
-- List all permissions in the system
-- Define who holds each permission
-- Reports on who has what permissions
+- Permissions are fully explicit — position in the hierarchy grants nothing automatically
+- Admin defines roles; each role carries module-level read/write permissions, a `can_publish_events` flag, and two sensitive-data flags: `can_access_medical` and `can_access_financial`
+- A member is assigned a role in a context (a hierarchy node or a team) with an explicit scope (one or more nodes, selected by the admin; UI defaults to "this node + all descendants")
+- A member with multiple assignments receives the union of all permissions and all scope nodes
+- Full assignment history retained (start date + optional end date per assignment)
+- Reports on who has what permissions and over which scope
 
 ---
 
 ## User Account Module
 
-- Login: email + password, social login, multi-factor authentication (MFA)
-- Forgot password / password reset
+- Login: email + password with optional TOTP MFA (Google Authenticator, Authy, etc.)
+- Forgot password / self-service password reset
 - My profile: view and update personal details (key changes require admin approval)
 - Upload photo / avatar
-- Privacy settings
-- View events attending / attended
-- View pending balances and transaction history
 - Communication preferences
 - Membership conditions acknowledgement
 - Important notice acknowledgement on login
 - Download my data (CSV/Excel)
+- Post-v1: parent/guardian accounts, magic-link login, social login
 
 ---
 
 ## Finance / Ledger Module
 
-> Replaces the separate Subscriptions and Finance modules — unified ledger model.
-
-- Each organisational level has its own billing account(s) — multiple cash/bank accounts per level
-- Per-event accounts (e.g. summer camp finances tracked separately)
-- Each member has a running balance per billing account (debit and credit)
-- Transaction types: membership fees, event fees, uniform/purchase, credits, refunds, donations
-- Offline/manual transaction recording by admin (online payments are post-v1)
-- E-invoices and e-receipts
-- Membership card / number issuance
-- Email reminders on subscription renewal / outstanding balance
-- Individual, group, and unified financial reports
-- Equipment inventory value tracked over time (linked to Equipment module)
+> Dropped from v1. Post-v1 scope: per-level billing accounts, individual member balances, transaction recording, e-invoices, financial reports, online payment gateway.
 
 ---
 
@@ -140,80 +139,66 @@
 
 **v1:**
 - Member portal: news/notifications on login, filtered by relevance to that member
-- Publication of articles (public or private, portal and/or newsletter)
-- Email: send to individual members or groups, targeted by level/role/criteria
-- Newsletter:
-  - Recipient lists: create and save filtered lists by role, rank, age, or other criteria
-  - Templates: create and manage reusable newsletter templates
-  - Images: upload or link images for use in templates
-  - Manual creation: compose a newsletter by selecting existing articles and/or adding new content
-  - Post-v1: automated newsletter generation based on articles published in the last X days
-- RSS feed: publicly available articles and events consumable by external websites
-- Resource library: forms, documents, files — readable and downloadable by members with appropriate access
+- Publication of articles (public or private, portal only)
+- Email: send plain text or basic HTML emails to individual members or groups, targeted by level/role/criteria
+- Outbound email queue: emails are queued and sent in configurable batches; never sent inline with a web request
+- Cron dispatcher: single scheduled entry point calling modular task handlers; setup wizard provides the cPanel cron command; pseudo-cron fallback if no cron is available, with admin warning
 
-**Post-v1:**
-- SMS
-- Polls
-- Social media posting (Instagram, X/Twitter, WhatsApp, LinkedIn)
-- Mail merge export
+**v1 — bounce handling (manual):**
+- Admin can flag a member's email address as invalid on their profile record
+
+**Dropped / Post-v1:**
+- Newsletter (post-v1)
+- Automated bounce handling via IMAP (post-v1 — added alongside newsletter)
+- RSS feed (post-v1)
+- SMS, polls, social media posting, mail merge (post-v1)
 
 ---
 
 ## Events Module
 
-- Create events with full details (title, description, location, dates, capacity, public/private)
-- Limited places with waiting list for oversubscribed events
-- Member event registration (self or admin)
-- Register multiple persons per booking
-- Parental consent collection for minors attending events
-- Training event applications (separate flow — apply, admin approves/rejects)
-- Online payment for events (post-v1)
-- Document packs for attendees
-- Attendees as an emailable group
-- Attendance records
-- Event photos and resources
-- Attendees can upload and share material
+> Simplified for v1: members with `can_publish_events` publish events; all members view them. No registration or advanced features.
+
+- Members with `can_publish_events` create and publish events (title, description, location, dates, public/private)
+- In-system calendar: all published events visible to logged-in members
+- iCal feed: members can subscribe in Google Calendar, Outlook, etc.
+
+**Dropped / Post-v1:**
+- Event registration, waiting lists, capacity management (post-v1)
+- Parental consent, document packs, attendee emailing, attendance records (post-v1)
+- Event photos and member uploads (post-v1)
+- Per-event finance accounts (dropped — Finance module dropped)
 - Auto-generated tickets (post-v1)
-- Per-event finance accounts (linked to Finance module)
-- In-system calendar: visible to members filtered by their level/permissions
-- iCal/RSS feed: subscribable in personal calendar apps (Google Calendar, Outlook, etc.)
 
 ---
 
-## Achievements Module
+## Achievements + Training Module
 
-- Fully configurable — each organisation defines their own achievements, badges, and requirements
-- No standard framework imposed
-- Achievements visible in member's account
-- Self-application or admin-awarded
-- Per-achievement: downloadable forms, requirements, resources
-- Per-achievement: upload documents, fill in reports
-- Tracking and management across multiple groups/levels
-- E-certificates
-- Peer / leader validation of achievements
-- Expiry on certain achievements
-- Badge eligibility rules: achievements auto-unlock when prerequisites are met, but require admin confirmation before publishing to the member's record
-- Tracking of activity metrics: service hours, camping nights, hiking miles (configurable per organisation)
+> Simplified for v1: adult/leader members only. No youth programme tracking. Training courses merged into this module.
+
+- Admin curates a list of achievements and training courses (title, description, date awarded)
+- Achievements and courses are manually assigned to adult/leader members by an admin
+- Member's achievements and completed training visible in their member portal profile
+- No self-application, no peer validation, no prerequisite rules, no e-certificates in v1
+
+**Dropped / Post-v1:**
+- Youth programme / badge tracking (post-v1)
+- Self-application and peer/leader validation (post-v1)
+- Badge eligibility rules and auto-unlock (post-v1)
+- E-certificates, expiry, activity metrics (post-v1)
+- Per-achievement forms, document uploads, reports (post-v1)
 
 ---
 
 ## Equipment Inventory Module
 
-- Track equipment items per group/level
-- Record item value and condition over time
-- Stock in / out logging
-- Inventory reports including total value
-- (eShop and online sales — post-v1)
+> Dropped from v1.
 
 ---
 
 ## Resource Library Module
 
-- Upload and organise documents, forms, templates
-- Public or private visibility per resource
-- Access controlled by level/role
-- Members can read or download resources they have access to
-- Linked from relevant areas (events, achievements, portal)
+> Dropped from v1.
 
 ---
 
@@ -227,8 +212,8 @@
 - Waiting lists for groups/sections (OSM) ✓ added
 - Medical records storage per member (OSM) ✓ added
 - Health form tracking (TroopWebHost) ✓ added
-- Parent/guardian portal with self-service detail updates (OSM, TroopTrack, TroopWebHost) ✓ added
-- Household/family grouping — one login covers a family with multiple youth members (TroopTrack) ✓ added
+- Parent/guardian portal with self-service detail updates (OSM, TroopTrack, TroopWebHost) — post-v1
+- Household/family grouping — one login covers a family with multiple youth members (TroopTrack) — post-v1
 
 **Achievements / Advancement**
 - Badge eligibility rules — auto-unlock when prerequisites are met (OSM Gold)
@@ -252,18 +237,18 @@
 - Bank statement import with auto-categorisation (OSM)
 - Gift Aid management (OSM — UK-specific but worth noting for EU equivalents)
 - Prepaid expense cards for leaders (OSM — advanced, probably out of scope for v1)
-- Individual member account balances (dues, fees, transaction history) ✓ added
+- Individual member account balances (dues, fees, transaction history) — post-v1 (Finance module)
 - Campership / financial aid applications (Tentaroo)
 
 **Communications**
 - Push notifications via mobile app (OSM, TroopWebHost, TroopTrack)
-- Automated renewal / payment reminder emails (OSM, Scout Manager) ✓ added
+- Automated renewal / payment reminder emails (OSM, Scout Manager) — post-v1 (Finance module)
 
 **Governance / Admin** *(Orgo — NSO-level, relevant if SK10 targets national orgs)*
 - e-Voting for general assemblies and board elections
 - Electronic document signing
 - Official gazette / policy document publication
-- Dual-level fee collection (national fee + local chapter fee simultaneously) ✓ added
+- Dual-level fee collection (national fee + local chapter fee simultaneously) — post-v1 (Finance module)
 
 **Facilities / Venue Booking** *(out of scope for SK10 v1)*
 - Campsite / activity centre booking portal
@@ -297,23 +282,24 @@
 - Displays organisational structure visually as an organogram
 - Contact list for key people in key roles (e.g. group leaders, district/regional commissioners, national board)
 - Roles and contacts pulled automatically from the org structure and role assignments
-- Access filtered by member's level/permissions
+- Access filtered by member's permissions
 
 ---
 
-## Training Module
+## Monitoring & Observability
 
-- Separate from the Events module
-- Members apply for training events (with limited places and waiting list)
-- Admin approves/rejects applications
-- Upon completion, participant's record is automatically updated (achievements, qualifications, role eligibility, etc.)
-- Training history visible in member profile
+> QuadNine-hosted instances only. Not applicable to self-hosted installations.
+
+- `/health.php` — unauthenticated performance endpoint: DB status, memory, cron last run, slow query flag, version, error count since last check
+- `/api/logs` — authenticated endpoint (API key in `config.php`): recent structured errors and slow query entries; supports `since` timestamp parameter
+- Application errors logged to `/var/logs/errors.json` (structured JSON, rotating)
+- Slow queries logged to `/var/logs/slow-queries.json` (threshold configurable)
+- Log viewer in admin panel for on-site visibility
+- Spike (separate QuadNine project) polls both endpoints per hosted instance
 
 ---
 
 ## Open Questions / To Explore
-- Service hours / camping nights / hiking miles tracking — relevant for WOSM orgs?
+- Service hours / camping nights / hiking miles tracking — relevant for WOSM orgs? (post-v1)
 - Programme planning module — future consideration
 - Offline mobile app — future consideration
-- WOSM census reporting details — to be added when WOSM requirements are clarified
-- Social posting platforms for post-v1 comms — update from defunct Google+ to Instagram, X/Twitter, WhatsApp, LinkedIn

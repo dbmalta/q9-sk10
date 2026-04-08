@@ -8,24 +8,20 @@ ScoutKeeper is a web-based membership management platform built for Scout organi
 
 ## Who is it for?
 
-Any Scout organisation that needs a proper membership system but lacks the budget, technical infrastructure, or in-house expertise to run complex software. SK10 is free, self-hostable, and built to run on standard shared hosting.
+Any Scout organisation that needs a proper membership system but lacks the budget, technical infrastructure, or in-house expertise to run complex software. SK10 is free, self-hostable, and built to run on standard shared Linux hosting.
 
 ---
 
 ## Key Features
 
 - **Membership management** — register, manage, and track members across any organisational structure
-- **Flexible org structure** — define your own hierarchy (group, district, region, national — or anything else)
+- **Flexible org structure** — define your own hierarchy (section, group, district, region, national — or anything else); includes functional teams at any level
 - **Custom member fields** — configure the data fields your organisation needs, with full history on time-bound fields
-- **Role-based permissions** — members can hold multiple roles with scoped access across the hierarchy
-- **Finance / ledger** — per-level billing accounts with individual member balances; track fees, events, and transactions
-- **Events** — create and manage events with registration, attendance, capacity limits, and calendar feeds
-- **Training** — manage training events with applications, approvals, and automatic record updates on completion
-- **Achievements** — fully configurable badges and awards with auto-unlock rules and admin confirmation
-- **Communications** — member portal, email, newsletter, and RSS feeds
-- **Resource library** — centralised document and form repository with access controls
+- **Explicit permissions** — roles with module-level access and explicit scope; members can hold multiple roles across the hierarchy and in functional teams
+- **Events calendar** — event publishing with in-system calendar and iCal feed
+- **Achievements & training** — manage leader qualifications, training records, and achievements
+- **Communications** — member portal with articles and notifications; email targeting by role, level, or criteria
 - **Directory & organogram** — visual org chart and contact list for key roles, visible to members
-- **Equipment inventory** — track group equipment, values, and stock movements
 - **Multi-language** — built-in i18n with community-shareable JSON language files
 - **GDPR-ready** — consent, data retention, and right-to-erasure features (toggleable for non-EU use)
 - **Audit trail** — every record change is logged
@@ -38,7 +34,7 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 - **Simple to install** — unzip, upload, run the setup wizard. No command line required.
 - **Simple to run** — designed for non-technical administrators
 - **Open and extensible** — well-commented code, built for community contribution
-- **Built to last** — unit tested, with auto-updates from this repository
+- **Built to last** — unit tested, with signed auto-updates from this repository
 - **Accessible** — free forever, no per-member or per-section fees
 
 ---
@@ -47,10 +43,10 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 
 | Component | Technology |
 |-----------|-----------|
-| Language | PHP |
-| Database | MySQL |
-| Hosting | Any shared hosting (e.g. SiteGround, cPanel) |
-| Updates | Auto-update from this GitHub repository |
+| Language | PHP 8.2+ |
+| Database | MySQL 8.0+ or MariaDB 10.6+ |
+| Hosting | Linux shared hosting (e.g. SiteGround, cPanel) |
+| Updates | Signed auto-update from tagged GitHub releases |
 | Testing | PHPUnit |
 
 ---
@@ -59,20 +55,18 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 
 > Full installation guide coming soon.
 
-1. Download the latest release
+1. Download the latest release from the [Releases](../../releases) page
 2. Upload and unzip to your web server
 3. Navigate to your domain and run the setup wizard
 4. Configure your organisation structure, branding, and admin account
 
-**Requirements:** PHP 8.0+, MySQL 5.7+, web server with mod_rewrite or equivalent
+**Requirements:** PHP 8.2+, MySQL 8.0+ or MariaDB 10.6+, Linux shared hosting
 
 ---
 
 ## Backup & Restore
 
-SK10 includes built-in backup tools:
-- Manual database download from the admin panel
-- Scheduled automatic backups to Google Drive or compatible cloud storage
+- Manual backup download from the admin panel (database + uploaded files, packaged as a single zip)
 - Full system restore from any backup file on a fresh installation
 
 ---
@@ -98,12 +92,18 @@ All contributions must include appropriate unit tests.
 
 ## About
 
-ScoutKeeper is developed and maintained by [QuadNine Ltd](https://quadnine.mt).
+ScoutKeeper is developed and maintained by [QuadNine Ltd](https://quadnine.mt) and its founder, Kevin Azzopardi.
 
 Previous versions of ScoutKeeper have been used by Scout organisations since the early days of the project. SK10 is a clean rebuild, designed for modern hosting environments and the needs of the global Scout movement.
+
+**Sustainability:** SK10 is an actively maintained project. The codebase is publicly hosted on GitHub under the AGPL v3 licence. In the event that QuadNine Ltd is unable to continue development, the repository will remain public and the community is free to fork and continue the project independently.
+
+A **paid hosted version** of ScoutKeeper is available for organisations that prefer a fully managed solution. Hosting fees fund ongoing development of the open-source project.
 
 ---
 
 ## Licence
 
-Coming soon.
+ScoutKeeper is licenced under the [GNU Affero General Public Licence v3.0 (AGPL-3.0)](https://www.gnu.org/licenses/agpl-3.0.html).
+
+You are free to use, self-host, and modify SK10 at no cost. If you offer SK10 (or a modified version) as a hosted service, you must make your source code available under the same licence.
