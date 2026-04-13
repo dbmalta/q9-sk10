@@ -77,7 +77,15 @@ jobs:
           "
 
       - name: Seed test database
-        run: php -d display_errors=1 -d error_reporting=E_ALL tests/seed.php
+        run: |
+          php -d display_errors=1 -d error_reporting=E_ALL tests/seed.php 2>&1 | tee /tmp/seed_output.txt || true
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "## Seed Failed" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            tail -50 /tmp/seed_output.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
