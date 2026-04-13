@@ -151,7 +151,7 @@ class UpdateManagerTest extends TestCase
     public function testVerifySignatureReturnsFalseForMissingFiles(): void
     {
         // Create a dummy public key file so verification is attempted
-        file_put_contents($this->tempDir . '/update_public_key.pem', 'dummy');
+        file_put_contents($this->tempDir . '/public-key.pem', 'dummy');
 
         $this->assertFalse($this->updater->verifySignature(
             $this->tempDir . '/nonexistent.zip',
@@ -161,7 +161,7 @@ class UpdateManagerTest extends TestCase
 
     public function testVerifySignatureReturnsFalseForInvalidKey(): void
     {
-        file_put_contents($this->tempDir . '/update_public_key.pem', 'not a real PEM key');
+        file_put_contents($this->tempDir . '/public-key.pem', 'not a real PEM key');
         $zipPath = $this->tempDir . '/test.zip';
         $sigPath = $this->tempDir . '/test.zip.sig';
         file_put_contents($zipPath, 'fake zip content');
