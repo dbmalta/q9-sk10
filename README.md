@@ -54,14 +54,16 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 
 ## Installation
 
-> Full installation guide coming soon.
-
 1. Download the latest release from the [Releases](../../releases) page
 2. Upload and unzip to your web server
-3. Navigate to your domain and run the setup wizard
-4. Configure your organisation structure, branding, and admin account
+3. Create a MySQL database and user for ScoutKeeper
+4. Navigate to your domain in a browser — the setup wizard will launch automatically
+5. The wizard will verify server requirements, connect to your database, run migrations, and guide you through configuring your organisation name, admin account, org structure, and SMTP settings
+6. Once complete, log in with the admin account you created
 
-**Requirements:** PHP 8.2+, MySQL 8.0+ or MariaDB 10.6+, Linux shared hosting
+**Requirements:** PHP 8.2+, MySQL 8.0+ or MariaDB 10.6+, Linux shared hosting with Apache and `mod_rewrite` enabled
+
+**No command-line access is needed at any stage.**
 
 ---
 
