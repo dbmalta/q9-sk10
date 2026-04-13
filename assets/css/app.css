@@ -150,7 +150,7 @@ body {
 
 .topbar {
     height: var(--sk-topbar-height);
-    z-index: 1030;
+    z-index: 1046; /* above offcanvas (1045) and its backdrop (1040) so hamburger stays clickable */
     box-shadow: var(--sk-shadow-sm);
 }
 
@@ -173,24 +173,10 @@ body {
 }
 
 .sidebar-collapsed {
-    width: var(--sk-sidebar-collapsed-width);
-}
-
-.sidebar-collapsed .sidebar-label,
-.sidebar-collapsed .sidebar-group-label,
-.sidebar-collapsed .badge {
-    display: none;
-}
-
-.sidebar-collapsed .sidebar-link {
-    justify-content: center;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-}
-
-.sidebar-collapsed .sidebar-icon {
-    margin-right: 0;
-    font-size: 1.25rem;
+    width: 0;
+    overflow: hidden;
+    border-right: none;
+    padding: 0;
 }
 
 .sidebar-group {
@@ -238,9 +224,9 @@ body {
     transition: margin-left 0.2s ease;
 }
 
-/* When sidebar is collapsed */
+/* When sidebar is hidden */
 .sidebar-collapsed ~ .main-content {
-    margin-left: var(--sk-sidebar-collapsed-width);
+    margin-left: 0;
 }
 
 /* Mobile: no sidebar margin */

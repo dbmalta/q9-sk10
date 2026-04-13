@@ -78,7 +78,7 @@ class ICalController extends Controller
             $feedUrl = $baseUrl . '/ical/' . $tokenRecord['token'];
         }
 
-        return $this->render('@events/ical.html.twig', [
+        return $this->render('@events/events/ical.html.twig', [
             'token_record' => $tokenRecord,
             'feed_url' => $feedUrl,
             'breadcrumbs' => [

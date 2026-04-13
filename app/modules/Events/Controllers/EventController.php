@@ -62,7 +62,7 @@ class EventController extends Controller
             ];
         }, $events);
 
-        return $this->render('@events/calendar.html.twig', [
+        return $this->render('@events/events/calendar.html.twig', [
             'events_json' => json_encode($eventsJson, JSON_UNESCAPED_UNICODE),
             'year' => $year,
             'month' => $month,
@@ -85,7 +85,7 @@ class EventController extends Controller
             return $this->render('errors/404.html.twig', [], 404);
         }
 
-        return $this->render('@events/show.html.twig', [
+        return $this->render('@events/events/show.html.twig', [
             'event' => $event,
             'breadcrumbs' => [
                 ['label' => $this->t('nav.events'), 'url' => '/events'],
@@ -107,7 +107,7 @@ class EventController extends Controller
         $page = max(1, (int) $request->getParam('page', 1));
         $result = $this->eventService->getAll($page, 20);
 
-        return $this->render('@events/admin_index.html.twig', [
+        return $this->render('@events/events/admin_index.html.twig', [
             'events' => $result['items'],
             'pagination' => $result,
             'breadcrumbs' => [
@@ -129,7 +129,7 @@ class EventController extends Controller
 
         $nodes = $this->orgService->getTree();
 
-        return $this->render('@events/form.html.twig', [
+        return $this->render('@events/events/form.html.twig', [
             'event' => null,
             'nodes' => $nodes,
             'breadcrumbs' => [
@@ -205,7 +205,7 @@ class EventController extends Controller
 
         $nodes = $this->orgService->getTree();
 
-        return $this->render('@events/form.html.twig', [
+        return $this->render('@events/events/form.html.twig', [
             'event' => $event,
             'nodes' => $nodes,
             'breadcrumbs' => [
