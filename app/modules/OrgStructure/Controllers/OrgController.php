@@ -107,6 +107,8 @@ class OrgController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $name = trim((string) $this->getParam('name', ''));
         if ($name === '') {
@@ -161,6 +163,8 @@ class OrgController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $nodeId = (int) $vars['id'];
         $node = $this->orgService->getNode($nodeId);
@@ -195,6 +199,8 @@ class OrgController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $nodeId = (int) $vars['id'];
 
@@ -215,6 +221,8 @@ class OrgController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $nodeId = (int) $vars['id'];
         $name = trim((string) $this->getParam('team_name', ''));
@@ -242,6 +250,8 @@ class OrgController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $teamId = (int) $vars['id'];
         $team = $this->orgService->getTeam($teamId);

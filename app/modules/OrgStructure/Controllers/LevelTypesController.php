@@ -53,6 +53,8 @@ class LevelTypesController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $name = trim((string) $this->getParam('name', ''));
         if ($name === '') {
@@ -78,6 +80,8 @@ class LevelTypesController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $levelId = (int) $vars['id'];
         $level = $this->orgService->getLevelType($levelId);
@@ -109,6 +113,8 @@ class LevelTypesController extends Controller
     {
         $guard = $this->requirePermission('org_structure.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         try {
             $this->orgService->deleteLevelType((int) $vars['id']);

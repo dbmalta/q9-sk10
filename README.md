@@ -47,7 +47,8 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 | Database | MySQL 8.0+ or MariaDB 10.6+ |
 | Hosting | Linux shared hosting (e.g. SiteGround, cPanel) |
 | Updates | Signed auto-update from tagged GitHub releases |
-| Testing | PHPUnit |
+| Frontend | Bootstrap 5.3, Alpine.js, HTMX, Twig 3 |
+| Testing | PHPUnit + Playwright E2E |
 
 ---
 
@@ -86,7 +87,9 @@ We welcome contributions — bug fixes, new language packs, feature additions, a
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
 
-All contributions must include appropriate unit tests.
+All contributions must include appropriate tests.
+
+For architecture details, directory layout, and development conventions, see [CLAUDE.md](CLAUDE.md).
 
 ---
 

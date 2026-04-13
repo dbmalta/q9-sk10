@@ -1,0 +1,43 @@
+name: Feature Request
+description: Suggest a new feature or improvement for ScoutKeeper
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature. Please provide as much detail as possible to help us understand your idea.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a clear and concise description of the feature you would like.
+      placeholder: I would like ScoutKeeper to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem It Solves
+      description: What problem or limitation does this feature address? Is it related to something that frustrates you today?
+      placeholder: Currently, I have to... which is difficult because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples from Other Systems
+      description: Have you seen this feature in other membership management systems, Scout tools, or similar software? Please share links or descriptions.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, or screenshots about the feature request.
+    validations:
+      required: false

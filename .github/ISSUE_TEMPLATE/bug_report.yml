@@ -1,0 +1,96 @@
+name: Bug Report
+description: Report a bug in ScoutKeeper
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug. Please fill in as much detail as possible.
+
+  - type: input
+    id: sk-version
+    attributes:
+      label: ScoutKeeper Version
+      description: Which version of ScoutKeeper are you running?
+      placeholder: e.g. 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP Version
+      description: Which version of PHP is your server running?
+      placeholder: e.g. 8.2.18
+    validations:
+      required: true
+
+  - type: input
+    id: mysql-version
+    attributes:
+      label: MySQL Version
+      description: Which version of MySQL (or MariaDB) is your server running?
+      placeholder: e.g. 8.0.36
+    validations:
+      required: true
+
+  - type: dropdown
+    id: hosting
+    attributes:
+      label: Hosting Environment
+      description: What type of hosting are you using?
+      options:
+        - Shared hosting
+        - VPS / Dedicated server
+        - Docker / Container
+        - Local development
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a clear, step-by-step description of how to reproduce the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behaviour
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Messages / Logs
+      description: Paste any relevant error messages, stack traces, or log output. This will be rendered as code.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or information about the problem.
+    validations:
+      required: false

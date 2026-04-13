@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  ci:
+    name: Full CI
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: Build and Publish Release
+    runs-on: ubuntu-latest
+    needs: ci
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: Install production dependencies
+        run: composer install --no-dev --optimize-autoloader --no-progress
+
+      - name: Get tag name
+        id: tag
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Strip dev files
+        run: |
+          rm -rf tests/
+          rm -rf .github/
+          rm -rf docs/ideas/
+          rm -f phpunit.xml
+          rm -f composer.lock
+          find . -name "*.md" ! -name "README.md" ! -name "CONTRIBUTING.md" ! -name "SECURITY.md" -delete
+
+      - name: Create release zip
+        run: |
+          cd ..
+          zip -r "$GITHUB_WORKSPACE/scoutkeeper-${{ steps.tag.outputs.TAG }}.zip" \
+            "$(basename $GITHUB_WORKSPACE)" \
+            -x "$(basename $GITHUB_WORKSPACE)/.git/*"
+
+      - name: Sign release zip
+        run: |
+          echo "${{ secrets.RELEASE_SIGNING_KEY }}" > /tmp/signing-key.pem
+          openssl dgst -sha256 -sign /tmp/signing-key.pem \
+            -out "scoutkeeper-${{ steps.tag.outputs.TAG }}.zip.sig" \
+            "scoutkeeper-${{ steps.tag.outputs.TAG }}.zip"
+          rm -f /tmp/signing-key.pem
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREVIOUS_TAG" ]; then
+            CHANGELOG=$(git log "${PREVIOUS_TAG}..HEAD" --pretty=format:"- %s (%h)" --no-merges)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          {
+            echo "CHANGELOG<<EOF"
+            echo "$CHANGELOG"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          name: ScoutKeeper ${{ steps.tag.outputs.TAG }}
+          body: |
+            ## Changes
+
+            ${{ steps.changelog.outputs.CHANGELOG }}
+
+            ## Verification
+
+            Verify the release signature:
+            ```bash
+            openssl dgst -sha256 -verify public-key.pem \
+              -signature scoutkeeper-${{ steps.tag.outputs.TAG }}.zip.sig \
+              scoutkeeper-${{ steps.tag.outputs.TAG }}.zip
+            ```
+          files: |
+            scoutkeeper-${{ steps.tag.outputs.TAG }}.zip
+            scoutkeeper-${{ steps.tag.outputs.TAG }}.zip.sig
+          draft: false
+          prerelease: false

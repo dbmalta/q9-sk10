@@ -45,6 +45,7 @@ ScoutKeeper is built for the global Scout community. We expect all contributors 
 - MySQL 8.0+ (or MariaDB 10.6+)
 - A local web server (e.g. XAMPP, Laragon, MAMP, or a plain Apache/Nginx setup)
 - PHPUnit (for running tests)
+- Node.js 18+ and Playwright (for E2E tests)
 - Git
 
 ### Setup
@@ -54,7 +55,7 @@ ScoutKeeper is built for the global Scout community. We expect all contributors 
    ```bash
    git clone https://github.com/YOUR-USERNAME/scoutkeeper.git
    ```
-3. Create a database and run the setup wizard at `http://localhost/q9-sk10/`
+3. Create a database and run the setup wizard at `http://localhost/scoutkeeper/`
 4. Create a new branch for your work:
    ```bash
    git checkout -b feature/your-feature-name
@@ -109,7 +110,12 @@ function get_members_by_node(int $node_id, bool $include_children = false): arra
 ### Running Tests
 
 ```bash
+# Unit and integration tests
 ./vendor/bin/phpunit
+
+# End-to-end tests (requires seeded database)
+php tests/seed.php
+cd tests/e2e && npm install && npx playwright test
 ```
 
 ### What to Test
@@ -117,13 +123,15 @@ function get_members_by_node(int $node_id, bool $include_children = false): arra
 - New functions must have unit tests covering expected behaviour and edge cases
 - Bug fixes must include a test that would have caught the bug
 - Any change to the permissions, finance/ledger, or authentication modules requires tests — these are critical paths
+- UI changes should include or update Playwright E2E tests where applicable
 
 ### Test Location
 
-Tests live in the `/tests` directory, mirroring the structure of `/src`. For example:
+Unit/integration tests live in `/tests`, mirroring the structure of `/app`. E2E specs live in `/tests/e2e/specs/`.
 
 ```
-/src/Members/Registration.php  →  /tests/Members/RegistrationTest.php
+/app/modules/Members/Services/MemberService.php  →  /tests/Modules/Members/MemberRegTest.php
+/tests/e2e/specs/members.spec.ts                 ←  E2E tests for member UI
 ```
 
 ---

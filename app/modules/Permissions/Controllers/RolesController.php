@@ -63,6 +63,8 @@ class RolesController extends Controller
     {
         $guard = $this->requirePermission('roles.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $data = $this->extractRoleData($request);
 
@@ -124,6 +126,8 @@ class RolesController extends Controller
     {
         $guard = $this->requirePermission('roles.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $roleId = (int) $vars['id'];
         $existing = $this->app->getDb()->fetchOne(
@@ -171,6 +175,8 @@ class RolesController extends Controller
     {
         $guard = $this->requirePermission('roles.write');
         if ($guard !== null) return $guard;
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) return $csrfGuard;
 
         $roleId = (int) $vars['id'];
         $role = $this->app->getDb()->fetchOne(
