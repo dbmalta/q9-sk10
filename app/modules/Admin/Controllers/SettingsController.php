@@ -39,6 +39,10 @@ class SettingsController extends Controller
         $settings = $this->settingsService->getAll();
         $activeTab = $request->getParam('tab', 'general');
 
+        if ($request->getParam('updated') === '1') {
+            $this->flash('success', $this->t('update.completed'));
+        }
+
         return $this->render('@admin/admin/settings/index.html.twig', [
             'settings' => $settings,
             'active_tab' => $activeTab,

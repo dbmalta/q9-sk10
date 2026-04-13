@@ -23,7 +23,13 @@ declare(strict_types=1);
 
 define('ROOT_PATH', dirname(__DIR__));
 
-header('Content-Type: application/json; charset=UTF-8');
+// Detect whether this is a direct browser visit or an API/AJAX call.
+$isBrowser = !isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+    && (empty($_SERVER['HTTP_ACCEPT']) || strpos($_SERVER['HTTP_ACCEPT'], 'text/html') !== false);
+
+if (!$isBrowser) {
+    header('Content-Type: application/json; charset=UTF-8');
+}
 
 require_once __DIR__ . '/UpdateManager.php';
 
@@ -78,24 +84,52 @@ if (file_exists($sigPath)) {
 
 // ── Step 5: Clear maintenance and respond ───────────────────────────
 
-if ($result['success']) {
-    $updater->setMaintenanceMode(false);
+// ── Log helper ──────────────────────────────────────────────────────
 
-    // Log the successful update
-    $logFile = ROOT_PATH . '/var/logs/updates.json';
-    $logEntry = [
-        'timestamp' => gmdate('c'),
-        'status' => 'success',
-        'steps' => $result['steps_completed'],
-    ];
+$logFile = ROOT_PATH . '/var/logs/updates.json';
+
+function appendUpdateLog(string $logFile, array $entry): void
+{
     $existing = [];
     if (file_exists($logFile)) {
         $existing = json_decode(file_get_contents($logFile), true) ?? [];
     }
-    $existing[] = $logEntry;
+    $existing[] = $entry;
     file_put_contents($logFile, json_encode($existing, JSON_PRETTY_PRINT));
+}
 
-    echo json_encode([
+// ── Respond helper ───────────────────────────────────────────────────
+
+function respond(bool $isBrowser, bool $success, array $data): void
+{
+    if ($isBrowser) {
+        $location = $success
+            ? ($data['redirect'] ?? '/admin/settings')
+            : ($data['redirect'] ?? '/admin/updates');
+        // Append a flash-style query param so the admin page can show a message
+        $sep = strpos($location, '?') !== false ? '&' : '?';
+        $location .= $sep . ($success ? 'updated=1' : 'update_failed=1');
+        header('Location: ' . $location, true, 302);
+        exit(0);
+    }
+
+    if (!$success) {
+        http_response_code(500);
+    }
+    echo json_encode($data);
+    exit(0);
+}
+
+if ($result['success']) {
+    $updater->setMaintenanceMode(false);
+
+    appendUpdateLog($logFile, [
+        'timestamp' => gmdate('c'),
+        'status' => 'success',
+        'steps' => $result['steps_completed'],
+    ]);
+
+    respond($isBrowser, true, [
         'success' => true,
         'message' => 'Update applied successfully.',
         'steps' => $result['steps_completed'],
@@ -106,27 +140,19 @@ if ($result['success']) {
     $rolledBack = $updater->rollback();
     $updater->setMaintenanceMode(false);
 
-    // Log the failed update
-    $logFile = ROOT_PATH . '/var/logs/updates.json';
-    $logEntry = [
+    appendUpdateLog($logFile, [
         'timestamp' => gmdate('c'),
         'status' => 'failed',
         'error' => $result['error'],
         'steps' => $result['steps_completed'],
         'rolled_back' => $rolledBack,
-    ];
-    $existing = [];
-    if (file_exists($logFile)) {
-        $existing = json_decode(file_get_contents($logFile), true) ?? [];
-    }
-    $existing[] = $logEntry;
-    file_put_contents($logFile, json_encode($existing, JSON_PRETTY_PRINT));
+    ]);
 
-    http_response_code(500);
-    echo json_encode([
+    respond($isBrowser, false, [
         'success' => false,
         'error' => $result['error'],
         'steps_completed' => $result['steps_completed'],
         'rolled_back' => $rolledBack,
+        'redirect' => '/admin/updates',
     ]);
 }

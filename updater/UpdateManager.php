@@ -24,10 +24,10 @@ class UpdateManager
     private string $rootPath;
 
     /** GitHub owner/repo for releases API. */
-    private const GITHUB_REPO = 'quadnine/scoutkeeper';
+    private const GITHUB_REPO = 'quadninemt/scoutkeeper';
 
     /** Name of the public key file for signature verification. */
-    private const PUBLIC_KEY_FILE = 'update_public_key.pem';
+    private const PUBLIC_KEY_FILE = 'public-key.pem';
 
     /** Timeout in seconds for HTTP requests. */
     private const HTTP_TIMEOUT = 30;
@@ -365,6 +365,18 @@ class UpdateManager
                 @unlink($flagFile);
             }
         }
+    }
+
+    /**
+     * Record a downloaded zip path in state and generate a single-use token.
+     *
+     * Call this after downloadRelease() and verifySignature() succeed.
+     * Returns the token to pass as ?token= when redirecting to run.php.
+     */
+    public function prepareDownload(string $zipPath): string
+    {
+        $this->saveState('zip_path', $zipPath);
+        return $this->generateUpdateToken();
     }
 
     /**

@@ -1,0 +1,37 @@
+{% if available is null %}
+<div class="d-flex align-items-center text-success">
+    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+    <span>{{ t('update.up_to_date') }} <span class="text-body-secondary">(v{{ current_version }})</span></span>
+</div>
+{% else %}
+<div class="alert alert-warning d-flex align-items-start gap-3 mb-3">
+    <i class="bi bi-arrow-up-circle-fill fs-4 flex-shrink-0 mt-1"></i>
+    <div>
+        <div class="fw-semibold">{{ t('update.available') }}: v{{ available.version }}</div>
+        {% if available.published_at %}
+        <div class="small text-body-secondary">{{ t('update.published') }}: {{ available.published_at|date('d M Y') }}</div>
+        {% endif %}
+    </div>
+</div>
+
+{% if available.release_notes %}
+<div class="mb-3">
+    <div class="small fw-semibold text-body-secondary text-uppercase mb-1">{{ t('update.release_notes') }}</div>
+    <div class="card border-0 bg-body-tertiary">
+        <div class="card-body small" style="white-space: pre-wrap; max-height: 200px; overflow-y: auto;">{{ available.release_notes }}</div>
+    </div>
+</div>
+{% endif %}
+
+<form method="POST" action="/admin/updates/download">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="version" value="{{ available.version }}">
+    <input type="hidden" name="download_url" value="{{ available.download_url }}">
+    {% if available.signature_url %}
+    <input type="hidden" name="signature_url" value="{{ available.signature_url }}">
+    {% endif %}
+    <button type="submit" class="btn btn-warning" onclick="this.disabled=true; this.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\' role=\'status\'></span>{{ t('update.in_progress') }}'; this.form.submit();">
+        <i class="bi bi-arrow-repeat me-1"></i>{{ t('update.start_update') }} (v{{ available.version }})
+    </button>
+</form>
+{% endif %}

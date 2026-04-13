@@ -13,6 +13,7 @@ use App\Modules\Admin\Controllers\ExportController;
 use App\Modules\Admin\Controllers\BackupController;
 use App\Modules\Admin\Controllers\LanguageController;
 use App\Modules\Admin\Controllers\MonitoringController;
+use App\Modules\Admin\Controllers\UpdateController;
 
 return [
     'id' => 'admin',
@@ -100,6 +101,14 @@ return [
             'order' => 60,
             'requires_auth' => true,
         ],
+        [
+            'label' => 'nav.updates',
+            'icon' => 'bi-arrow-repeat',
+            'route' => '/admin/updates',
+            'group' => 'admin',
+            'order' => 65,
+            'requires_auth' => true,
+        ],
     ],
 
     'routes' => function (\App\Core\Router $router): void {
@@ -161,6 +170,11 @@ return [
         $router->post('/admin/backups/create', [BackupController::class, 'create'], 'admin.backups.create');
         $router->get('/admin/backups/{filename}', [BackupController::class, 'download'], 'admin.backups.download');
         $router->post('/admin/backups/{filename}/delete', [BackupController::class, 'delete'], 'admin.backups.delete');
+
+        // Updates
+        $router->get('/admin/updates', [UpdateController::class, 'index'], 'admin.updates');
+        $router->get('/admin/updates/check', [UpdateController::class, 'check'], 'admin.updates.check');
+        $router->post('/admin/updates/download', [UpdateController::class, 'download'], 'admin.updates.download');
 
         // Languages
         $router->get('/admin/languages', [LanguageController::class, 'index'], 'admin.languages');

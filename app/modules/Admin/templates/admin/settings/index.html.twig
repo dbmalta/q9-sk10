@@ -1,0 +1,141 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('settings.title') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('settings.title') }}</h1>
+</div>
+
+{# Tab navigation #}
+<ul class="nav nav-tabs mb-4" id="settingsTabs">
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'general' ? 'active' : '' }}" href="?tab=general">{{ t('settings.general') }}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'registration' ? 'active' : '' }}" href="?tab=registration">{{ t('settings.registration') }}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'security' ? 'active' : '' }}" href="?tab=security">{{ t('settings.security') }}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'gdpr' ? 'active' : '' }}" href="?tab=gdpr">{{ t('settings.gdpr') }}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'cron' ? 'active' : '' }}" href="?tab=cron">{{ t('settings.cron') }}</a>
+    </li>
+</ul>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form method="POST" action="/admin/settings">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="group" value="{{ active_tab }}">
+
+            {# ── General ──────────────────────────────────────────── #}
+            {% if active_tab == 'general' %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">{{ t('settings.org_name') }}</label>
+                    <input type="text" name="settings[org_name]" class="form-control"
+                           value="{{ settings.general.org_name|default('') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('settings.timezone') }}</label>
+                    <input type="text" name="settings[timezone]" class="form-control"
+                           value="{{ settings.general.timezone|default('UTC') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('settings.date_format') }}</label>
+                    <input type="text" name="settings[date_format]" class="form-control"
+                           value="{{ settings.general.date_format|default('d M Y') }}">
+                </div>
+            </div>
+
+            {# ── Registration ─────────────────────────────────────── #}
+            {% elseif active_tab == 'registration' %}
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="settings[self_registration]"
+                               id="self_registration" value="1"
+                               {{ settings.registration.self_registration ?? '0' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="self_registration">{{ t('settings.self_registration') }}</label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="settings[waiting_list]"
+                               id="waiting_list" value="1"
+                               {{ settings.registration.waiting_list ?? '0' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="waiting_list">{{ t('settings.waiting_list') }}</label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="settings[admin_approval]"
+                               id="admin_approval" value="1"
+                               {{ settings.registration.admin_approval ?? '0' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="admin_approval">{{ t('settings.admin_approval') }}</label>
+                    </div>
+                </div>
+            </div>
+
+            {# ── Security ─────────────────────────────────────────── #}
+            {% elseif active_tab == 'security' %}
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.session_timeout') }}</label>
+                    <input type="number" name="settings[session_timeout]" class="form-control"
+                           value="{{ settings.security.session_timeout|default('3600') }}" min="300">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.mfa_enforcement') }}</label>
+                    <select name="settings[mfa_enforcement]" class="form-select">
+                        <option value="disabled" {{ settings.security.mfa_enforcement|default('disabled') == 'disabled' ? 'selected' : '' }}>{{ t('settings.mfa_disabled') }}</option>
+                        <option value="optional" {{ settings.security.mfa_enforcement|default('disabled') == 'optional' ? 'selected' : '' }}>{{ t('settings.mfa_optional') }}</option>
+                        <option value="required" {{ settings.security.mfa_enforcement|default('disabled') == 'required' ? 'selected' : '' }}>{{ t('settings.mfa_required') }}</option>
+                    </select>
+                </div>
+            </div>
+
+            {# ── GDPR ─────────────────────────────────────────────── #}
+            {% elseif active_tab == 'gdpr' %}
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="settings[gdpr_enabled]"
+                               id="gdpr_enabled" value="1"
+                               {{ settings.gdpr.gdpr_enabled ?? '0' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="gdpr_enabled">{{ t('settings.gdpr_enabled') }}</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.gdpr_retention_days') }}</label>
+                    <input type="number" name="settings[gdpr_retention_days]" class="form-control"
+                           value="{{ settings.gdpr.gdpr_retention_days|default('365') }}" min="30">
+                </div>
+            </div>
+
+            {# ── Cron ─────────────────────────────────────────────── #}
+            {% elseif active_tab == 'cron' %}
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.cron_mode') }}</label>
+                    <select name="settings[cron_mode]" class="form-select">
+                        <option value="pseudo" {{ settings.cron.cron_mode|default('pseudo') == 'pseudo' ? 'selected' : '' }}>{{ t('settings.cron_pseudo') }}</option>
+                        <option value="real" {{ settings.cron.cron_mode|default('pseudo') == 'real' ? 'selected' : '' }}>{{ t('settings.cron_real') }}</option>
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
