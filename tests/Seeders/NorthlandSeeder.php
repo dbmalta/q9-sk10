@@ -36,9 +36,11 @@ class NorthlandSeeder
      */
     public function run(): void
     {
+        // Truncate outside transaction — TRUNCATE is DDL and causes implicit commit
+        $this->truncateAll();
+
         $this->db->beginTransaction();
         try {
-            $this->truncateAll();
             $this->seedLevelTypes();
             $this->seedOrgTree();
             $this->seedTeams();
@@ -64,7 +66,11 @@ class NorthlandSeeder
             $this->seedAuditLog();
             $this->db->commit();
         } catch (\Throwable $e) {
-            $this->db->rollback();
+            try {
+                $this->db->rollback();
+            } catch (\Throwable) {
+                // Rollback may fail if transaction was implicitly committed
+            }
             throw $e;
         }
     }
