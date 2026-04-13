@@ -70,7 +70,15 @@ jobs:
           done
 
       - name: Seed test database
-        run: php tests/seed.php
+        run: |
+          set +e
+          php -d display_errors=1 -d error_reporting=E_ALL tests/seed.php > /tmp/seed.log 2>&1
+          RC=$?
+          cat /tmp/seed.log
+          if [ $RC -ne 0 ]; then
+            echo "::error::SEED FAILED: $(tail -20 /tmp/seed.log | tr '\n' '|')"
+            exit 1
+          fi
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
