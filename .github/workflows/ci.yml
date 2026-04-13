@@ -87,7 +87,14 @@ jobs:
           DB_PASSWORD: root
 
       - name: Run PHPUnit
-        run: vendor/bin/phpunit
+        run: |
+          set +e
+          vendor/bin/phpunit --no-progress 2>&1 | tee /tmp/phpunit.log
+          RC=${PIPESTATUS[0]}
+          if [ $RC -ne 0 ]; then
+            echo "::error::PHPUNIT FAILED (exit $RC): $(tail -30 /tmp/phpunit.log | tr '\n' '|')"
+            exit $RC
+          fi
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
