@@ -69,24 +69,8 @@ jobs:
             sleep 1
           done
 
-      - name: Verify DB connection
-        run: |
-          php -r "
-          \$pdo = new PDO('mysql:host=127.0.0.1;port=3306;dbname=scoutkeeper_test', 'root', 'root');
-          echo 'Connected OK. Server: ' . \$pdo->getAttribute(PDO::ATTR_SERVER_VERSION) . PHP_EOL;
-          "
-
       - name: Seed test database
-        run: |
-          set +e
-          php -d display_errors=1 -d error_reporting=E_ALL tests/seed.php > /tmp/seed.log 2>&1
-          EXIT_CODE=$?
-          cat /tmp/seed.log
-          if [ $EXIT_CODE -ne 0 ]; then
-            ERROR_MSG=$(tail -20 /tmp/seed.log | tr '\n' ' ')
-            echo "::error::SEED FAILED: $ERROR_MSG"
-            exit 1
-          fi
+        run: php tests/seed.php
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306

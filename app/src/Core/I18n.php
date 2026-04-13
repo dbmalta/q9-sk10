@@ -229,11 +229,11 @@ class I18n
         if ($this->db !== null) {
             try {
                 $overrides = $this->db->fetchAll(
-                    "SELECT translation_key, translation_value FROM i18n_overrides WHERE language = :lang",
+                    "SELECT string_key, value FROM i18n_overrides WHERE language_code = :lang",
                     ['lang' => $this->language]
                 );
                 foreach ($overrides as $row) {
-                    $this->translations[$row['translation_key']] = $row['translation_value'];
+                    $this->translations[$row['string_key']] = $row['value'];
                 }
             } catch (\PDOException) {
                 // Table may not exist yet during setup
