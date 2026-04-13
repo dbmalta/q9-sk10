@@ -79,16 +79,12 @@ jobs:
       - name: Seed test database
         run: |
           set +e
-          OUTPUT=$(php -d display_errors=1 -d error_reporting=E_ALL tests/seed.php 2>&1)
+          php -d display_errors=1 -d error_reporting=E_ALL tests/seed.php > /tmp/seed.log 2>&1
           EXIT_CODE=$?
-          echo "$OUTPUT"
+          cat /tmp/seed.log
           if [ $EXIT_CODE -ne 0 ]; then
-            {
-              echo "## Seed Failed (exit $EXIT_CODE)"
-              echo '```'
-              echo "$OUTPUT" | tail -80
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
+            ERROR_MSG=$(tail -20 /tmp/seed.log | tr '\n' ' ')
+            echo "::error::SEED FAILED: $ERROR_MSG"
             exit 1
           fi
         env:
