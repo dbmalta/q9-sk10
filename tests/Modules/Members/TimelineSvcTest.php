@@ -29,12 +29,11 @@ class TimelineSvcTest extends TestCase
         }
 
         // Drop in dependency order
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
         $this->db->query("DROP TABLE IF EXISTS `member_timeline`");
         $this->db->query("DROP TABLE IF EXISTS `medical_access_log`");
         $this->db->query("DROP TABLE IF EXISTS `member_pending_changes`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
-        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
-        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `role_assignment_scopes`");
         $this->db->query("DROP TABLE IF EXISTS `role_assignments`");
@@ -42,6 +41,7 @@ class TimelineSvcTest extends TestCase
         $this->db->query("DROP TABLE IF EXISTS `password_resets`");
         $this->db->query("DROP TABLE IF EXISTS `user_sessions`");
         $this->db->query("DROP TABLE IF EXISTS `users`");
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
 
         // Create minimal users table
         $this->db->query("
@@ -109,11 +109,11 @@ class TimelineSvcTest extends TestCase
     protected function tearDown(): void
     {
         if (isset($this->db)) {
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
             $this->db->query("DROP TABLE IF EXISTS `member_timeline`");
-            $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
-            $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
             $this->db->query("DROP TABLE IF EXISTS `members`");
             $this->db->query("DROP TABLE IF EXISTS `users`");
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
         }
     }
 

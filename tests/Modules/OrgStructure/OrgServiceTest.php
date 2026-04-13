@@ -28,18 +28,18 @@ class OrgServiceTest extends TestCase
         }
 
         // Clean up
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
         $this->db->query("DROP TABLE IF EXISTS `member_attachments`");
         $this->db->query("DROP TABLE IF EXISTS `member_timeline`");
         $this->db->query("DROP TABLE IF EXISTS `medical_access_log`");
         $this->db->query("DROP TABLE IF EXISTS `member_pending_changes`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
-        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
-        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `org_teams`");
         $this->db->query("DROP TABLE IF EXISTS `org_closure`");
         $this->db->query("DROP TABLE IF EXISTS `org_nodes`");
         $this->db->query("DROP TABLE IF EXISTS `org_level_types`");
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
 
         // Create tables
         $this->db->query("
@@ -110,10 +110,12 @@ class OrgServiceTest extends TestCase
     protected function tearDown(): void
     {
         if ($this->db) {
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
             $this->db->query("DROP TABLE IF EXISTS `org_teams`");
             $this->db->query("DROP TABLE IF EXISTS `org_closure`");
             $this->db->query("DROP TABLE IF EXISTS `org_nodes`");
             $this->db->query("DROP TABLE IF EXISTS `org_level_types`");
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
         }
     }
 

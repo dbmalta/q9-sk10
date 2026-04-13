@@ -28,13 +28,13 @@ class CustomFieldSvcTest extends TestCase
         }
 
         // Drop in dependency order
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
         $this->db->query("DROP TABLE IF EXISTS `medical_access_log`");
         $this->db->query("DROP TABLE IF EXISTS `member_pending_changes`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
-        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
-        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `custom_field_definitions`");
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
 
         // Create the table
         $this->db->query("

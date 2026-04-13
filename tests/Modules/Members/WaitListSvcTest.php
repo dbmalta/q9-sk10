@@ -29,6 +29,7 @@ class WaitListSvcTest extends TestCase
         }
 
         // Drop in dependency order
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
         $this->db->query("DROP TABLE IF EXISTS `registration_invitations`");
         $this->db->query("DROP TABLE IF EXISTS `waiting_list`");
         $this->db->query("DROP TABLE IF EXISTS `member_attachments`");
@@ -36,8 +37,6 @@ class WaitListSvcTest extends TestCase
         $this->db->query("DROP TABLE IF EXISTS `medical_access_log`");
         $this->db->query("DROP TABLE IF EXISTS `member_pending_changes`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
-        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
-        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `custom_field_definitions`");
         $this->db->query("DROP TABLE IF EXISTS `org_node_closure`");
@@ -50,6 +49,7 @@ class WaitListSvcTest extends TestCase
         $this->db->query("DROP TABLE IF EXISTS `password_resets`");
         $this->db->query("DROP TABLE IF EXISTS `user_sessions`");
         $this->db->query("DROP TABLE IF EXISTS `users`");
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
 
         // Create users
         $this->db->query("
@@ -161,14 +161,14 @@ class WaitListSvcTest extends TestCase
 
     protected function tearDown(): void
     {
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
         $this->db->query("DROP TABLE IF EXISTS `waiting_list`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
-        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
-        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `org_nodes`");
         $this->db->query("DROP TABLE IF EXISTS `org_level_types`");
         $this->db->query("DROP TABLE IF EXISTS `users`");
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
     }
 
     // ── Add Entry ────────────────────────────────────────────────────
