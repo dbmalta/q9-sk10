@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
-define("ROOT_PATH", dirname(__DIR__, 2));
+if (!defined("ROOT_PATH")) {
+    define("ROOT_PATH", dirname(__DIR__, 2));
+}
 require ROOT_PATH . "/vendor/autoload.php";
 define("TEST_CONFIG", [
     "db" => [
