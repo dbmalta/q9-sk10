@@ -8,7 +8,7 @@ ScoutKeeper is a web-based membership management platform built for Scout organi
 
 ## Who is it for?
 
-Any Scout organisation that needs a proper membership system but lacks the budget, technical infrastructure, or in-house expertise to run complex software. SK10 is free, self-hostable, and built to run on standard shared Linux hosting.
+Any Scout organisation that needs a proper membership system but lacks the budget, technical infrastructure, or in-house expertise to run complex software. ScoutKeeper is free, self-hostable, and built to run on standard shared Linux hosting.
 
 ---
 
@@ -73,7 +73,7 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 
 ## Languages
 
-SK10 ships with English. Additional language packs are stored as JSON files and can be:
+ScoutKeeper ships with English. Additional language packs are stored as JSON files and can be:
 - Downloaded via the auto-update mechanism
 - Created using AI-generated starter packs from the English base
 - Contributed back to this repository for the community
@@ -94,9 +94,9 @@ All contributions must include appropriate unit tests.
 
 ScoutKeeper is developed and maintained by [QuadNine Ltd](https://quadnine.mt) and its founder, Kevin Camilleri.
 
-Previous versions of ScoutKeeper have been used by Scout organisations since the early days of the project. SK10 is a clean rebuild, designed for modern hosting environments and the needs of the global Scout movement.
+Previous versions of ScoutKeeper have been used by Scout organisations since the early days of the project. This is a clean rebuild, designed for modern hosting environments and the needs of the global Scout movement.
 
-**Sustainability:** SK10 is an actively maintained project. The codebase is publicly hosted at [github.com/quadninemt/scoutkeeper](https://github.com/quadninemt/scoutkeeper) under the AGPL v3 licence. In the event that QuadNine Ltd is unable to continue development, the repository will remain public and the community is free to fork and continue the project independently.
+**Sustainability:** ScoutKeeper is an actively maintained project. The codebase is publicly hosted at [github.com/quadninemt/scoutkeeper](https://github.com/quadninemt/scoutkeeper) under the AGPL v3 licence. In the event that QuadNine Ltd is unable to continue development, the repository will remain public and the community is free to fork and continue the project independently.
 
 A **paid hosted version** of ScoutKeeper is available for organisations that prefer a fully managed solution. Hosting fees fund ongoing development of the open-source project.
 
@@ -106,4 +106,4 @@ A **paid hosted version** of ScoutKeeper is available for organisations that pre
 
 ScoutKeeper is licenced under the [GNU Affero General Public Licence v3.0 (AGPL-3.0)](https://www.gnu.org/licenses/agpl-3.0.html).
 
-You are free to use, self-host, and modify SK10 at no cost. If you offer SK10 (or a modified version) as a hosted service, you must make your source code available under the same licence.
+You are free to use, self-host, and modify ScoutKeeper at no cost. If you offer ScoutKeeper (or a modified version) as a hosted service, you must make your source code available under the same licence.
