@@ -32,7 +32,9 @@ class ReportController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.reports');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $demographics = $this->reportService->getDemographics();
         $roles = $this->reportService->getRolesSummary();
@@ -52,7 +54,9 @@ class ReportController extends Controller
     public function growth(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.reports');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $interval = $request->getParam('interval', 'month');
         if (!in_array($interval, ['month', 'quarter', 'year'], true)) {
@@ -82,7 +86,9 @@ class ReportController extends Controller
     public function statusChanges(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.reports');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $startDate = $request->getParam('start_date') ?: null;
         $endDate = $request->getParam('end_date') ?: null;
@@ -106,7 +112,9 @@ class ReportController extends Controller
     public function exportMembers(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.reports');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csv = $this->reportService->exportMembersCsv(null);
 

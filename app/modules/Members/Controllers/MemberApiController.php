@@ -33,7 +33,9 @@ class MemberApiController extends Controller
     public function searchResults(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $query = trim((string) $request->getParam('q', ''));
         if (strlen($query) < 2) {
@@ -56,7 +58,9 @@ class MemberApiController extends Controller
     public function memberCard(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $member = $this->memberService->getById((int) $vars['id']);
         if ($member === null) {
@@ -74,7 +78,9 @@ class MemberApiController extends Controller
     public function statusBadge(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $member = $this->memberService->getById((int) $vars['id']);
         if ($member === null) {

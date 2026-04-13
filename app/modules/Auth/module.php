@@ -4,13 +4,6 @@ declare(strict_types=1);
 
 use App\Modules\Auth\Controllers\AuthController;
 
-/**
- * Auth module definition.
- *
- * System module — no navigation entry. Registers the login, logout,
- * password reset, and MFA routes. The auth module is always active
- * and cannot be disabled.
- */
 return [
     'id' => 'auth',
     'name' => 'Authentication',

@@ -32,7 +32,9 @@ class ExportController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.export');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         return $this->render('@admin/admin/export/index.html.twig', [
             'breadcrumbs' => [
@@ -48,7 +50,9 @@ class ExportController extends Controller
     public function membersCsv(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.export');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csv = $this->service->exportMembersCsv();
         $filename = 'members_' . date('Ymd_His') . '.csv';
@@ -65,7 +69,9 @@ class ExportController extends Controller
     public function membersXml(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.export');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $xml = $this->service->exportMembersXml();
         $filename = 'members_' . date('Ymd_His') . '.xml';
@@ -82,7 +88,9 @@ class ExportController extends Controller
     public function settingsJson(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.export');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $json = $this->service->exportSettingsJson();
         $filename = 'settings_' . date('Ymd_His') . '.json';
@@ -99,7 +107,9 @@ class ExportController extends Controller
     public function myData(Request $request, array $vars): Response
     {
         $authCheck = $this->requireAuth();
-        if ($authCheck !== null) return $authCheck;
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
 
         $user = $this->app->getSession()->get('user');
         $memberId = (int) ($user['member_id'] ?? 0);

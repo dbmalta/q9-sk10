@@ -32,7 +32,9 @@ class LanguageController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $languages = $this->service->getLanguages();
 
@@ -56,7 +58,9 @@ class LanguageController extends Controller
     public function upload(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         return $this->render('@admin/admin/languages/upload.html.twig', [
             'breadcrumbs' => [
@@ -73,10 +77,14 @@ class LanguageController extends Controller
     public function processUpload(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $code       = trim((string) $request->getParam('code', ''));
         $name       = trim((string) $request->getParam('name', ''));
@@ -119,10 +127,14 @@ class LanguageController extends Controller
     public function setDefault(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $code = (string) ($vars['code'] ?? '');
 
@@ -142,10 +154,14 @@ class LanguageController extends Controller
     public function activate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $code = (string) ($vars['code'] ?? '');
         $this->service->activate($code);
@@ -160,10 +176,14 @@ class LanguageController extends Controller
     public function deactivate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $code = (string) ($vars['code'] ?? '');
 
@@ -183,7 +203,9 @@ class LanguageController extends Controller
     public function strings(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $code = (string) ($vars['code'] ?? '');
         $strings = $this->service->getStringsForLanguage($code);
@@ -216,10 +238,14 @@ class LanguageController extends Controller
     public function saveOverride(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $code  = (string) ($vars['code'] ?? '');
         $key   = trim((string) $request->getParam('key', ''));
@@ -242,10 +268,14 @@ class LanguageController extends Controller
     public function clearOverride(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $code = (string) ($vars['code'] ?? '');
         $key  = trim((string) $request->getParam('key', ''));
@@ -267,7 +297,9 @@ class LanguageController extends Controller
     public function exportMaster(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.languages');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $json = $this->service->exportMasterFile();
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Updater;
 
 use PHPUnit\Framework\TestCase;
-use UpdateManager;
+use Updater\UpdateManager;
 
 /**
  * Tests for the Auto-Update Manager (Phase 6.2).

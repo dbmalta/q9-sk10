@@ -32,7 +32,9 @@ class AchievementController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $achievements = $this->achievementService->getDefinitions('achievement', false);
         $training = $this->achievementService->getDefinitions('training', false);
@@ -52,7 +54,9 @@ class AchievementController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         return $this->render('@achievements/achievements/form.html.twig', [
             'definition' => null,
@@ -69,10 +73,14 @@ class AchievementController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $data = [
             'name' => trim((string) $request->getParam('name', '')),
@@ -103,7 +111,9 @@ class AchievementController extends Controller
     public function edit(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $definition = $this->achievementService->getDefinitionById($id);
@@ -127,10 +137,14 @@ class AchievementController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
 
@@ -163,10 +177,14 @@ class AchievementController extends Controller
     public function deactivate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->achievementService->deactivateDefinition((int) $vars['id']);
         $this->flash('success', $this->t('flash.saved'));
@@ -179,10 +197,14 @@ class AchievementController extends Controller
     public function activate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->achievementService->activateDefinition((int) $vars['id']);
         $this->flash('success', $this->t('flash.saved'));
@@ -195,10 +217,14 @@ class AchievementController extends Controller
     public function award(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $memberId = (int) $vars['memberId'];
         $achievementId = (int) $request->getParam('achievement_id', 0);
@@ -223,10 +249,14 @@ class AchievementController extends Controller
     public function revoke(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('achievements.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $memberId = (int) $vars['memberId'];
         $id = (int) $vars['id'];

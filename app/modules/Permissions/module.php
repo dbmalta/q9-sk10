@@ -5,13 +5,6 @@ declare(strict_types=1);
 use App\Modules\Permissions\Controllers\RolesController;
 use App\Modules\Permissions\Controllers\AssignmentsController;
 
-/**
- * Permissions module definition.
- *
- * Manages roles and role assignments. Appears in the administration
- * nav group. Defines its own permissions (roles.read, roles.write)
- * so that access to role management itself is permission-controlled.
- */
 return [
     'id' => 'permissions',
     'name' => 'Permissions',

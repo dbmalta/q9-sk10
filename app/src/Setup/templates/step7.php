@@ -1,9 +1,9 @@
 <h4 class="mb-3"><i class="bi bi-check2-all me-2"></i>Finish Setup</h4>
 
-<?php if (!empty($errors ?? [])): ?>
+<?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
     <ul class="mb-0">
-        <?php foreach ($errors as $err): ?>
+        <?php foreach ($errors as $err) : ?>
         <li><?= htmlspecialchars($err) ?></li>
         <?php endforeach; ?>
     </ul>
@@ -17,7 +17,7 @@ $finished = !$wizard->isSetupNeeded() && empty($errors ?? []) && ($_SESSION['set
 // If we already wrote config (POST success), show the success message.
 ?>
 
-<?php if (isset($justFinished) && $justFinished): ?>
+<?php if (isset($justFinished) && $justFinished) : ?>
     <!-- Post-finish success state -->
     <div class="alert alert-success">
         <i class="bi bi-check-circle me-1"></i>
@@ -32,7 +32,7 @@ $finished = !$wizard->isSetupNeeded() && empty($errors ?? []) && ($_SESSION['set
         </a>
     </div>
 
-<?php else: ?>
+<?php else : ?>
     <!-- Pre-finish summary -->
     <p class="text-muted">Review your settings before finalising the installation.</p>
 
@@ -59,9 +59,9 @@ $finished = !$wizard->isSetupNeeded() && empty($errors ?? []) && ($_SESSION['set
             <tr>
                 <th class="text-muted">SMTP</th>
                 <td>
-                    <?php if (!empty($sd['smtp']['host'])): ?>
+                    <?php if (!empty($sd['smtp']['host'])) : ?>
                         <?= htmlspecialchars($sd['smtp']['host'] . ':' . $sd['smtp']['port']) ?>
-                    <?php else: ?>
+                    <?php else : ?>
                         <span class="text-muted">Skipped (can configure later)</span>
                     <?php endif; ?>
                 </td>
@@ -69,9 +69,9 @@ $finished = !$wizard->isSetupNeeded() && empty($errors ?? []) && ($_SESSION['set
             <tr>
                 <th class="text-muted">Encryption Key</th>
                 <td>
-                    <?php if (file_exists(dirname(__DIR__, 4) . '/config/encryption.key')): ?>
+                    <?php if (file_exists(dirname(__DIR__, 4) . '/config/encryption.key')) : ?>
                         <span class="text-success"><i class="bi bi-check-circle"></i> Generated</span>
-                    <?php else: ?>
+                    <?php else : ?>
                         <span class="text-danger"><i class="bi bi-x-circle"></i> Missing</span>
                     <?php endif; ?>
                 </td>

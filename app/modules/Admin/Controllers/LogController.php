@@ -34,7 +34,9 @@ class LogController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.logs');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $tab     = $request->getParam('tab', 'errors');
         $page    = max(1, (int) $request->getParam('page', 1));
@@ -74,10 +76,14 @@ class LogController extends Controller
     public function clear(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.logs');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $type = (string) ($vars['type'] ?? '');
 

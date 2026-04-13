@@ -51,7 +51,9 @@ class PublicRegistrationController extends Controller
     public function register(Request $request, array $vars): Response
     {
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $data = [
             'first_name'    => trim((string) $request->getParam('first_name', '')),
@@ -104,7 +106,9 @@ class PublicRegistrationController extends Controller
     public function processInvitation(Request $request, array $vars): Response
     {
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $token = $vars['token'] ?? '';
 
@@ -152,7 +156,9 @@ class PublicRegistrationController extends Controller
     public function submitWaitingList(Request $request, array $vars): Response
     {
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $data = [
             'parent_name'  => trim((string) $request->getParam('parent_name', '')),

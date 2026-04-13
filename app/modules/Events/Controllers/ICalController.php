@@ -63,7 +63,9 @@ class ICalController extends Controller
     public function manage(Request $request, array $vars): Response
     {
         $authCheck = $this->requireAuth();
-        if ($authCheck !== null) return $authCheck;
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
 
         $user = $this->app->getSession()->get('user');
         $memberId = (int) $user['member_id'];
@@ -92,10 +94,14 @@ class ICalController extends Controller
     public function generate(Request $request, array $vars): Response
     {
         $authCheck = $this->requireAuth();
-        if ($authCheck !== null) return $authCheck;
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $user = $this->app->getSession()->get('user');
         $memberId = (int) $user['member_id'];

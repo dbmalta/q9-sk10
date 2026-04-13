@@ -1,10 +1,10 @@
 <h4 class="mb-3"><i class="bi bi-database me-2"></i>Database Configuration</h4>
 <p class="text-muted">Enter the MySQL database credentials. The database must already exist.</p>
 
-<?php if (!empty($errors ?? [])): ?>
+<?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
     <ul class="mb-0">
-        <?php foreach ($errors as $err): ?>
+        <?php foreach ($errors as $err) : ?>
         <li><?= htmlspecialchars($err) ?></li>
         <?php endforeach; ?>
     </ul>

@@ -32,9 +32,13 @@ class TimelineController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $memberId = (int) $vars['id'];
         $fieldKey = trim((string) $request->getParam('field_key', ''));
@@ -67,9 +71,13 @@ class TimelineController extends Controller
     public function delete(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $memberId = (int) $vars['id'];
         $entryId = (int) $vars['entryId'];

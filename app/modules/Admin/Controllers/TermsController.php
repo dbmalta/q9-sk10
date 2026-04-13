@@ -32,7 +32,9 @@ class TermsController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.terms');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $versions = $this->termsService->getVersions();
 
@@ -50,7 +52,9 @@ class TermsController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.terms');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         return $this->render('@admin/admin/terms/form.html.twig', [
             'version' => null,
@@ -67,10 +71,14 @@ class TermsController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.terms');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $userId = (int) $this->app->getSession()->get('user')['id'];
 
@@ -108,7 +116,9 @@ class TermsController extends Controller
     public function edit(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.terms');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $version = $this->termsService->getVersionById($id);
@@ -132,10 +142,14 @@ class TermsController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.terms');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
 
@@ -172,10 +186,14 @@ class TermsController extends Controller
     public function publish(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.terms');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->termsService->publishVersion((int) $vars['id']);
         $this->flash('success', $this->t('terms.published'));
@@ -188,7 +206,9 @@ class TermsController extends Controller
     public function show(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.terms');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $version = $this->termsService->getVersionById($id);

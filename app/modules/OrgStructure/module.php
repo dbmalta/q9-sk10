@@ -5,12 +5,6 @@ declare(strict_types=1);
 use App\Modules\OrgStructure\Controllers\OrgController;
 use App\Modules\OrgStructure\Controllers\LevelTypesController;
 
-/**
- * Org Structure module definition.
- *
- * Manages the organisational hierarchy (nodes + closure table),
- * teams, and level type definitions.
- */
 return [
     'id' => 'org_structure',
     'name' => 'Org Structure',

@@ -32,7 +32,9 @@ class NoticeController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.notices');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $notices = $this->noticeService->getAll();
 
@@ -50,7 +52,9 @@ class NoticeController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.notices');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         return $this->render('@admin/admin/notices/form.html.twig', [
             'notice' => null,
@@ -67,10 +71,14 @@ class NoticeController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.notices');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $userId = (int) $this->app->getSession()->get('user')['id'];
 
@@ -102,7 +110,9 @@ class NoticeController extends Controller
     public function edit(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.notices');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $notice = $this->noticeService->getById($id);
@@ -126,10 +136,14 @@ class NoticeController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.notices');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
 
@@ -160,10 +174,14 @@ class NoticeController extends Controller
     public function deactivate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.notices');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->noticeService->deactivate((int) $vars['id']);
         $this->flash('success', $this->t('flash.saved'));
@@ -176,7 +194,9 @@ class NoticeController extends Controller
     public function acknowledgements(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.notices');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $notice = $this->noticeService->getById($id);

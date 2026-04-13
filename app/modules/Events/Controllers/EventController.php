@@ -100,7 +100,9 @@ class EventController extends Controller
     public function adminIndex(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $page = max(1, (int) $request->getParam('page', 1));
         $result = $this->eventService->getAll($page, 20);
@@ -121,7 +123,9 @@ class EventController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodes = $this->orgService->getTree();
 
@@ -142,10 +146,14 @@ class EventController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $userId = (int) $this->app->getSession()->get('user')['id'];
 
@@ -185,7 +193,9 @@ class EventController extends Controller
     public function edit(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $event = $this->eventService->getById($id);
@@ -212,10 +222,14 @@ class EventController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
 
@@ -250,10 +264,14 @@ class EventController extends Controller
     public function publish(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->eventService->publish((int) $vars['id']);
         $this->flash('success', $this->t('events.published'));
@@ -266,10 +284,14 @@ class EventController extends Controller
     public function unpublish(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->eventService->unpublish((int) $vars['id']);
         $this->flash('success', $this->t('flash.saved'));
@@ -282,10 +304,14 @@ class EventController extends Controller
     public function delete(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('events.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->eventService->delete((int) $vars['id']);
         $this->flash('success', $this->t('flash.deleted'));

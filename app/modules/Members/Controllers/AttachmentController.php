@@ -32,9 +32,13 @@ class AttachmentController extends Controller
     public function upload(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $memberId = (int) $vars['id'];
         $fieldKey = trim((string) $request->getParam('field_key', 'general'));
@@ -69,7 +73,9 @@ class AttachmentController extends Controller
     public function download(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $attachmentId = (int) $vars['attachmentId'];
@@ -98,9 +104,13 @@ class AttachmentController extends Controller
     public function delete(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $memberId = (int) $vars['id'];
         $attachmentId = (int) $vars['attachmentId'];

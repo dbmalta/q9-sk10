@@ -14,12 +14,6 @@ use App\Modules\Admin\Controllers\BackupController;
 use App\Modules\Admin\Controllers\LanguageController;
 use App\Modules\Admin\Controllers\MonitoringController;
 
-/**
- * Administration module definition.
- *
- * Dashboard, reports, terms & conditions, notices, settings,
- * audit log, system logs, data export, backups, and language management.
- */
 return [
     'id' => 'admin',
     'name' => 'Administration',

@@ -27,7 +27,7 @@ header('Content-Type: application/json; charset=UTF-8');
 
 require_once __DIR__ . '/UpdateManager.php';
 
-$updater = new UpdateManager(ROOT_PATH);
+$updater = new \Updater\UpdateManager(ROOT_PATH);
 
 // ── Step 1: Verify token ────────────────────────────────────────────
 

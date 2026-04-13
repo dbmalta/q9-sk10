@@ -75,7 +75,9 @@ class ArticleController extends Controller
     public function adminIndex(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $page = max(1, (int) $request->getParam('page', 1));
         $result = $this->articleService->getAll($page, 20);
@@ -96,7 +98,9 @@ class ArticleController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodes = $this->orgService->getTree();
 
@@ -117,10 +121,14 @@ class ArticleController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $userId = (int) $this->app->getSession()->get('user')['id'];
 
@@ -153,7 +161,9 @@ class ArticleController extends Controller
     public function edit(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $article = $this->articleService->getById($id);
@@ -180,10 +190,14 @@ class ArticleController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
 
@@ -211,10 +225,14 @@ class ArticleController extends Controller
     public function publish(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->articleService->publish((int) $vars['id']);
         $this->flash('success', $this->t('articles.published'));
@@ -227,10 +245,14 @@ class ArticleController extends Controller
     public function unpublish(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->articleService->unpublish((int) $vars['id']);
         $this->flash('success', $this->t('flash.saved'));
@@ -243,10 +265,14 @@ class ArticleController extends Controller
     public function delete(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $this->articleService->delete((int) $vars['id']);
         $this->flash('success', $this->t('flash.deleted'));

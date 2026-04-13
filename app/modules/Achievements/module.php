@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 use App\Modules\Achievements\Controllers\AchievementController;
 
-/**
- * Achievements module definition.
- *
- * Achievement and training definition management, plus awarding
- * and revoking achievements on individual member profiles.
- */
 return [
     'id' => 'achievements',
     'name' => 'Achievements',

@@ -37,7 +37,9 @@ class EmailController extends Controller
     public function compose(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodes = $this->orgService->getTree();
         $stats = $this->emailService->getQueueStats();
@@ -58,10 +60,14 @@ class EmailController extends Controller
     public function send(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $subject = trim((string) $request->getParam('subject', ''));
         $body = (string) $request->getParam('body', '');
@@ -103,7 +109,9 @@ class EmailController extends Controller
     public function log(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('communications.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $page = max(1, (int) $request->getParam('page', 1));
         $result = $this->emailService->getLog($page, 25);

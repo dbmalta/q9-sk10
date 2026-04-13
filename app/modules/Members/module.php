@@ -11,12 +11,6 @@ use App\Modules\Members\Controllers\MemberTabsController;
 use App\Modules\Members\Controllers\RegistrationController;
 use App\Modules\Members\Controllers\PublicRegistrationController;
 
-/**
- * Members module definition.
- *
- * Core member management: CRUD, search, listing, status changes,
- * pending change review, and HTMX API partials.
- */
 return [
     'id' => 'members',
     'name' => 'Members',

@@ -4,10 +4,10 @@
     for the first level in your hierarchy (e.g. "National", "Country", "Region").
 </p>
 
-<?php if (!empty($errors ?? [])): ?>
+<?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
     <ul class="mb-0">
-        <?php foreach ($errors as $err): ?>
+        <?php foreach ($errors as $err) : ?>
         <li><?= htmlspecialchars($err) ?></li>
         <?php endforeach; ?>
     </ul>

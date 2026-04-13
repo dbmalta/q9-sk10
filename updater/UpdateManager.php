@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Updater;
+
 /**
  * ScoutKeeper -- Auto-Update Manager
  *
@@ -253,7 +255,6 @@ class UpdateManager
             $this->clearState();
 
             return ['success' => true, 'steps_completed' => $steps, 'error' => null];
-
         } catch (\Throwable $e) {
             return ['success' => false, 'steps_completed' => $steps, 'error' => $e->getMessage()];
         }
@@ -313,7 +314,6 @@ class UpdateManager
 
             $this->clearState();
             return true;
-
         } catch (\Throwable) {
             return false;
         }

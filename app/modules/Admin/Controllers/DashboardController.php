@@ -32,7 +32,9 @@ class DashboardController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.dashboard');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $stats = $this->dashboardService->getStats();
         $health = $this->dashboardService->getSystemHealth();

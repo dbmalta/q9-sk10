@@ -5,10 +5,10 @@
     <code>config/encryption.key</code>.
 </p>
 
-<?php if (!empty($errors ?? [])): ?>
+<?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
     <ul class="mb-0">
-        <?php foreach ($errors as $err): ?>
+        <?php foreach ($errors as $err) : ?>
         <li><?= htmlspecialchars($err) ?></li>
         <?php endforeach; ?>
     </ul>
@@ -20,12 +20,12 @@ $keyFile = $wizard->isSetupNeeded() ? '' : ''; // just for display
 $keyExists = file_exists(dirname(__DIR__, 4) . '/config/encryption.key');
 ?>
 
-<?php if ($keyExists): ?>
+<?php if ($keyExists) : ?>
 <div class="alert alert-success">
     <i class="bi bi-check-circle me-1"></i>
     Encryption key already exists. It will not be overwritten.
 </div>
-<?php else: ?>
+<?php else : ?>
 <div class="alert alert-info">
     <i class="bi bi-info-circle me-1"></i>
     Clicking <strong>Generate</strong> will create a new 256-bit key.

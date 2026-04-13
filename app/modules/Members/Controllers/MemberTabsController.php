@@ -43,10 +43,14 @@ class MemberTabsController extends Controller
     public function personal(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $member = $this->getMemberOrFail((int) $vars['id']);
-        if ($member instanceof Response) return $member;
+        if ($member instanceof Response) {
+            return $member;
+        }
 
         return $this->render('@members/partials/tabs/_personal.html.twig', [
             'member' => $member,
@@ -59,10 +63,14 @@ class MemberTabsController extends Controller
     public function contact(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $member = $this->getMemberOrFail((int) $vars['id']);
-        if ($member instanceof Response) return $member;
+        if ($member instanceof Response) {
+            return $member;
+        }
 
         return $this->render('@members/partials/tabs/_contact.html.twig', [
             'member' => $member,
@@ -77,7 +85,9 @@ class MemberTabsController extends Controller
     public function medical(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $resolver = $this->app->getPermissionResolver();
@@ -106,7 +116,9 @@ class MemberTabsController extends Controller
     public function roles(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
 
@@ -146,7 +158,9 @@ class MemberTabsController extends Controller
     public function timeline(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $canWrite = $this->app->getPermissionResolver()->can('members.write');
@@ -165,7 +179,9 @@ class MemberTabsController extends Controller
     public function documents(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $canWrite = $this->app->getPermissionResolver()->can('members.write');
@@ -184,7 +200,9 @@ class MemberTabsController extends Controller
     public function additional(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $member = $this->memberService->getById($memberId);

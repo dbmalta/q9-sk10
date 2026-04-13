@@ -32,7 +32,9 @@ class AuditController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.audit');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $page    = max(1, (int) $request->getParam('page', 1));
         $perPage = 25;
@@ -75,7 +77,9 @@ class AuditController extends Controller
     public function entityTrail(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.audit');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $entityType = (string) ($vars['entityType'] ?? '');
         $entityId   = (int) ($vars['entityId'] ?? 0);

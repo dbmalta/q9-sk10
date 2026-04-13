@@ -1,10 +1,10 @@
 <h4 class="mb-3"><i class="bi bi-person-lock me-2"></i>Create Admin Account</h4>
 <p class="text-muted">This will be the super-admin with full access to the system.</p>
 
-<?php if (!empty($errors ?? [])): ?>
+<?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
     <ul class="mb-0">
-        <?php foreach ($errors as $err): ?>
+        <?php foreach ($errors as $err) : ?>
         <li><?= htmlspecialchars($err) ?></li>
         <?php endforeach; ?>
     </ul>

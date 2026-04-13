@@ -24,7 +24,9 @@ class AssignmentsController extends Controller
     public function forUser(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('roles.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $userId = (int) $vars['userId'];
         $user = $this->app->getDb()->fetchOne(
@@ -87,9 +89,13 @@ class AssignmentsController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('roles.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $userId = (int) $vars['userId'];
         $user = $this->app->getDb()->fetchOne(
@@ -161,9 +167,13 @@ class AssignmentsController extends Controller
     public function end(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('roles.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $assignmentId = (int) $vars['id'];
         $assignment = $this->app->getDb()->fetchOne(

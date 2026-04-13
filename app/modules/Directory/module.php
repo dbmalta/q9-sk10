@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 use App\Modules\Directory\Controllers\DirectoryController;
 
-/**
- * Directory module definition.
- *
- * Visual organogram showing the org structure with key role holders,
- * and a searchable flat contact directory.
- */
 return [
     'id' => 'directory',
     'name' => 'Directory',

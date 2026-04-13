@@ -39,7 +39,9 @@ class MembersController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $page = max(1, (int) $request->getParam('page', 1));
         $status = $request->getParam('status', '');
@@ -87,7 +89,9 @@ class MembersController extends Controller
     public function view(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $member = $this->memberService->getById($memberId);
@@ -116,7 +120,9 @@ class MembersController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodes = $this->orgService->getTree();
 
@@ -137,7 +143,9 @@ class MembersController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $data = $this->extractMemberData($request);
 
@@ -167,7 +175,9 @@ class MembersController extends Controller
     public function edit(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $member = $this->memberService->getById($memberId);
@@ -201,7 +211,9 @@ class MembersController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $member = $this->memberService->getById($memberId);
@@ -236,7 +248,9 @@ class MembersController extends Controller
     public function changeStatus(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $memberId = (int) $vars['id'];
         $status = trim((string) $this->getParam('status', ''));
@@ -258,7 +272,9 @@ class MembersController extends Controller
     public function pendingChanges(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $scopeNodeIds = $this->getScopeNodeIds();
         $changes = $this->memberService->getPendingChanges(null, $scopeNodeIds);
@@ -278,7 +294,9 @@ class MembersController extends Controller
     public function reviewChange(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $changeId = (int) $vars['id'];
         $decision = trim((string) $this->getParam('decision', ''));

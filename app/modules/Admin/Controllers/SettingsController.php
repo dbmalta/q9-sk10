@@ -32,7 +32,9 @@ class SettingsController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.settings');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $settings = $this->settingsService->getAll();
         $activeTab = $request->getParam('tab', 'general');
@@ -52,10 +54,14 @@ class SettingsController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.settings');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $group = (string) $request->getParam('group', 'general');
         $allowedGroups = ['general', 'registration', 'security', 'gdpr', 'cron'];

@@ -5,12 +5,6 @@ declare(strict_types=1);
 use App\Modules\Communications\Controllers\ArticleController;
 use App\Modules\Communications\Controllers\EmailController;
 
-/**
- * Communications module definition.
- *
- * Articles/news publishing, email composition and queue management,
- * cron task dispatch, and email preference management.
- */
 return [
     'id' => 'communications',
     'name' => 'Communications',

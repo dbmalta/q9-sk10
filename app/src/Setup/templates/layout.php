@@ -27,10 +27,16 @@
 <div class="container py-4">
     <!-- Step indicator -->
     <div class="text-center mb-4 step-indicator">
-        <?php for ($i = 1; $i <= $totalSteps; $i++): ?>
-            <?php if ($i > 1): ?><span class="step-line <?= $i <= $currentStep ? 'done' : '' ?>"></span><?php endif; ?>
+        <?php for ($i = 1; $i <= $totalSteps; $i++) : ?>
+            <?php if ($i > 1) :
+                ?><span class="step-line <?= $i <= $currentStep ? 'done' : '' ?>"></span><?php
+            endif; ?>
             <span class="step <?= $i < $currentStep ? 'done' : ($i === $currentStep ? 'active' : '') ?>">
-                <?php if ($i < $currentStep): ?><i class="bi bi-check"></i><?php else: ?><?= $i ?><?php endif; ?>
+                <?php if ($i < $currentStep) :
+                    ?><i class="bi bi-check"></i><?php
+                else :
+                    ?><?= $i ?><?php
+                endif; ?>
             </span>
         <?php endfor; ?>
     </div>

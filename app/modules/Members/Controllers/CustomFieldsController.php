@@ -32,7 +32,9 @@ class CustomFieldsController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $showInactive = $request->getParam('show_inactive', '') === '1';
         $definitions = $this->fieldService->getDefinitions($showInactive ? null : true);
@@ -53,7 +55,9 @@ class CustomFieldsController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         return $this->render('@members/custom_fields/form.html.twig', [
             'definition' => null,
@@ -71,9 +75,13 @@ class CustomFieldsController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $data = $this->extractFieldData($request);
 
@@ -101,7 +109,9 @@ class CustomFieldsController extends Controller
     public function edit(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $id = (int) $vars['id'];
         $definition = $this->fieldService->getById($id);
@@ -130,9 +140,13 @@ class CustomFieldsController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $id = (int) $vars['id'];
         $data = $this->extractFieldData($request);
@@ -162,9 +176,13 @@ class CustomFieldsController extends Controller
     public function deactivate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $id = (int) $vars['id'];
         $this->fieldService->deactivate($id);
@@ -178,9 +196,13 @@ class CustomFieldsController extends Controller
     public function activate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $id = (int) $vars['id'];
         $this->fieldService->activate($id);
@@ -196,9 +218,13 @@ class CustomFieldsController extends Controller
     public function reorder(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('custom_fields.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $ids = $request->getParam('ids', []);
         if (!is_array($ids)) {

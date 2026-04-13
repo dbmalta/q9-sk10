@@ -5,12 +5,6 @@ declare(strict_types=1);
 use App\Modules\Events\Controllers\EventController;
 use App\Modules\Events\Controllers\ICalController;
 
-/**
- * Events module definition.
- *
- * Calendar event management: public calendar view, event CRUD,
- * publish/unpublish workflow, and iCalendar feed generation.
- */
 return [
     'id' => 'events',
     'name' => 'Events',

@@ -43,7 +43,9 @@ class RegistrationController extends Controller
     public function pending(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $scopeNodeIds = $this->app->getPermissionResolver()->getScopeNodeIds();
         $registrations = $this->registrationService->getPendingRegistrations($scopeNodeIds);
@@ -63,10 +65,14 @@ class RegistrationController extends Controller
     public function approve(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $memberId = (int) $vars['id'];
         $userId = (int) $this->app->getSession()->get('user')['id'];
@@ -87,10 +93,14 @@ class RegistrationController extends Controller
     public function reject(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $memberId = (int) $vars['id'];
         $userId = (int) $this->app->getSession()->get('user')['id'];
@@ -114,7 +124,9 @@ class RegistrationController extends Controller
     public function invitations(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodeId = (int) $request->getParam('node_id', 0);
         $showAll = (bool) $request->getParam('show_all', false);
@@ -143,10 +155,14 @@ class RegistrationController extends Controller
     public function createInvitation(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $nodeId = (int) $request->getParam('node_id', 0);
         $email = trim((string) $request->getParam('email', ''));
@@ -175,7 +191,9 @@ class RegistrationController extends Controller
     public function bulkImportForm(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodes = $this->orgService->getTree();
 
@@ -194,7 +212,9 @@ class RegistrationController extends Controller
     public function downloadTemplate(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodeId = (int) $request->getParam('node_id', 0);
         $csv = $this->bulkImportService->generateTemplate($nodeId);
@@ -211,10 +231,14 @@ class RegistrationController extends Controller
     public function bulkImportUpload(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $nodeId = (int) $request->getParam('node_id', 0);
         if ($nodeId <= 0) {
@@ -264,10 +288,14 @@ class RegistrationController extends Controller
     public function bulkImportConfirm(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $importData = $this->app->getSession()->get('bulk_import_data');
         if (!$importData || empty($importData['valid'])) {
@@ -298,7 +326,9 @@ class RegistrationController extends Controller
     public function waitingList(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $status = $request->getParam('status') ?: null;
         $nodeId = $request->getParam('node_id') ? (int) $request->getParam('node_id') : null;
@@ -328,10 +358,14 @@ class RegistrationController extends Controller
     public function waitingListStatus(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
         $newStatus = trim((string) $request->getParam('status', ''));
@@ -352,10 +386,14 @@ class RegistrationController extends Controller
     public function waitingListConvert(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
 
@@ -376,10 +414,14 @@ class RegistrationController extends Controller
     public function waitingListDelete(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $id = (int) $vars['id'];
 
@@ -399,10 +441,14 @@ class RegistrationController extends Controller
     public function waitingListReorder(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('members.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $orderedIds = $request->getParam('order', []);
         if (is_array($orderedIds)) {

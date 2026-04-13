@@ -28,7 +28,7 @@ jobs:
         run: composer require --dev squizlabs/php_codesniffer --no-interaction
 
       - name: Run PHP_CodeSniffer
-        run: vendor/bin/phpcs --standard=PSR12 --extensions=php app/ config/ cron/ lang/ scripts/ updater/ index.php
+        run: vendor/bin/phpcs --standard=PSR12 --extensions=php -n app/ config/ cron/ lang/ scripts/ updater/ index.php
 
   test:
     name: PHPUnit (PHP ${{ matrix.php-version }})

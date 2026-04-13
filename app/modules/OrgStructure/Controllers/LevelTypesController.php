@@ -33,7 +33,9 @@ class LevelTypesController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('org_structure.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $levels = $this->orgService->getLevelTypes();
 
@@ -52,9 +54,13 @@ class LevelTypesController extends Controller
     public function store(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('org_structure.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $name = trim((string) $this->getParam('name', ''));
         if ($name === '') {
@@ -79,9 +85,13 @@ class LevelTypesController extends Controller
     public function update(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('org_structure.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         $levelId = (int) $vars['id'];
         $level = $this->orgService->getLevelType($levelId);
@@ -112,9 +122,13 @@ class LevelTypesController extends Controller
     public function delete(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('org_structure.write');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
         $csrfGuard = $this->validateCsrf($request);
-        if ($csrfGuard !== null) return $csrfGuard;
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
 
         try {
             $this->orgService->deleteLevelType((int) $vars['id']);

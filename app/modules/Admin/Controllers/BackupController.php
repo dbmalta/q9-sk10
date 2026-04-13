@@ -34,7 +34,9 @@ class BackupController extends Controller
     public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.backup');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $backups = $this->service->listBackups();
 
@@ -53,10 +55,14 @@ class BackupController extends Controller
     public function create(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.backup');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         try {
             $filename = $this->service->createBackup();
@@ -74,7 +80,9 @@ class BackupController extends Controller
     public function download(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.backup');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $filename = (string) ($vars['filename'] ?? '');
 
@@ -99,10 +107,14 @@ class BackupController extends Controller
     public function delete(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('admin.backup');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $csrfCheck = $this->validateCsrf($request);
-        if ($csrfCheck !== null) return $csrfCheck;
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
 
         $filename = (string) ($vars['filename'] ?? '');
 

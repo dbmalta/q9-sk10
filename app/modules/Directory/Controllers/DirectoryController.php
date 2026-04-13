@@ -35,7 +35,9 @@ class DirectoryController extends Controller
     public function organogram(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('directory.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $tree = $this->directoryService->getOrganogram();
 
@@ -53,7 +55,9 @@ class DirectoryController extends Controller
     public function contacts(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('directory.read');
-        if ($guard !== null) return $guard;
+        if ($guard !== null) {
+            return $guard;
+        }
 
         $nodeId = $request->getParam('node_id') ? (int) $request->getParam('node_id') : null;
         $search = $request->getParam('search') ? trim((string) $request->getParam('search')) : null;

@@ -5,7 +5,9 @@
 $checks = $wizard->getPrerequisiteChecks();
 $allPassed = true;
 foreach ($checks as $check) {
-    if (!$check['passed']) { $allPassed = false; }
+    if (!$check['passed']) {
+        $allPassed = false;
+    }
 }
 ?>
 
@@ -14,13 +16,13 @@ foreach ($checks as $check) {
         <tr><th>Requirement</th><th>Status</th><th>Detail</th></tr>
     </thead>
     <tbody>
-        <?php foreach ($checks as $check): ?>
+        <?php foreach ($checks as $check) : ?>
         <tr>
             <td><?= htmlspecialchars($check['label']) ?></td>
             <td>
-                <?php if ($check['passed']): ?>
+                <?php if ($check['passed']) : ?>
                     <i class="bi bi-check-circle-fill check-ok"></i>
-                <?php else: ?>
+                <?php else : ?>
                     <i class="bi bi-x-circle-fill check-fail"></i>
                 <?php endif; ?>
             </td>
@@ -30,7 +32,7 @@ foreach ($checks as $check) {
     </tbody>
 </table>
 
-<?php if (!empty($errors ?? [])): ?>
+<?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
     <strong>Cannot proceed.</strong> Please fix the issues above and reload this page.
 </div>

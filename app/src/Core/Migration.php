@@ -173,7 +173,9 @@ class Migration
             // Skip line comments
             if ($char === '-' && isset($sql[$i + 1]) && $sql[$i + 1] === '-') {
                 $end = strpos($sql, "\n", $i);
-                if ($end === false) break;
+                if ($end === false) {
+                    break;
+                }
                 $i = $end;
                 continue;
             }
