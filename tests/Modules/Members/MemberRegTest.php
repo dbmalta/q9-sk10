@@ -35,6 +35,8 @@ class MemberRegTest extends TestCase
         $this->db->query("DROP TABLE IF EXISTS `medical_access_log`");
         $this->db->query("DROP TABLE IF EXISTS `member_pending_changes`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
+        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
+        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `custom_field_definitions`");
         $this->db->query("DROP TABLE IF EXISTS `org_node_closure`");
@@ -166,6 +168,8 @@ class MemberRegTest extends TestCase
     {
         $this->db->query("DROP TABLE IF EXISTS `registration_invitations`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
+        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
+        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `org_nodes`");
         $this->db->query("DROP TABLE IF EXISTS `org_level_types`");

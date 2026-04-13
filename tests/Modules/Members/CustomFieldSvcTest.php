@@ -31,6 +31,8 @@ class CustomFieldSvcTest extends TestCase
         $this->db->query("DROP TABLE IF EXISTS `medical_access_log`");
         $this->db->query("DROP TABLE IF EXISTS `member_pending_changes`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
+        $this->db->query("DROP TABLE IF EXISTS `member_email_preferences`");
+        $this->db->query("DROP TABLE IF EXISTS `member_achievements`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
         $this->db->query("DROP TABLE IF EXISTS `custom_field_definitions`");
 
