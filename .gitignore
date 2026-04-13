@@ -6,11 +6,11 @@
 /config/encryption.key
 
 # Runtime data
-/var/cache/
-/var/logs/
-/var/locks/
-/var/sessions/
-/var/updates/
+/var/cache/*
+/var/logs/*
+/var/locks/*
+/var/sessions/*
+/var/updates/*
 
 # User data
 /data/uploads/*

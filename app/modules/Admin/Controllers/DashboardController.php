@@ -27,6 +27,14 @@ class DashboardController extends Controller
     }
 
     /**
+     * GET / — redirect to dashboard.
+     */
+    public function root(Request $request, array $vars): Response
+    {
+        return $this->redirect('/admin/dashboard');
+    }
+
+    /**
      * GET /admin/dashboard — main dashboard view.
      */
     public function index(Request $request, array $vars): Response

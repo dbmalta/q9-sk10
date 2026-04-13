@@ -107,6 +107,9 @@ return [
         $router->get('/api/health', [MonitoringController::class, 'health'], 'api.health');
         $router->get('/api/logs', [MonitoringController::class, 'logs'], 'api.logs');
 
+        // Root redirect
+        $router->get('/', [DashboardController::class, 'root'], 'home');
+
         // Dashboard
         $router->get('/admin/dashboard', [DashboardController::class, 'index'], 'admin.dashboard');
 
