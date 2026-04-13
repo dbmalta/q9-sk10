@@ -1,0 +1,134 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.achievements') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('nav.achievements') }}</h1>
+    <a href="/admin/achievements/create" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>{{ t('achievements.create') }}
+    </a>
+</div>
+
+{# Achievements section #}
+<h2 class="h5 mb-3">{{ t('achievements.category_achievement') }}</h2>
+{% if achievements is empty %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body text-center py-4">
+            <i class="bi bi-trophy text-body-secondary" style="font-size: 2rem;"></i>
+            <p class="mt-2 mb-0 text-body-secondary">{{ t('achievements.no_achievements') }}</p>
+        </div>
+    </div>
+{% else %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('common.name') }}</th>
+                    <th>{{ t('common.description') }}</th>
+                    <th>{{ t('common.status') }}</th>
+                    <th class="text-end pe-3">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in achievements %}
+                <tr class="{{ not item.is_active ? 'opacity-50' : '' }}">
+                    <td class="ps-3 fw-medium">{{ item.name }}</td>
+                    <td class="text-body-secondary small">{{ item.description|default('—') }}</td>
+                    <td>
+                        {% if item.is_active %}
+                            <span class="badge bg-success-subtle text-success">{{ t('common.active') }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary">{{ t('common.inactive') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-3">
+                        <a href="/admin/achievements/{{ item.id }}/edit" class="btn btn-sm btn-outline-secondary" title="{{ t('common.edit') }}">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% if item.is_active %}
+                        <form method="POST" action="/admin/achievements/{{ item.id }}/deactivate" class="d-inline">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-sm btn-outline-warning" title="{{ t('common.deactivate') }}">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                        <form method="POST" action="/admin/achievements/{{ item.id }}/activate" class="d-inline">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('common.activate') }}">
+                                <i class="bi bi-check-circle"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{# Training section #}
+<h2 class="h5 mb-3">{{ t('achievements.category_training') }}</h2>
+{% if training is empty %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-4">
+            <i class="bi bi-mortarboard text-body-secondary" style="font-size: 2rem;"></i>
+            <p class="mt-2 mb-0 text-body-secondary">{{ t('achievements.no_training') }}</p>
+        </div>
+    </div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('common.name') }}</th>
+                    <th>{{ t('common.description') }}</th>
+                    <th>{{ t('common.status') }}</th>
+                    <th class="text-end pe-3">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in training %}
+                <tr class="{{ not item.is_active ? 'opacity-50' : '' }}">
+                    <td class="ps-3 fw-medium">{{ item.name }}</td>
+                    <td class="text-body-secondary small">{{ item.description|default('—') }}</td>
+                    <td>
+                        {% if item.is_active %}
+                            <span class="badge bg-success-subtle text-success">{{ t('common.active') }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary">{{ t('common.inactive') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-3">
+                        <a href="/admin/achievements/{{ item.id }}/edit" class="btn btn-sm btn-outline-secondary" title="{{ t('common.edit') }}">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% if item.is_active %}
+                        <form method="POST" action="/admin/achievements/{{ item.id }}/deactivate" class="d-inline">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-sm btn-outline-warning" title="{{ t('common.deactivate') }}">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                        <form method="POST" action="/admin/achievements/{{ item.id }}/activate" class="d-inline">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('common.activate') }}">
+                                <i class="bi bi-check-circle"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

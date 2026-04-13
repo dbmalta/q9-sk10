@@ -1,0 +1,28 @@
+{# HTMX live search results partial. Expects: members, total, query #}
+{% if members is empty %}
+<div class="p-3 text-center text-body-secondary small">
+    {{ t('members.no_results_for', { query: query }) }}
+</div>
+{% else %}
+<div class="list-group list-group-flush">
+    {% for member in members %}
+    <a href="/members/{{ member.id }}" class="list-group-item list-group-item-action d-flex align-items-center py-2">
+        <div class="avatar-circle bg-primary-subtle text-primary me-2" style="width:32px;height:32px;font-size:0.7rem;">
+            {{ member.first_name|first|upper }}{{ member.surname|first|upper }}
+        </div>
+        <div class="flex-grow-1">
+            <span class="fw-medium">{{ member.first_name }} {{ member.surname }}</span>
+            <span class="text-body-secondary small ms-2">{{ member.membership_number }}</span>
+        </div>
+        {% include "@members/partials/_status_badge.html.twig" with { member: member } %}
+    </a>
+    {% endfor %}
+</div>
+{% if total > members|length %}
+<div class="p-2 text-center">
+    <a href="/members?q={{ query|url_encode }}" class="small">
+        {{ t('members.view_all_results', { count: total }) }}
+    </a>
+</div>
+{% endif %}
+{% endif %}

@@ -1,0 +1,14 @@
+{#
+    Empty state component
+    Expects: icon, title, message, action_url (optional), action_label (optional)
+#}
+<div class="empty-state">
+    <i class="bi {{ icon|default('bi-inbox') }}"></i>
+    {% if title is defined and title %}<h5>{{ title }}</h5>{% endif %}
+    <p class="mb-3">{{ message }}</p>
+    {% if action_url is defined and action_url %}
+    <a href="{{ action_url }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>{{ action_label|default(t('common.add')) }}
+    </a>
+    {% endif %}
+</div>

@@ -1,0 +1,31 @@
+{# Personal details tab. Expects: member #}
+<dl class="row mb-0">
+    <dt class="col-sm-4">{{ t('members.first_name') }}</dt>
+    <dd class="col-sm-8">{{ member.first_name }}</dd>
+
+    <dt class="col-sm-4">{{ t('members.surname') }}</dt>
+    <dd class="col-sm-8">{{ member.surname }}</dd>
+
+    {% if member.dob %}
+    <dt class="col-sm-4">{{ t('members.dob') }}</dt>
+    <dd class="col-sm-8">{{ member.dob }}</dd>
+    {% endif %}
+
+    {% if member.gender %}
+    <dt class="col-sm-4">{{ t('members.gender') }}</dt>
+    <dd class="col-sm-8">{{ t('members.gender_' ~ member.gender) }}</dd>
+    {% endif %}
+
+    <dt class="col-sm-4">{{ t('members.membership_number') }}</dt>
+    <dd class="col-sm-8"><code>{{ member.membership_number }}</code></dd>
+
+    <dt class="col-sm-4">{{ t('common.status') }}</dt>
+    <dd class="col-sm-8">
+        {% include "@members/partials/_status_badge.html.twig" with { member: member } %}
+    </dd>
+
+    {% if member.joined_date %}
+    <dt class="col-sm-4">{{ t('members.joined_date') }}</dt>
+    <dd class="col-sm-8">{{ member.joined_date }}</dd>
+    {% endif %}
+</dl>

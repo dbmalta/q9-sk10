@@ -1,0 +1,56 @@
+{# Renders custom field inputs for the member create/edit form. Expects: custom_fields (array of renderField results) #}
+{% if custom_fields is not empty %}
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-header bg-transparent">
+        <h6 class="mb-0"><i class="bi bi-sliders me-2"></i>{{ t('custom_fields.title') }}</h6>
+    </div>
+    <div class="card-body">
+        {% for field in custom_fields %}
+        <div class="mb-3">
+            <label for="custom_{{ field.key }}" class="form-label">
+                {{ field.label }}
+                {% if field.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+
+            {% if field.type == 'short_text' %}
+            <input type="text" id="custom_{{ field.key }}" name="custom_data[{{ field.key }}]"
+                   class="form-control" value="{{ field.value ?? '' }}"
+                   {{ field.required ? 'required' : '' }}
+                   {% if field.max_length %}maxlength="{{ field.max_length }}"{% endif %}>
+
+            {% elseif field.type == 'long_text' %}
+            <textarea id="custom_{{ field.key }}" name="custom_data[{{ field.key }}]"
+                      class="form-control" rows="3"
+                      {{ field.required ? 'required' : '' }}
+                      {% if field.max_length %}maxlength="{{ field.max_length }}"{% endif %}>{{ field.value ?? '' }}</textarea>
+
+            {% elseif field.type == 'number' %}
+            <input type="number" id="custom_{{ field.key }}" name="custom_data[{{ field.key }}]"
+                   class="form-control" value="{{ field.value ?? '' }}" step="any"
+                   {{ field.required ? 'required' : '' }}
+                   {% if field.min is not null %}min="{{ field.min }}"{% endif %}
+                   {% if field.max is not null %}max="{{ field.max }}"{% endif %}>
+
+            {% elseif field.type == 'dropdown' %}
+            <select id="custom_{{ field.key }}" name="custom_data[{{ field.key }}]"
+                    class="form-select" {{ field.required ? 'required' : '' }}>
+                <option value="">{{ t('common.none') }}</option>
+                {% for option in field.options %}
+                <option value="{{ option }}" {{ field.value == option ? 'selected' : '' }}>{{ option }}</option>
+                {% endfor %}
+            </select>
+
+            {% elseif field.type == 'date' %}
+            <input type="date" id="custom_{{ field.key }}" name="custom_data[{{ field.key }}]"
+                   class="form-control" value="{{ field.value ?? '' }}"
+                   {{ field.required ? 'required' : '' }}>
+            {% endif %}
+
+            {% if field.description %}
+            <div class="form-text">{{ field.description }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

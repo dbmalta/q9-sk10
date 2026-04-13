@@ -1,0 +1,121 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('permissions.assignments_for', {email: target_user.email}) }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ t('permissions.role_assignments') }}</h1>
+            <p class="text-body-secondary mb-0">{{ target_user.email }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/admin/roles/assignments/{{ target_user.id }}{% if not show_history %}?history=1{% endif %}"
+               class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-clock-history me-1"></i>
+                {{ show_history ? t('permissions.hide_history') : t('permissions.show_history') }}
+            </a>
+        </div>
+    </div>
+
+    {# Add assignment form #}
+    {% if has_permission('roles.write') %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent">
+            <h2 class="h6 mb-0">{{ t('permissions.add_assignment') }}</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/admin/roles/assignments/{{ target_user.id }}" class="row g-3 align-items-end">
+                {{ csrf_field() }}
+                <div class="col-md-4">
+                    <label for="role_id" class="form-label">{{ t('permissions.role') }}</label>
+                    <select id="role_id" name="role_id" class="form-select" required>
+                        <option value="">{{ t('permissions.select_role') }}</option>
+                        {% for role in roles %}
+                        <option value="{{ role.id }}">{{ role.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="start_date" class="form-label">{{ t('permissions.start_date') }}</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control"
+                           value="{{ "now"|date("Y-m-d") }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="context_type" class="form-label">{{ t('permissions.context') }}</label>
+                    <select id="context_type" name="context_type" class="form-select">
+                        <option value="">{{ t('permissions.global') }}</option>
+                        <option value="node">{{ t('permissions.org_node') }}</option>
+                        <option value="team">{{ t('permissions.team') }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">{{ t('permissions.assign') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Assignments list #}
+    {% if assignments is empty %}
+        {% include "components/_empty_state.html.twig" with {
+            icon: 'bi-shield',
+            message: t('permissions.no_assignments')
+        } %}
+    {% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ t('permissions.role') }}</th>
+                        <th>{{ t('permissions.context') }}</th>
+                        <th>{{ t('permissions.start_date') }}</th>
+                        <th>{{ t('permissions.end_date') }}</th>
+                        <th>{{ t('common.status') }}</th>
+                        <th class="text-end">{{ t('common.actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    {% set is_active = assignment.end_date is null or assignment.end_date >= "now"|date("Y-m-d") %}
+                    <tr class="{{ not is_active ? 'text-body-tertiary' : '' }}">
+                        <td class="fw-medium">{{ assignment.role_name }}</td>
+                        <td>
+                            {% if assignment.context_type %}
+                                <span class="badge bg-light text-dark">{{ assignment.context_type }}: {{ assignment.context_id }}</span>
+                            {% else %}
+                                <span class="text-body-secondary">{{ t('permissions.global') }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ assignment.start_date|format_date }}</td>
+                        <td>{{ assignment.end_date ? assignment.end_date|format_date : '—' }}</td>
+                        <td>
+                            {% if is_active %}
+                                <span class="badge bg-success-subtle text-success-emphasis">{{ t('permissions.active') }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis">{{ t('permissions.ended') }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if is_active and has_permission('roles.write') %}
+                            <form method="post" action="/admin/roles/assignments/{{ assignment.id }}/end"
+                                  class="d-inline"
+                                  onsubmit="return confirm('{{ t('permissions.end_confirm') }}')">
+                                {{ csrf_field() }}
+                                <button type="submit" class="btn btn-sm btn-outline-warning">
+                                    {{ t('permissions.end_assignment') }}
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

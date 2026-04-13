@@ -1,0 +1,59 @@
+{% extends "layouts/auth.html.twig" %}
+
+{% block title %}{{ t('registration.waiting_list') }}{% endblock %}
+
+{% block body %}
+<h5 class="mb-3">{{ t('registration.join_waiting_list') }}</h5>
+
+<form method="POST" action="/waiting-list">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+    <div class="mb-3">
+        <label for="parent_name" class="form-label small">{{ t('registration.parent_name') }} <span class="text-danger">*</span></label>
+        <input type="text" name="parent_name" id="parent_name" class="form-control form-control-sm" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="parent_email" class="form-label small">{{ t('registration.parent_email') }} <span class="text-danger">*</span></label>
+        <input type="email" name="parent_email" id="parent_email" class="form-control form-control-sm" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="child_name" class="form-label small">{{ t('registration.child_name') }} <span class="text-danger">*</span></label>
+        <input type="text" name="child_name" id="child_name" class="form-control form-control-sm" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="child_dob" class="form-label small">{{ t('registration.child_dob') }}</label>
+        <input type="date" name="child_dob" id="child_dob" class="form-control form-control-sm">
+    </div>
+
+    <div class="mb-3">
+        <label for="preferred_node_id" class="form-label small">{{ t('registration.preferred_group') }}</label>
+        <select name="preferred_node_id" id="preferred_node_id" class="form-select form-select-sm">
+            <option value="">{{ t('common.no_preference') }}</option>
+            {{ _self.render_node_options(nodes, '') }}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="notes" class="form-label small">{{ t('registration.notes') }}</label>
+        <textarea name="notes" id="notes" class="form-control form-control-sm" rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">{{ t('registration.join_waiting_list') }}</button>
+</form>
+
+<div class="text-center mt-3">
+    <a href="/register" class="small text-body-secondary">{{ t('registration.want_to_register') }}</a>
+</div>
+
+{% macro render_node_options(nodes, prefix) %}
+    {% for node in nodes %}
+    <option value="{{ node.id }}">{{ prefix }}{{ node.name }}</option>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_options(node.children, prefix ~ '  ') }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

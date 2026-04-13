@@ -1,0 +1,136 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ role and role.id ? t('permissions.edit_role') : t('permissions.add_role') }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="h3 mb-4">{{ role and role.id ? t('permissions.edit_role') : t('permissions.add_role') }}</h1>
+
+            <form method="post" action="{{ role and role.id ? '/admin/roles/' ~ role.id : '/admin/roles' }}" novalidate>
+                {{ csrf_field() }}
+
+                {# Role name and description #}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">{{ t('permissions.role_name') }} <span class="text-danger">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   value="{{ role.name|default('') }}" required autofocus>
+                        </div>
+                        <div class="mb-0">
+                            <label for="description" class="form-label">{{ t('permissions.description') }}</label>
+                            <textarea id="description" name="description" class="form-control" rows="2">{{ role.description|default('') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                {# Module permissions #}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-transparent">
+                        <h2 class="h6 mb-0">{{ t('permissions.module_permissions') }}</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if module_permissions is empty %}
+                            <p class="text-body-secondary small mb-0">{{ t('permissions.no_module_permissions') }}</p>
+                        {% else %}
+                            {% set current_module = '' %}
+                            {% for key, description in module_permissions %}
+                                {% set module = key|split('.')[0] %}
+                                {% if module != current_module %}
+                                    {% if current_module != '' %}</div>{% endif %}
+                                    <div class="mb-3">
+                                    <h3 class="h6 text-body-secondary text-uppercase small fw-semibold mb-2">{{ module }}</h3>
+                                    {% set current_module = module %}
+                                {% endif %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="permissions[]"
+                                           value="{{ key }}" id="perm_{{ key }}"
+                                           {% if role and role.permissions is iterable and role.permissions[key] is defined %}checked{% endif %}>
+                                    <label class="form-check-label" for="perm_{{ key }}">
+                                        {{ description }}
+                                        <code class="small text-body-tertiary ms-1">{{ key }}</code>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            {% if current_module != '' %}</div>{% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Special flags #}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-transparent">
+                        <h2 class="h6 mb-0">{{ t('permissions.special_flags') }}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="can_publish_events" value="1"
+                                   id="can_publish_events"
+                                   {% if role and role.can_publish_events %}checked{% endif %}>
+                            <label class="form-check-label" for="can_publish_events">
+                                <i class="bi bi-calendar-event text-success me-1"></i>{{ t('permissions.can_publish_events') }}
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="can_access_medical" value="1"
+                                   id="can_access_medical"
+                                   {% if role and role.can_access_medical %}checked{% endif %}>
+                            <label class="form-check-label" for="can_access_medical">
+                                <i class="bi bi-heart-pulse text-danger me-1"></i>{{ t('permissions.can_access_medical') }}
+                            </label>
+                        </div>
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="checkbox" name="can_access_financial" value="1"
+                                   id="can_access_financial"
+                                   {% if role and role.can_access_financial %}checked{% endif %}>
+                            <label class="form-check-label" for="can_access_financial">
+                                <i class="bi bi-currency-exchange text-warning me-1"></i>{{ t('permissions.can_access_financial') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {# Actions #}
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="/admin/roles" class="btn btn-link text-body-secondary">{{ t('common.cancel') }}</a>
+                    <div>
+                        {% if role and role.id and not role.is_system %}
+                        <button type="button" class="btn btn-outline-danger me-2"
+                                data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            {{ t('common.delete') }}
+                        </button>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary">{{ t('common.save') }}</button>
+                    </div>
+                </div>
+            </form>
+
+            {# Delete confirmation modal #}
+            {% if role and role.id and not role.is_system %}
+            <div class="modal fade" id="deleteModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ t('permissions.delete_role') }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{ t('permissions.delete_confirm', {name: role.name}) }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t('common.cancel') }}</button>
+                            <form method="post" action="/admin/roles/{{ role.id }}/delete" class="d-inline">
+                                {{ csrf_field() }}
+                                <button type="submit" class="btn btn-danger">{{ t('common.delete') }}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

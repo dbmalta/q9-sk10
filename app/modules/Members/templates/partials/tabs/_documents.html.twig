@@ -1,0 +1,6 @@
+{# Documents/Attachments tab. Expects: attachments, member_id, can_write #}
+{% include "@members/partials/_attachments.html.twig" with {
+    attachments: attachments,
+    member_id: member_id,
+    can_write: can_write
+} %}

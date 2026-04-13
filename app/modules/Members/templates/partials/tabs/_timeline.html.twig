@@ -1,0 +1,17 @@
+{# Timeline tab. Expects: grouped_entries (field_key => entries[]), member_id, can_write #}
+{% if grouped_entries is not empty %}
+    {% for field_key, entries in grouped_entries %}
+        {% include "@members/partials/_timeline.html.twig" with {
+            entries: entries,
+            field_key: field_key,
+            member_id: member_id,
+            can_write: can_write
+        } %}
+    {% endfor %}
+{% else %}
+<p class="text-body-secondary">{{ t('timeline.no_entries') }}</p>
+
+{% if can_write %}
+<p class="small text-body-secondary">{{ t('profile.timeline_hint') }}</p>
+{% endif %}
+{% endif %}

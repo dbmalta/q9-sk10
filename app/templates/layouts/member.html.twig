@@ -1,0 +1,71 @@
+{% extends "layouts/base.html.twig" %}
+
+{% block layout %}{% endblock %}
+
+{% block body_wrapper %}
+{# --- Topbar only (no sidebar for member shell) --- #}
+<nav class="navbar navbar-expand fixed-top border-bottom bg-body">
+    <div class="container">
+        <a href="/account" class="navbar-brand mb-0 fw-semibold text-body text-decoration-none">
+            {{ app_name|default('ScoutKeeper') }}
+        </a>
+
+        <div class="d-flex align-items-center gap-1">
+            {# Theme toggle #}
+            <button class="btn btn-link text-body p-1" title="{{ t('theme.toggle') }}"
+                    x-data x-on:click="$store.theme.toggle()">
+                <i class="bi" x-data :class="$store.theme.icon"></i>
+            </button>
+
+            {# User menu #}
+            <div class="dropdown">
+                <button class="btn btn-link text-body p-1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="d-none d-sm-inline ms-1 small">{{ user.email|default('') }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="/account"><i class="bi bi-person me-2"></i>{{ t('user.menu.account') }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>{{ t('user.menu.logout') }}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="member-content" style="padding-top: 60px;">
+    {# Breadcrumbs #}
+    {% if breadcrumbs is not empty %}
+    <nav aria-label="breadcrumb" class="container pt-3">
+        <ol class="breadcrumb mb-0 small">
+            {% for crumb in breadcrumbs %}
+            {% if loop.last %}
+            <li class="breadcrumb-item active" aria-current="page">{{ crumb.label }}</li>
+            {% else %}
+            <li class="breadcrumb-item"><a href="{{ crumb.url }}">{{ crumb.label }}</a></li>
+            {% endif %}
+            {% endfor %}
+        </ol>
+    </nav>
+    {% endif %}
+
+    {# Flash messages #}
+    {% set flashes = flash() %}
+    {% if flashes is not empty %}
+    <div class="container pt-3">
+        {% for type, messages in flashes %}
+            {% for message in messages %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ t('common.close') }}"></button>
+            </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main id="main-content" class="container py-4">
+        {% block body %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

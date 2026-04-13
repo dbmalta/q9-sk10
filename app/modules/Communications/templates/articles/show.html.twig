@@ -1,0 +1,26 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block body %}
+<article class="mb-4">
+    <div class="mb-4">
+        <h1 class="h3">{{ article.title }}</h1>
+        <div class="text-body-secondary small">
+            {{ article.published_at|date('d M Y H:i') }}
+            {% if article.author_email %} &middot; {{ article.author_email }}{% endif %}
+            <span class="badge bg-{{ article.visibility == 'public' ? 'success' : 'secondary' }} ms-2">{{ article.visibility }}</span>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            {{ article.body|raw }}
+        </div>
+    </div>
+</article>
+
+<a href="/articles" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+</a>
+{% endblock %}

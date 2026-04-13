@@ -1,0 +1,27 @@
+{# Contact details tab. Expects: member #}
+<dl class="row mb-0">
+    {% if member.email %}
+    <dt class="col-sm-4">{{ t('members.email') }}</dt>
+    <dd class="col-sm-8"><a href="mailto:{{ member.email }}">{{ member.email }}</a></dd>
+    {% endif %}
+
+    {% if member.phone %}
+    <dt class="col-sm-4">{{ t('members.phone') }}</dt>
+    <dd class="col-sm-8">{{ member.phone }}</dd>
+    {% endif %}
+
+    {% if member.address_line1 %}
+    <dt class="col-sm-4">{{ t('members.address') }}</dt>
+    <dd class="col-sm-8">
+        {{ member.address_line1 }}<br>
+        {% if member.address_line2 %}{{ member.address_line2 }}<br>{% endif %}
+        {% if member.city %}{{ member.city }}{% endif %}
+        {% if member.postcode %} {{ member.postcode }}{% endif %}
+        {% if member.country %}<br>{{ member.country }}{% endif %}
+    </dd>
+    {% endif %}
+</dl>
+
+{% if not member.email and not member.phone and not member.address_line1 %}
+<p class="text-body-secondary mb-0">{{ t('profile.no_contact') }}</p>
+{% endif %}

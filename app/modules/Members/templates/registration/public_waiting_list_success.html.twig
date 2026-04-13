@@ -1,0 +1,12 @@
+{% extends "layouts/auth.html.twig" %}
+
+{% block title %}{{ t('registration.waiting_list_success') }}{% endblock %}
+
+{% block body %}
+<div class="text-center py-3">
+    <i class="bi bi-hourglass-split text-primary" style="font-size: 3rem;"></i>
+    <h5 class="mt-3">{{ t('registration.waiting_list_success') }}</h5>
+    <p class="text-body-secondary small">{{ t('registration.waiting_list_success_message') }}</p>
+    <a href="/" class="btn btn-outline-primary btn-sm mt-2">{{ t('common.home') }}</a>
+</div>
+{% endblock %}

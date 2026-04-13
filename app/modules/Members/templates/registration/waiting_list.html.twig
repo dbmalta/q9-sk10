@@ -1,0 +1,134 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('registration.waiting_list') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('registration.waiting_list') }}</h1>
+    <a href="/admin/registrations" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('registration.pending') }}
+    </a>
+</div>
+
+{# Status filter pills #}
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <a href="/admin/waiting-list" class="btn btn-sm {{ filters.status is null ? 'btn-primary' : 'btn-outline-secondary' }}">
+        {{ t('common.all') }} <span class="badge bg-light text-body-secondary ms-1">{{ counts.waiting + counts.contacted + counts.converted + counts.withdrawn }}</span>
+    </a>
+    <a href="/admin/waiting-list?status=waiting" class="btn btn-sm {{ filters.status == 'waiting' ? 'btn-warning' : 'btn-outline-warning' }}">
+        {{ t('registration.wl_waiting') }} <span class="badge bg-light text-body-secondary ms-1">{{ counts.waiting }}</span>
+    </a>
+    <a href="/admin/waiting-list?status=contacted" class="btn btn-sm {{ filters.status == 'contacted' ? 'btn-info' : 'btn-outline-info' }}">
+        {{ t('registration.wl_contacted') }} <span class="badge bg-light text-body-secondary ms-1">{{ counts.contacted }}</span>
+    </a>
+    <a href="/admin/waiting-list?status=converted" class="btn btn-sm {{ filters.status == 'converted' ? 'btn-success' : 'btn-outline-success' }}">
+        {{ t('registration.wl_converted') }} <span class="badge bg-light text-body-secondary ms-1">{{ counts.converted }}</span>
+    </a>
+    <a href="/admin/waiting-list?status=withdrawn" class="btn btn-sm {{ filters.status == 'withdrawn' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+        {{ t('registration.wl_withdrawn') }} <span class="badge bg-light text-body-secondary ms-1">{{ counts.withdrawn }}</span>
+    </a>
+</div>
+
+{% if entries is empty %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-hourglass text-body-secondary" style="font-size: 2.5rem;"></i>
+            <p class="mt-3 text-body-secondary">{{ t('registration.waiting_list_empty') }}</p>
+        </div>
+    </div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3" style="width: 50px;">#</th>
+                    <th>{{ t('registration.child_name') }}</th>
+                    <th>{{ t('registration.parent_name') }}</th>
+                    <th>{{ t('registration.parent_email') }}</th>
+                    <th>{{ t('members.node') }}</th>
+                    <th>{{ t('common.status') }}</th>
+                    <th class="text-end pe-3">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td class="ps-3 text-body-secondary">{{ entry.position }}</td>
+                    <td>
+                        <strong>{{ entry.child_name }}</strong>
+                        {% if entry.child_dob %}
+                        <div class="text-body-secondary small">{{ t('members.dob') }}: {{ entry.child_dob|date('d M Y') }}</div>
+                        {% endif %}
+                    </td>
+                    <td>{{ entry.parent_name }}</td>
+                    <td>{{ entry.parent_email }}</td>
+                    <td>{{ entry.node_name|default('—') }}</td>
+                    <td>
+                        {% if entry.status == 'waiting' %}
+                            <span class="badge bg-warning">{{ t('registration.wl_waiting') }}</span>
+                        {% elseif entry.status == 'contacted' %}
+                            <span class="badge bg-info">{{ t('registration.wl_contacted') }}</span>
+                        {% elseif entry.status == 'converted' %}
+                            <span class="badge bg-success">{{ t('registration.wl_converted') }}</span>
+                        {% elseif entry.status == 'withdrawn' %}
+                            <span class="badge bg-secondary">{{ t('registration.wl_withdrawn') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-3">
+                        {% if entry.status == 'waiting' %}
+                            <form method="POST" action="/admin/waiting-list/{{ entry.id }}/status" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <input type="hidden" name="status" value="contacted">
+                                <button type="submit" class="btn btn-sm btn-outline-info" title="{{ t('registration.mark_contacted') }}">
+                                    <i class="bi bi-telephone"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="/admin/waiting-list/{{ entry.id }}/convert" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success ms-1" title="{{ t('registration.convert') }}">
+                                    <i class="bi bi-person-plus"></i>
+                                </button>
+                            </form>
+                        {% elseif entry.status == 'contacted' %}
+                            <form method="POST" action="/admin/waiting-list/{{ entry.id }}/convert" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('registration.convert') }}">
+                                    <i class="bi bi-person-plus"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="/admin/waiting-list/{{ entry.id }}/status" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <input type="hidden" name="status" value="withdrawn">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary ms-1" title="{{ t('registration.withdraw') }}">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </form>
+                        {% elseif entry.status == 'withdrawn' %}
+                            <form method="POST" action="/admin/waiting-list/{{ entry.id }}/status" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <input type="hidden" name="status" value="waiting">
+                                <button type="submit" class="btn btn-sm btn-outline-warning" title="{{ t('registration.reinstate') }}">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        {% if entry.status in ['waiting', 'withdrawn'] %}
+                            <form method="POST" action="/admin/waiting-list/{{ entry.id }}/delete" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="{{ t('common.delete') }}"
+                                        onclick="return confirm('{{ t('common.confirm_delete') }}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

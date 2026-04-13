@@ -3,7 +3,7 @@
 **Version:** 1.0 (Planning)
 **Date:** April 2026
 **Owner:** QuadNine Ltd (https://quadnine.mt)
-**Repository:** https://github.com/dbmalta/q9-sk10
+**Repository:** https://github.com/quadninemt/scoutkeeper
 
 ---
 
@@ -374,9 +374,18 @@ Post-v1: youth programme / badge tracking, self-application, peer validation, ba
 
 ## 16. UI & Design
 
-- **Fully responsive**: mobile, tablet, and desktop from day one
-- **Dark mode**: built in from day one — not a retrofit
-- **Branding**: custom logo + choice of one of 3 colour schemes (each with light and dark variants)
+- **Fully responsive**: mobile-first, tablet, and desktop from day one
+- **Dark mode**: built in from day one — not a retrofit; uses Bootstrap 5.3 native `data-bs-theme`; respects `prefers-color-scheme` on first visit; user preference saved in DB
+- **Visual direction**: Stripe Dashboard-inspired — generous white space, subtle shadows, refined, with strong contrast (WCAG AA minimum, AAA where practical)
+- **Branding**: custom logo upload + configurable organisation name (shown in topbar, reports, exports, emails). No colour scheme customisation — one neutral palette that works in both light and dark mode
+- **Layout**: sidebar + topbar (admin shell); topbar-only (member shell). Sidebar uses grouped sections (Main, Engagement, Operations, Administration) with a module registry pattern — modules self-register for nav, permissions, i18n, and ordering. Empty groups auto-hide.
+- **Mobile navigation**: Bootstrap Offcanvas drawer from hamburger menu; same grouped nav as desktop sidebar
+- **Breadcrumbs**: always visible below topbar for orientation
+- **Typography**: system font stack (no custom fonts)
+- **Component styling**: lightly themed Bootstrap 5 — softer border-radius, subtle shadows, refined buttons; does not fight the framework
+- **Density**: comfortable (generous padding, large touch targets); compact density as a post-v1 user preference
+- **Accessibility**: WCAG AA contrast minimum, visible focus rings in both modes, keyboard-navigable, skip-to-content link
+- **Frontend stack**: Twig 3 templates, Bootstrap 5.3 CSS/JS, Alpine.js 3 (interactive sprinkles), HTMX 2 (partial page updates), Bootstrap Icons — all vendored in `/assets/vendor/`, no build step
 - Member profile split into tabs/pages — lazy-loaded for performance
 
 ---
@@ -474,7 +483,7 @@ The synthetic design partner (see §19) replaces the need for a real alpha org d
 
 ## 22. Governance & Sustainability
 
-- **Maintainer:** QuadNine Ltd and its founder, Kevin Azzopardi
+- **Maintainer:** QuadNine Ltd and its founder, Kevin Camilleri
 - **Licence:** GNU Affero General Public Licence v3.0 (AGPL-3.0) — free to use and self-host; anyone offering it as a hosted service must publish their modifications under the same licence
 - **Model:** QuadNine-led with public roadmap; community PRs welcome; a paid hosted version offered by QuadNine funds ongoing development
 - **Sustainability statement:** published in the README — in the event QuadNine is unable to continue, the repository remains public and the community is free to fork

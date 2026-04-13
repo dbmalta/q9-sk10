@@ -1,0 +1,86 @@
+{# Timeline entries list. Expects: entries (array), field_key (string), member_id (int), can_write (bool) #}
+<div class="timeline-section mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0 text-capitalize">{{ field_key|replace({'_': ' '}) }}</h6>
+        {% if can_write | default(false) %}
+        <button class="btn btn-sm btn-outline-primary"
+                data-bs-toggle="collapse" data-bs-target="#add-{{ field_key }}">
+            <i class="bi bi-plus-lg me-1"></i>{{ t('common.add') }}
+        </button>
+        {% endif %}
+    </div>
+
+    {# Add entry form (collapsed) #}
+    {% if can_write | default(false) %}
+    <div class="collapse mb-3" id="add-{{ field_key }}">
+        <div class="card card-body border-0 bg-body-tertiary">
+            <form method="post" action="/members/{{ member_id }}/timeline"
+                  hx-post="/members/{{ member_id }}/timeline"
+                  hx-target="#timeline-{{ field_key }}"
+                  hx-swap="outerHTML">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <input type="hidden" name="field_key" value="{{ field_key }}">
+                <div class="row g-2 mb-2">
+                    <div class="col-md-5">
+                        <input type="text" name="value" class="form-control form-control-sm"
+                               placeholder="{{ t('timeline.value') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="date" name="effective_date" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                            {{ t('common.add') }}
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <input type="text" name="notes" class="form-control form-control-sm"
+                           placeholder="{{ t('timeline.notes_placeholder') }}">
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Entry list #}
+    <div id="timeline-{{ field_key }}">
+        {% if entries is empty %}
+        <p class="text-body-secondary small">{{ t('timeline.no_entries') }}</p>
+        {% else %}
+        <div class="list-group list-group-flush">
+            {% for entry in entries %}
+            <div class="list-group-item px-0 d-flex align-items-start">
+                <div class="timeline-dot me-3 mt-1">
+                    <span class="d-inline-block rounded-circle bg-primary" style="width:8px;height:8px;"></span>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-medium">{{ entry.value }}</span>
+                        <small class="text-body-secondary">{{ entry.effective_date }}</small>
+                    </div>
+                    {% if entry.notes %}
+                    <div class="small text-body-secondary mt-1">{{ entry.notes }}</div>
+                    {% endif %}
+                    {% if entry.recorder_email is defined and entry.recorder_email %}
+                    <div class="small text-body-tertiary mt-1">
+                        <i class="bi bi-person me-1"></i>{{ entry.recorder_email }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% if can_write | default(false) %}
+                <form method="post" action="/members/{{ member_id }}/timeline/{{ entry.id }}/delete"
+                      class="ms-2"
+                      onsubmit="return confirm('{{ t('timeline.delete_confirm') }}')">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="{{ t('common.delete') }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>

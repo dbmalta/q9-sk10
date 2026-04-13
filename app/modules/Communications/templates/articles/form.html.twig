@@ -1,0 +1,70 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ article ? t('common.edit') : t('articles.create') }}{% endblock %}
+
+{% block body %}
+<h1 class="h3 mb-4">{{ article ? t('common.edit') ~ ': ' ~ article.title : t('articles.create') }}</h1>
+
+<form method="POST" action="{{ article ? '/admin/articles/' ~ article.id : '/admin/articles' }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="title" class="form-label">{{ t('articles.article_title') }} <span class="text-danger">*</span></label>
+                <input type="text" name="title" id="title" class="form-control" required
+                       value="{{ article.title|default('') }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="excerpt" class="form-label">{{ t('articles.excerpt') }}</label>
+                <textarea name="excerpt" id="excerpt" class="form-control" rows="2">{{ article.excerpt|default('') }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="body" class="form-label">{{ t('articles.body') }} <span class="text-danger">*</span></label>
+                <textarea name="body" id="body" class="form-control" rows="12" required>{{ article.body|default('') }}</textarea>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="visibility" class="form-label">{{ t('articles.visibility') }}</label>
+                    <select name="visibility" id="visibility" class="form-select">
+                        <option value="members" {{ (article.visibility|default('members')) == 'members' ? 'selected' : '' }}>{{ t('articles.vis_members') }}</option>
+                        <option value="public" {{ (article.visibility|default('')) == 'public' ? 'selected' : '' }}>{{ t('articles.vis_public') }}</option>
+                        <option value="portal" {{ (article.visibility|default('')) == 'portal' ? 'selected' : '' }}>{{ t('articles.vis_portal') }}</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="node_scope_id" class="form-label">{{ t('articles.scope') }}</label>
+                    <select name="node_scope_id" id="node_scope_id" class="form-select">
+                        <option value="">{{ t('articles.all_nodes') }}</option>
+                        {{ _self.render_node_options(nodes, '', article.node_scope_id|default('')) }}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
+        </button>
+        {% if not article %}
+        <button type="submit" name="publish" value="1" class="btn btn-success">
+            <i class="bi bi-eye me-1"></i>{{ t('articles.save_and_publish') }}
+        </button>
+        {% endif %}
+        <a href="/admin/articles" class="btn btn-outline-secondary">{{ t('common.cancel') }}</a>
+    </div>
+</form>
+
+{% macro render_node_options(nodes, prefix, selected) %}
+    {% for node in nodes %}
+    <option value="{{ node.id }}" {{ selected == node.id ? 'selected' : '' }}>{{ prefix }}{{ node.name }}</option>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_options(node.children, prefix ~ '  ', selected) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

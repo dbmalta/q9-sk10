@@ -1,0 +1,232 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ member.first_name }} {{ member.surname }}{% endblock %}
+
+{% block body %}
+{# Member header #}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <div class="avatar-circle-lg bg-primary-subtle text-primary">
+            {{ member.first_name|first|upper }}{{ member.surname|first|upper }}
+        </div>
+        <div>
+            <h1 class="h3 mb-1">{{ member.first_name }} {{ member.surname }}</h1>
+            <div class="d-flex align-items-center gap-2">
+                <code class="small">{{ member.membership_number }}</code>
+                {% include "@members/partials/_status_badge.html.twig" with { member: member } %}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/members" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+        </a>
+        {% if has_permission('members.write') %}
+        <a href="/members/{{ member.id }}/edit" class="btn btn-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i>{{ t('common.edit') }}
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    {# Main content — Tabs #}
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent p-0">
+                <ul class="nav nav-tabs card-header-tabs px-3" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-personal"
+                                hx-get="/members/{{ member.id }}/tab/personal" hx-target="#tab-personal" hx-trigger="click once"
+                                hx-swap="innerHTML" role="tab">
+                            <i class="bi bi-person me-1"></i>{{ t('members.personal_details') }}
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-contact"
+                                hx-get="/members/{{ member.id }}/tab/contact" hx-target="#tab-contact" hx-trigger="click once"
+                                hx-swap="innerHTML" role="tab">
+                            <i class="bi bi-envelope me-1"></i>{{ t('members.contact_details') }}
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-medical"
+                                hx-get="/members/{{ member.id }}/tab/medical" hx-target="#tab-medical" hx-trigger="click once"
+                                hx-swap="innerHTML" role="tab">
+                            <i class="bi bi-shield-exclamation me-1"></i>{{ t('members.medical_notes') }}
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-roles"
+                                hx-get="/members/{{ member.id }}/tab/roles" hx-target="#tab-roles" hx-trigger="click once"
+                                hx-swap="innerHTML" role="tab">
+                            <i class="bi bi-shield-check me-1"></i>{{ t('profile.tab.roles') }}
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-timeline"
+                                hx-get="/members/{{ member.id }}/tab/timeline" hx-target="#tab-timeline" hx-trigger="click once"
+                                hx-swap="innerHTML" role="tab">
+                            <i class="bi bi-clock-history me-1"></i>{{ t('profile.tab.timeline') }}
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-documents"
+                                hx-get="/members/{{ member.id }}/tab/documents" hx-target="#tab-documents" hx-trigger="click once"
+                                hx-swap="innerHTML" role="tab">
+                            <i class="bi bi-paperclip me-1"></i>{{ t('attachments.title') }}
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-additional"
+                                hx-get="/members/{{ member.id }}/tab/additional" hx-target="#tab-additional" hx-trigger="click once"
+                                hx-swap="innerHTML" role="tab">
+                            <i class="bi bi-sliders me-1"></i>{{ t('profile.tab.additional') }}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    {# Personal tab — loaded inline (first/active tab) #}
+                    <div class="tab-pane fade show active" id="tab-personal" role="tabpanel">
+                        {% include "@members/partials/tabs/_personal.html.twig" with { member: member } %}
+                    </div>
+
+                    {# Other tabs — lazy-loaded via HTMX #}
+                    <div class="tab-pane fade" id="tab-contact" role="tabpanel">
+                        <div class="text-center text-body-secondary py-4">
+                            <div class="spinner-border spinner-border-sm me-2"></div>{{ t('common.loading') }}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-medical" role="tabpanel">
+                        <div class="text-center text-body-secondary py-4">
+                            <div class="spinner-border spinner-border-sm me-2"></div>{{ t('common.loading') }}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-roles" role="tabpanel">
+                        <div class="text-center text-body-secondary py-4">
+                            <div class="spinner-border spinner-border-sm me-2"></div>{{ t('common.loading') }}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-timeline" role="tabpanel">
+                        <div class="text-center text-body-secondary py-4">
+                            <div class="spinner-border spinner-border-sm me-2"></div>{{ t('common.loading') }}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-documents" role="tabpanel">
+                        <div class="text-center text-body-secondary py-4">
+                            <div class="spinner-border spinner-border-sm me-2"></div>{{ t('common.loading') }}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-additional" role="tabpanel">
+                        <div class="text-center text-body-secondary py-4">
+                            <div class="spinner-border spinner-border-sm me-2"></div>{{ t('common.loading') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Status change (admin) #}
+        {% if has_permission('members.write') %}
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-transparent border-bottom">
+                <h5 class="card-title mb-0"><i class="bi bi-toggles me-2"></i>{{ t('members.change_status') }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/members/{{ member.id }}/status" class="row g-2 align-items-end">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                    <div class="col-md-4">
+                        <label for="status" class="form-label small mb-1">{{ t('common.status') }}</label>
+                        <select name="status" id="status" class="form-select form-select-sm">
+                            <option value="active" {{ member.status == 'active' ? 'selected' : '' }}>{{ t('members.status_active') }}</option>
+                            <option value="pending" {{ member.status == 'pending' ? 'selected' : '' }}>{{ t('members.status_pending') }}</option>
+                            <option value="suspended" {{ member.status == 'suspended' ? 'selected' : '' }}>{{ t('members.status_suspended') }}</option>
+                            <option value="inactive" {{ member.status == 'inactive' ? 'selected' : '' }}>{{ t('members.status_inactive') }}</option>
+                            <option value="left" {{ member.status == 'left' ? 'selected' : '' }}>{{ t('members.status_left') }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="status_reason" class="form-label small mb-1">{{ t('members.status_reason') }}</label>
+                        <input type="text" name="status_reason" id="status_reason" class="form-control form-control-sm" placeholder="{{ t('common.optional') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">{{ t('common.save') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {# Sidebar #}
+    <div class="col-lg-4">
+        {# Node assignments #}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom">
+                <h5 class="card-title mb-0"><i class="bi bi-diagram-3 me-2"></i>{{ t('members.nodes') }}</h5>
+            </div>
+            <div class="card-body">
+                {% if member.nodes is defined and member.nodes is not empty %}
+                <ul class="list-unstyled mb-0">
+                    {% for node in member.nodes %}
+                    <li class="d-flex align-items-center py-1">
+                        <i class="bi bi-folder text-body-secondary me-2"></i>
+                        <a href="/admin/org/nodes/{{ node.node_id }}" class="text-decoration-none">{{ node.node_name }}</a>
+                        {% if node.is_primary %}
+                        <span class="badge bg-primary-subtle text-primary ms-auto">{{ t('members.primary') }}</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-body-secondary mb-0 small">{{ t('common.none') }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Quick info #}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent border-bottom">
+                <h5 class="card-title mb-0"><i class="bi bi-info-circle me-2"></i>{{ t('members.quick_info') }}</h5>
+            </div>
+            <div class="card-body small">
+                <dl class="row mb-0">
+                    {% if member.joined_date %}
+                    <dt class="col-6">{{ t('members.joined_date') }}</dt>
+                    <dd class="col-6">{{ member.joined_date }}</dd>
+                    {% endif %}
+
+                    {% if member.left_date %}
+                    <dt class="col-6">{{ t('members.left_date') }}</dt>
+                    <dd class="col-6">{{ member.left_date }}</dd>
+                    {% endif %}
+
+                    <dt class="col-6">{{ t('common.created') }}</dt>
+                    <dd class="col-6">{{ member.created_at|date('Y-m-d') }}</dd>
+
+                    <dt class="col-6">{{ t('members.gdpr_consent') }}</dt>
+                    <dd class="col-6">{{ member.gdpr_consent ? t('common.yes') : t('common.no') }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    .avatar-circle-lg {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}

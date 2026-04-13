@@ -1,0 +1,43 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('export.title') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('export.title') }}</h1>
+</div>
+
+{# Admin exports #}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-transparent">
+        <h5 class="card-title mb-0">{{ t('export.admin_exports') }}</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-body-secondary mb-4">{{ t('export.admin_description') }}</p>
+        <div class="d-flex flex-wrap gap-3">
+            <a href="/admin/export/members/csv" class="btn btn-outline-primary">
+                <i class="bi bi-filetype-csv me-2"></i>{{ t('export.members_csv') }}
+            </a>
+            <a href="/admin/export/members/xml" class="btn btn-outline-primary">
+                <i class="bi bi-filetype-xml me-2"></i>{{ t('export.members_xml') }}
+            </a>
+            <a href="/admin/export/settings" class="btn btn-outline-primary">
+                <i class="bi bi-filetype-json me-2"></i>{{ t('export.settings_json') }}
+            </a>
+        </div>
+    </div>
+</div>
+
+{# GDPR self-export #}
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent">
+        <h5 class="card-title mb-0">{{ t('export.gdpr_title') }}</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-body-secondary mb-4">{{ t('export.gdpr_description') }}</p>
+        <a href="/my-data/export" class="btn btn-outline-secondary">
+            <i class="bi bi-person-lock me-2"></i>{{ t('export.my_data') }}
+        </a>
+    </div>
+</div>
+{% endblock %}

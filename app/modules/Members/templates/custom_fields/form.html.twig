@@ -1,0 +1,150 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% set is_edit = definition is not null %}
+{% set form_data = old ?? definition ?? {} %}
+{% set rules = form_data.validation_rules ?? {} %}
+
+{% block title %}{{ is_edit ? t('custom_fields.edit_field') : t('custom_fields.add_field') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ is_edit ? t('custom_fields.edit_field') : t('custom_fields.add_field') }}</h1>
+    <a href="/admin/custom-fields" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+    </a>
+</div>
+
+{% if error is defined and error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<form method="post" action="{{ is_edit ? '/admin/custom-fields/' ~ definition.id ~ '/edit' : '/admin/custom-fields/create' }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    {# Label #}
+                    <div class="mb-3">
+                        <label for="label" class="form-label">{{ t('custom_fields.label') }} <span class="text-danger">*</span></label>
+                        <input type="text" id="label" name="label" class="form-control"
+                               value="{{ form_data.label ?? '' }}" required
+                               placeholder="e.g. Uniform Size">
+                        <div class="form-text">{{ t('custom_fields.label_help') }}</div>
+                    </div>
+
+                    {# Field key #}
+                    <div class="mb-3">
+                        <label for="field_key" class="form-label">{{ t('custom_fields.field_key') }} <span class="text-danger">*</span></label>
+                        <input type="text" id="field_key" name="field_key" class="form-control font-monospace"
+                               value="{{ form_data.field_key ?? '' }}" required
+                               pattern="[a-z][a-z0-9_]*" maxlength="100"
+                               placeholder="e.g. uniform_size"
+                               {{ is_edit ? 'readonly' : '' }}>
+                        <div class="form-text">{{ t('custom_fields.field_key_help') }}</div>
+                    </div>
+
+                    {# Field type #}
+                    <div class="mb-3">
+                        <label for="field_type" class="form-label">{{ t('custom_fields.field_type') }} <span class="text-danger">*</span></label>
+                        <select id="field_type" name="field_type" class="form-select" required
+                                x-data x-on:change="$dispatch('field-type-changed', { type: $el.value })">
+                            <option value="">—</option>
+                            {% for ftype in field_types %}
+                            <option value="{{ ftype }}" {{ (form_data.field_type ?? '') == ftype ? 'selected' : '' }}>
+                                {{ t('custom_fields.type.' ~ ftype) }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {# Description #}
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{{ t('custom_fields.description') }}</label>
+                        <input type="text" id="description" name="description" class="form-control"
+                               value="{{ form_data.description ?? '' }}"
+                               placeholder="Optional help text">
+                        <div class="form-text">{{ t('custom_fields.description_help') }}</div>
+                    </div>
+
+                    {# Required checkbox #}
+                    <div class="form-check mb-3">
+                        <input type="checkbox" id="is_required" name="is_required" class="form-check-input" value="1"
+                               {{ (form_data.is_required ?? false) ? 'checked' : '' }}>
+                        <label for="is_required" class="form-check-label">{{ t('custom_fields.is_required') }}</label>
+                    </div>
+                </div>
+            </div>
+
+            {# Type-specific validation rules #}
+            <div class="card border-0 shadow-sm mb-3" x-data="{ fieldType: '{{ form_data.field_type ?? '' }}' }"
+                 x-on:field-type-changed.window="fieldType = $event.detail.type">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0">{{ t('custom_fields.validation_rules') }}</h6>
+                </div>
+                <div class="card-body">
+                    {# Dropdown options #}
+                    <div x-show="fieldType === 'dropdown'" x-cloak>
+                        <div class="mb-3">
+                            <label for="dropdown_options" class="form-label">{{ t('custom_fields.dropdown_options') }}</label>
+                            <textarea id="dropdown_options" name="dropdown_options" class="form-control" rows="5"
+                                      placeholder="Small&#10;Medium&#10;Large&#10;Extra Large">{{ (rules.dropdown_options ?? [])|join("\n") }}</textarea>
+                            <div class="form-text">{{ t('custom_fields.dropdown_options_help') }}</div>
+                        </div>
+                    </div>
+
+                    {# Number min/max #}
+                    <div x-show="fieldType === 'number'" x-cloak>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="min" class="form-label">{{ t('custom_fields.min_value') }}</label>
+                                <input type="number" id="min" name="min" class="form-control" step="any"
+                                       value="{{ rules.min ?? '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="max" class="form-label">{{ t('custom_fields.max_value') }}</label>
+                                <input type="number" id="max" name="max" class="form-control" step="any"
+                                       value="{{ rules.max ?? '' }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Text max length #}
+                    <div x-show="fieldType === 'short_text' || fieldType === 'long_text'" x-cloak>
+                        <div class="mb-3">
+                            <label for="max_length" class="form-label">{{ t('custom_fields.max_length') }}</label>
+                            <input type="number" id="max_length" name="max_length" class="form-control" min="1"
+                                   value="{{ rules.max_length ?? '' }}"
+                                   placeholder="255">
+                        </div>
+                    </div>
+
+                    {# Date — no extra rules #}
+                    <div x-show="fieldType === 'date'" x-cloak>
+                        <p class="text-body-secondary small mb-0">Date fields accept values in YYYY-MM-DD format. No additional validation rules required.</p>
+                    </div>
+
+                    {# No type selected #}
+                    <div x-show="!fieldType">
+                        <p class="text-body-secondary small mb-0">Select a field type to see validation options.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <button type="submit" class="btn btn-primary w-100 mb-2">
+                        <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
+                    </button>
+                    <a href="/admin/custom-fields" class="btn btn-outline-secondary w-100">
+                        {{ t('common.cancel') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

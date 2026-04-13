@@ -1,0 +1,101 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('directory.contacts') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('directory.contacts') }}</h1>
+    <a href="/directory" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-diagram-3 me-1"></i>{{ t('directory.organogram') }}
+    </a>
+</div>
+
+{# Search and filter bar #}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="/directory/contacts" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="search" class="form-label">{{ t('common.search') }}</label>
+                <input type="text" name="search" id="search" class="form-control"
+                       placeholder="{{ t('directory.search_placeholder') }}"
+                       value="{{ current_search }}">
+            </div>
+            <div class="col-md-4">
+                <label for="node_id" class="form-label">{{ t('directory.filter_by_node') }}</label>
+                <select name="node_id" id="node_id" class="form-select">
+                    <option value="">{{ t('directory.all_nodes') }}</option>
+                    {{ _self.render_node_options(nodes, '', current_node_id) }}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i>{{ t('common.search') }}
+                </button>
+                {% if current_search or current_node_id %}
+                <a href="/directory/contacts" class="btn btn-outline-secondary">{{ t('common.clear') }}</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+{# Results table #}
+{% if contacts is empty %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-person-lines-fill text-body-secondary" style="font-size: 2.5rem;"></i>
+            <p class="mt-3 text-body-secondary">{{ t('directory.no_contacts') }}</p>
+        </div>
+    </div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('common.name') }}</th>
+                    <th>{{ t('directory.role') }}</th>
+                    <th>{{ t('common.email') }}</th>
+                    <th>{{ t('common.phone') }}</th>
+                    <th class="pe-3">{{ t('directory.node') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contact in contacts %}
+                <tr>
+                    <td class="ps-3 fw-medium">{{ contact.member_name }}</td>
+                    <td>{{ contact.role_name }}</td>
+                    <td>
+                        {% if contact.email %}
+                        <a href="mailto:{{ contact.email }}" class="text-decoration-none">{{ contact.email }}</a>
+                        {% else %}
+                        <span class="text-body-secondary">&mdash;</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if contact.phone %}
+                        <a href="tel:{{ contact.phone }}" class="text-decoration-none">{{ contact.phone }}</a>
+                        {% else %}
+                        <span class="text-body-secondary">&mdash;</span>
+                        {% endif %}
+                    </td>
+                    <td class="pe-3">
+                        <span class="badge bg-secondary-subtle text-secondary">{{ contact.node_name }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% macro render_node_options(nodes, prefix, selected) %}
+    {% for node in nodes %}
+    <option value="{{ node.id }}" {{ selected == node.id ? 'selected' : '' }}>{{ prefix }}{{ node.name }}</option>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_options(node.children, prefix ~ '  ', selected) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

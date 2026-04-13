@@ -1,0 +1,18 @@
+{# Medical notes tab. Expects: member, has_access, medical_notes (only if has_access) #}
+{% if has_access %}
+<div class="alert alert-warning small mb-3">
+    <i class="bi bi-lock me-1"></i>{{ t('members.medical_notes_warning') }}
+</div>
+{% if medical_notes %}
+<div class="p-3 bg-body-tertiary rounded">
+    {{ medical_notes|nl2br }}
+</div>
+{% else %}
+<p class="text-body-secondary">{{ t('profile.no_medical') }}</p>
+{% endif %}
+{% else %}
+<div class="text-center py-4">
+    <i class="bi bi-lock d-block mb-2 text-body-secondary" style="font-size:2rem;"></i>
+    <p class="text-body-secondary">{{ t('profile.medical_restricted') }}</p>
+</div>
+{% endif %}

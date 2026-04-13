@@ -1,0 +1,99 @@
+{# Member attachments panel. Expects: attachments, member_id, can_write #}
+<div class="attachments-section">
+    {# Upload form (Alpine dropzone) #}
+    {% if can_write | default(false) %}
+    <div x-data="dropzone()" class="mb-3">
+        <form method="post" action="/members/{{ member_id }}/attachments" enctype="multipart/form-data"
+              x-ref="uploadForm">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="field_key" value="general">
+            <div class="border border-2 border-dashed rounded-3 p-4 text-center"
+                 :class="{ 'border-primary bg-primary-subtle': dragging, 'border-body-secondary': !dragging }"
+                 @dragover.prevent="dragging = true"
+                 @dragleave.prevent="dragging = false"
+                 @drop.prevent="handleDrop($event)">
+                <i class="bi bi-cloud-upload d-block mb-2" style="font-size:1.5rem;"></i>
+                <p class="mb-1 small">{{ t('attachments.drop_zone') }}</p>
+                <label class="btn btn-sm btn-outline-primary">
+                    {{ t('attachments.browse') }}
+                    <input type="file" name="attachment" class="d-none"
+                           accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx"
+                           @change="handleSelect($event)">
+                </label>
+                <p class="text-body-secondary mt-2 mb-0" style="font-size:0.75rem;">
+                    {{ t('attachments.allowed_types') }}
+                </p>
+            </div>
+        </form>
+    </div>
+    <script>
+    function dropzone() {
+        return {
+            dragging: false,
+            handleDrop(e) {
+                this.dragging = false;
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const input = this.$refs.uploadForm.querySelector('input[type=file]');
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    input.files = dt.files;
+                    this.$refs.uploadForm.submit();
+                }
+            },
+            handleSelect(e) {
+                if (e.target.files.length > 0) {
+                    this.$refs.uploadForm.submit();
+                }
+            }
+        };
+    }
+    </script>
+    {% endif %}
+
+    {# Attachment list #}
+    {% if attachments is defined and attachments is not empty %}
+    <div class="list-group list-group-flush">
+        {% for att in attachments %}
+        <div class="list-group-item px-0 d-flex align-items-center">
+            <div class="me-3">
+                {% set icon = 'bi-file-earmark' %}
+                {% if att.mime_type starts with 'image/' %}
+                    {% set icon = 'bi-file-earmark-image' %}
+                {% elseif att.mime_type == 'application/pdf' %}
+                    {% set icon = 'bi-file-earmark-pdf' %}
+                {% elseif att.mime_type starts with 'application/vnd' or att.mime_type == 'application/msword' %}
+                    {% set icon = 'bi-file-earmark-word' %}
+                {% endif %}
+                <i class="{{ icon }} text-body-secondary" style="font-size:1.5rem;"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+                <a href="/members/{{ member_id }}/attachments/{{ att.id }}/download"
+                   class="text-decoration-none fw-medium text-truncate d-block">
+                    {{ att.original_name }}
+                </a>
+                <div class="small text-body-secondary">
+                    {{ (att.file_size / 1024)|round(1) }} KB
+                    {% if att.uploader_email is defined and att.uploader_email %}
+                        &middot; {{ att.uploader_email }}
+                    {% endif %}
+                    &middot; {{ att.created_at }}
+                </div>
+            </div>
+            {% if can_write | default(false) %}
+            <form method="post" action="/members/{{ member_id }}/attachments/{{ att.id }}/delete"
+                  class="ms-2"
+                  onsubmit="return confirm('{{ t('attachments.delete_confirm') }}')">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="{{ t('common.delete') }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-body-secondary small">{{ t('attachments.no_attachments') }}</p>
+    {% endif %}
+</div>

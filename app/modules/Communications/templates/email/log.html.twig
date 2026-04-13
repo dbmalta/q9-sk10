@@ -1,0 +1,90 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('email.log') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('email.log') }}</h1>
+    <a href="/admin/email" class="btn btn-primary btn-sm">
+        <i class="bi bi-envelope-plus me-1"></i>{{ t('email.compose') }}
+    </a>
+</div>
+
+{# Queue stats #}
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-2">
+                <div class="h4 mb-0 text-warning">{{ queue_stats.pending|default(0) }}</div>
+                <small class="text-body-secondary">{{ t('email.pending') }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-2">
+                <div class="h4 mb-0 text-primary">{{ queue_stats.sending|default(0) }}</div>
+                <small class="text-body-secondary">{{ t('email.sending') }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-2">
+                <div class="h4 mb-0 text-success">{{ queue_stats.sent|default(0) }}</div>
+                <small class="text-body-secondary">{{ t('email.sent') }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-2">
+                <div class="h4 mb-0 text-danger">{{ queue_stats.failed|default(0) }}</div>
+                <small class="text-body-secondary">{{ t('email.failed') }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if entries is empty %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5 text-body-secondary">
+            <i class="bi bi-envelope-open" style="font-size: 2.5rem;"></i>
+            <p class="mt-3">{{ t('email.no_log_entries') }}</p>
+        </div>
+    </div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('email.recipient') }}</th>
+                    <th>{{ t('email.subject') }}</th>
+                    <th>{{ t('common.status') }}</th>
+                    <th>{{ t('email.sent_at') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td class="ps-3">{{ entry.recipient_email }}</td>
+                    <td>{{ entry.subject }}</td>
+                    <td>
+                        {% if entry.status == 'sent' %}
+                            <span class="badge bg-success">{{ t('email.sent') }}</span>
+                        {% elseif entry.status == 'failed' %}
+                            <span class="badge bg-danger">{{ t('email.failed') }}</span>
+                        {% elseif entry.status == 'bounced' %}
+                            <span class="badge bg-warning">{{ t('email.bounced') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="small">{{ entry.sent_at|date('d M Y H:i') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

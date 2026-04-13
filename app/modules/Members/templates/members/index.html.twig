@@ -1,0 +1,198 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.members') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('nav.members') }}</h1>
+    <div class="d-flex gap-2">
+        {% if has_permission('members.write') %}
+        <a href="/members/pending-changes" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-clock-history me-1"></i>{{ t('members.pending_changes') }}
+        </a>
+        <a href="/members/create" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>{{ t('members.add_member') }}
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+{# Status filter pills #}
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <a href="/members" class="btn btn-sm {{ filters.status == '' ? 'btn-primary' : 'btn-outline-secondary' }}">
+        {{ t('common.all') }} <span class="badge bg-light text-body-secondary ms-1">{{ status_counts.active + status_counts.pending + status_counts.suspended + status_counts.inactive + status_counts.left }}</span>
+    </a>
+    <a href="/members?status=active" class="btn btn-sm {{ filters.status == 'active' ? 'btn-success' : 'btn-outline-success' }}">
+        {{ t('members.status_active') }} <span class="badge bg-light text-body-secondary ms-1">{{ status_counts.active }}</span>
+    </a>
+    <a href="/members?status=pending" class="btn btn-sm {{ filters.status == 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
+        {{ t('members.status_pending') }} <span class="badge bg-light text-body-secondary ms-1">{{ status_counts.pending }}</span>
+    </a>
+    <a href="/members?status=suspended" class="btn btn-sm {{ filters.status == 'suspended' ? 'btn-danger' : 'btn-outline-danger' }}">
+        {{ t('members.status_suspended') }} <span class="badge bg-light text-body-secondary ms-1">{{ status_counts.suspended }}</span>
+    </a>
+    <a href="/members?status=inactive" class="btn btn-sm {{ filters.status == 'inactive' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+        {{ t('members.status_inactive') }} <span class="badge bg-light text-body-secondary ms-1">{{ status_counts.inactive }}</span>
+    </a>
+</div>
+
+{# Search and node filter #}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form method="GET" action="/members" class="row g-2 align-items-end">
+            {% if filters.status %}
+            <input type="hidden" name="status" value="{{ filters.status }}">
+            {% endif %}
+
+            <div class="col-md-5">
+                <label for="search-q" class="form-label small mb-1">{{ t('common.search') }}</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="search" name="q" id="search-q" class="form-control" placeholder="{{ t('members.search_placeholder') }}" value="{{ filters.q }}">
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="filter-node" class="form-label small mb-1">{{ t('members.filter_by_node') }}</label>
+                <select name="node_id" id="filter-node" class="form-select form-select-sm">
+                    <option value="">{{ t('common.all') }}</option>
+                    {{ _self.render_node_options(nodes, '', filters.node_id) }}
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary flex-grow-1">
+                    <i class="bi bi-funnel me-1"></i>{{ t('common.filter') }}
+                </button>
+                <a href="/members" class="btn btn-sm btn-outline-secondary">{{ t('common.clear') }}</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# HTMX live search area #}
+<div id="live-search-results"></div>
+
+{% if members is empty %}
+    {% include "components/_empty_state.html.twig" with {
+        icon: 'bi-people',
+        message: t('members.no_members'),
+        action_label: t('members.add_member'),
+        action_url: '/members/create'
+    } %}
+{% else %}
+{# Member table #}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('members.member') }}</th>
+                    <th>{{ t('members.membership_number') }}</th>
+                    <th>{{ t('members.node') }}</th>
+                    <th>{{ t('common.status') }}</th>
+                    <th class="text-end pe-3">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td class="ps-3">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle bg-primary-subtle text-primary me-2">
+                                {{ member.first_name|first|upper }}{{ member.surname|first|upper }}
+                            </div>
+                            <div>
+                                <a href="/members/{{ member.id }}" class="text-decoration-none fw-medium">
+                                    {{ member.first_name }} {{ member.surname }}
+                                </a>
+                                {% if member.email %}
+                                <div class="text-body-secondary small">{{ member.email }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td><code class="small">{{ member.membership_number }}</code></td>
+                    <td>
+                        {% if member.node_names %}
+                        <span class="small">{{ member.node_names }}</span>
+                        {% else %}
+                        <span class="text-body-secondary small">{{ t('common.none') }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% include "@members/partials/_status_badge.html.twig" with { member: member } %}
+                    </td>
+                    <td class="text-end pe-3">
+                        <a href="/members/{{ member.id }}" class="btn btn-sm btn-outline-secondary" title="{{ t('common.view') }}">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if has_permission('members.write') %}
+                        <a href="/members/{{ member.id }}/edit" class="btn btn-sm btn-outline-secondary" title="{{ t('common.edit') }}">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# Pagination #}
+    {% if pagination.pages > 1 %}
+    <div class="card-footer bg-transparent border-top d-flex justify-content-between align-items-center py-2 px-3">
+        <span class="text-body-secondary small">
+            {{ t('common.showing', { from: ((pagination.page - 1) * pagination.per_page + 1), to: [pagination.page * pagination.per_page, pagination.total]|min, total: pagination.total }) }}
+        </span>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if pagination.page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="/members?page={{ pagination.page - 1 }}{{ filters.status ? '&status=' ~ filters.status : '' }}{{ filters.q ? '&q=' ~ filters.q : '' }}{{ filters.node_id ? '&node_id=' ~ filters.node_id : '' }}">{{ t('pagination.previous') }}</a>
+                </li>
+                {% endif %}
+
+                {% for p in range(max(1, pagination.page - 2), min(pagination.pages, pagination.page + 2)) %}
+                <li class="page-item {{ p == pagination.page ? 'active' : '' }}">
+                    <a class="page-link" href="/members?page={{ p }}{{ filters.status ? '&status=' ~ filters.status : '' }}{{ filters.q ? '&q=' ~ filters.q : '' }}{{ filters.node_id ? '&node_id=' ~ filters.node_id : '' }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+
+                {% if pagination.page < pagination.pages %}
+                <li class="page-item">
+                    <a class="page-link" href="/members?page={{ pagination.page + 1 }}{{ filters.status ? '&status=' ~ filters.status : '' }}{{ filters.q ? '&q=' ~ filters.q : '' }}{{ filters.node_id ? '&node_id=' ~ filters.node_id : '' }}">{{ t('pagination.next') }}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% macro render_node_options(nodes, prefix, selected) %}
+    {% for node in nodes %}
+    <option value="{{ node.id }}" {{ selected == node.id ? 'selected' : '' }}>{{ prefix }}{{ node.name }}</option>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_options(node.children, prefix ~ '&nbsp;&nbsp;', selected) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}
+
+{% block head %}
+<style>
+    .avatar-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}

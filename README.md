@@ -18,8 +18,8 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 - **Flexible org structure** — define your own hierarchy (section, group, district, region, national — or anything else); includes functional teams at any level
 - **Custom member fields** — configure the data fields your organisation needs, with full history on time-bound fields
 - **Explicit permissions** — roles with module-level access and explicit scope; members can hold multiple roles across the hierarchy and in functional teams
-- **Events calendar** — event publishing with in-system calendar and iCal feed
-- **Achievements & training** — manage leader qualifications, training records, and achievements
+- **Events calendar** — publish events with an in-system calendar and iCal subscription feed; event registration and attendance tracking are planned for post-v1
+- **Achievements & training** — admin-maintained list of achievements and training courses, manually assigned to adult/leader members with full history; youth programme and badge tracking are planned for post-v1
 - **Communications** — member portal with articles and notifications; email targeting by role, level, or criteria
 - **Directory & organogram** — visual org chart and contact list for key roles, visible to members
 - **Multi-language** — built-in i18n with community-shareable JSON language files
@@ -92,11 +92,11 @@ All contributions must include appropriate unit tests.
 
 ## About
 
-ScoutKeeper is developed and maintained by [QuadNine Ltd](https://quadnine.mt) and its founder, Kevin Azzopardi.
+ScoutKeeper is developed and maintained by [QuadNine Ltd](https://quadnine.mt) and its founder, Kevin Camilleri.
 
 Previous versions of ScoutKeeper have been used by Scout organisations since the early days of the project. SK10 is a clean rebuild, designed for modern hosting environments and the needs of the global Scout movement.
 
-**Sustainability:** SK10 is an actively maintained project. The codebase is publicly hosted on GitHub under the AGPL v3 licence. In the event that QuadNine Ltd is unable to continue development, the repository will remain public and the community is free to fork and continue the project independently.
+**Sustainability:** SK10 is an actively maintained project. The codebase is publicly hosted at [github.com/quadninemt/scoutkeeper](https://github.com/quadninemt/scoutkeeper) under the AGPL v3 licence. In the event that QuadNine Ltd is unable to continue development, the repository will remain public and the community is free to fork and continue the project independently.
 
 A **paid hosted version** of ScoutKeeper is available for organisations that prefer a fully managed solution. Hosting fees fund ongoing development of the open-source project.
 

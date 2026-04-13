@@ -1,0 +1,12 @@
+{% extends "layouts/auth.html.twig" %}
+
+{% block title %}{{ t('registration.invitation_invalid') }}{% endblock %}
+
+{% block body %}
+<div class="text-center py-3">
+    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+    <h5 class="mt-3">{{ t('registration.invitation_invalid') }}</h5>
+    <p class="text-body-secondary small">{{ t('registration.invitation_invalid_message') }}</p>
+    <a href="/register" class="btn btn-outline-primary btn-sm mt-2">{{ t('registration.register') }}</a>
+</div>
+{% endblock %}

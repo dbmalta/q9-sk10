@@ -1,0 +1,77 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.directory') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('directory.organogram') }}</h1>
+    <a href="/directory/contacts" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-list-ul me-1"></i>{{ t('directory.contacts') }}
+    </a>
+</div>
+
+{% if tree is empty %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-diagram-3 text-body-secondary" style="font-size: 2.5rem;"></i>
+            <p class="mt-3 text-body-secondary">{{ t('directory.no_nodes') }}</p>
+        </div>
+    </div>
+{% else %}
+    {{ _self.render_node_tree(tree, 0) }}
+{% endif %}
+
+{% macro render_node_tree(nodes, depth) %}
+    {% for node in nodes %}
+    <div class="card border-0 shadow-sm mb-3 {{ depth > 0 ? 'ms-4' : '' }}">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+                <h5 class="card-title mb-0">{{ node.name }}</h5>
+                <span class="badge bg-secondary-subtle text-secondary ms-2">{{ node.level_type }}</span>
+            </div>
+
+            {% if node.key_roles is not empty %}
+            <div class="table-responsive">
+                <table class="table table-sm table-borderless align-middle mb-0">
+                    <tbody>
+                        {% for holder in node.key_roles %}
+                        <tr>
+                            <td class="ps-0">
+                                <span class="fw-medium">{{ holder.member_name }}</span>
+                            </td>
+                            <td>
+                                <span class="text-body-secondary">{{ holder.role_name }}</span>
+                            </td>
+                            <td>
+                                {% if holder.email %}
+                                <a href="mailto:{{ holder.email }}" class="text-decoration-none small">
+                                    <i class="bi bi-envelope me-1"></i>{{ holder.email }}
+                                </a>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-0">
+                                {% if holder.phone %}
+                                <a href="tel:{{ holder.phone }}" class="text-decoration-none small">
+                                    <i class="bi bi-telephone me-1"></i>{{ holder.phone }}
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-body-secondary small mb-0">{{ t('directory.no_key_roles') }}</p>
+            {% endif %}
+
+            {% if node.children is defined and node.children is not empty %}
+            <div class="mt-3">
+                {{ _self.render_node_tree(node.children, depth + 1) }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

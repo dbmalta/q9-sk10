@@ -1,0 +1,51 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('events.ical_feed') }}{% endblock %}
+
+{% block body %}
+<h1 class="h3 mb-4">{{ t('events.ical_feed') }}</h1>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <p class="text-body-secondary">{{ t('events.ical_description') }}</p>
+
+        {% if feed_url %}
+        <div class="mb-4">
+            <label class="form-label fw-semibold">{{ t('events.ical_url') }}</label>
+            <div class="input-group">
+                <input type="text" class="form-control" value="{{ feed_url }}" readonly id="icalUrl">
+                <button type="button" class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('icalUrl').value)">
+                    <i class="bi bi-clipboard me-1"></i>{{ t('common.copy') }}
+                </button>
+            </div>
+            <div class="form-text">{{ t('events.ical_url_help') }}</div>
+        </div>
+
+        <div class="alert alert-warning mb-4">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            {{ t('events.ical_regenerate_warning') }}
+        </div>
+        {% else %}
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-info-circle me-1"></i>
+            {{ t('events.ical_no_token') }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/events/ical/generate">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <button type="submit" class="btn {{ feed_url ? 'btn-warning' : 'btn-primary' }}"
+                    {% if feed_url %}onclick="return confirm('{{ t('events.ical_confirm_regenerate') }}')"{% endif %}>
+                <i class="bi bi-arrow-repeat me-1"></i>
+                {{ feed_url ? t('events.ical_regenerate') : t('events.ical_generate') }}
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="/events" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+    </a>
+</div>
+{% endblock %}

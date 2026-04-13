@@ -1,1 +1,46 @@
-ideas/
+# Dependencies
+/vendor/
+
+# Configuration (contains secrets)
+/config/config.php
+/config/encryption.key
+
+# Runtime data
+/var/cache/
+/var/logs/
+/var/locks/
+/var/sessions/
+/var/updates/
+
+# User data
+/data/uploads/*
+/data/backups/*
+
+# Keep directory structure
+!.gitkeep
+
+# Claude Code local settings
+.claude/
+
+# Test output artifacts
+test_*.txt
+test_*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.phpunit.result.cache
+.phpunit.cache/
+/tests/e2e/test-results/
+/tests/e2e/playwright-report/
+
+# Node (for Playwright)
+/node_modules/

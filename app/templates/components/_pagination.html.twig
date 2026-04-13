@@ -1,0 +1,37 @@
+{#
+    Pagination component
+    Expects: current_page, total_pages, base_url
+#}
+{% if total_pages > 1 %}
+<nav aria-label="Pagination">
+    <ul class="pagination justify-content-center mb-0">
+        <li class="page-item {{ current_page <= 1 ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ base_url }}?page={{ current_page - 1 }}" aria-label="{{ t('pagination.previous') }}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+
+        {% for page in 1..total_pages %}
+            {% if page == current_page %}
+            <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ page }}</span>
+            </li>
+            {% elseif page == 1 or page == total_pages or (page >= current_page - 2 and page <= current_page + 2) %}
+            <li class="page-item">
+                <a class="page-link" href="{{ base_url }}?page={{ page }}">{{ page }}</a>
+            </li>
+            {% elseif page == current_page - 3 or page == current_page + 3 %}
+            <li class="page-item disabled">
+                <span class="page-link">&hellip;</span>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        <li class="page-item {{ current_page >= total_pages ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ base_url }}?page={{ current_page + 1 }}" aria-label="{{ t('pagination.next') }}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endif %}

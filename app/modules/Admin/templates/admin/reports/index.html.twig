@@ -1,0 +1,119 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.reports') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('nav.reports') }}</h1>
+    <div class="d-flex gap-2">
+        <a href="/admin/reports/growth" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-graph-up me-1"></i>{{ t('reports.growth') }}
+        </a>
+        <a href="/admin/reports/status-changes" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left-right me-1"></i>{{ t('reports.status_changes') }}
+        </a>
+        <a href="/admin/reports/export/members" class="btn btn-primary btn-sm">
+            <i class="bi bi-download me-1"></i>{{ t('reports.export_members') }}
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    {# Gender demographics #}
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent">
+                <h2 class="h6 mb-0">{{ t('reports.demographics_gender') }}</h2>
+            </div>
+            {% if demographics.by_gender is empty %}
+            <div class="card-body text-center py-4">
+                <p class="text-body-secondary mb-0">{{ t('reports.no_data') }}</p>
+            </div>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-3">{{ t('reports.gender') }}</th>
+                            <th class="text-end pe-3">{{ t('common.count') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in demographics.by_gender %}
+                        <tr>
+                            <td class="ps-3">{{ item.gender }}</td>
+                            <td class="text-end pe-3 fw-medium">{{ item.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Age group demographics #}
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent">
+                <h2 class="h6 mb-0">{{ t('reports.demographics_age') }}</h2>
+            </div>
+            {% if demographics.by_age_group is empty %}
+            <div class="card-body text-center py-4">
+                <p class="text-body-secondary mb-0">{{ t('reports.no_data') }}</p>
+            </div>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-3">{{ t('reports.age_group') }}</th>
+                            <th class="text-end pe-3">{{ t('common.count') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in demographics.by_age_group %}
+                        <tr>
+                            <td class="ps-3">{{ item.group }}</td>
+                            <td class="text-end pe-3 fw-medium">{{ item.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# Roles summary #}
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent">
+        <h2 class="h6 mb-0">{{ t('reports.roles_summary') }}</h2>
+    </div>
+    {% if roles is empty %}
+    <div class="card-body text-center py-4">
+        <p class="text-body-secondary mb-0">{{ t('reports.no_data') }}</p>
+    </div>
+    {% else %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('reports.role') }}</th>
+                    <th class="text-end pe-3">{{ t('common.count') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in roles %}
+                <tr>
+                    <td class="ps-3">{{ item.role }}</td>
+                    <td class="text-end pe-3 fw-medium">{{ item.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

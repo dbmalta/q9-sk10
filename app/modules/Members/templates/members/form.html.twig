@@ -1,0 +1,192 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ member ? t('members.edit_member') : t('members.add_member') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ member ? t('members.edit_member') : t('members.add_member') }}</h1>
+</div>
+
+<form method="POST" action="{{ member ? '/members/' ~ member.id : '/members' }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            {# Personal details #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="card-title mb-0">{{ t('members.personal_details') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">{{ t('members.first_name') }} <span class="text-danger">*</span></label>
+                            <input type="text" name="first_name" id="first_name" class="form-control"
+                                   value="{{ member ? member.first_name : '' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="surname" class="form-label">{{ t('members.surname') }} <span class="text-danger">*</span></label>
+                            <input type="text" name="surname" id="surname" class="form-control"
+                                   value="{{ member ? member.surname : '' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dob" class="form-label">{{ t('members.dob') }}</label>
+                            <input type="date" name="dob" id="dob" class="form-control"
+                                   value="{{ member ? member.dob : '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gender" class="form-label">{{ t('members.gender') }}</label>
+                            <select name="gender" id="gender" class="form-select">
+                                <option value="">{{ t('common.none') }}</option>
+                                <option value="male" {{ member and member.gender == 'male' ? 'selected' : '' }}>{{ t('members.gender_male') }}</option>
+                                <option value="female" {{ member and member.gender == 'female' ? 'selected' : '' }}>{{ t('members.gender_female') }}</option>
+                                <option value="other" {{ member and member.gender == 'other' ? 'selected' : '' }}>{{ t('members.gender_other') }}</option>
+                                <option value="prefer_not_to_say" {{ member and member.gender == 'prefer_not_to_say' ? 'selected' : '' }}>{{ t('members.gender_prefer_not_to_say') }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Contact details #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="card-title mb-0">{{ t('members.contact_details') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">{{ t('members.email') }}</label>
+                            <input type="email" name="email" id="email" class="form-control"
+                                   value="{{ member ? member.email : '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">{{ t('members.phone') }}</label>
+                            <input type="tel" name="phone" id="phone" class="form-control"
+                                   value="{{ member ? member.phone : '' }}">
+                        </div>
+                        <div class="col-12">
+                            <label for="address_line1" class="form-label">{{ t('members.address') }}</label>
+                            <input type="text" name="address_line1" id="address_line1" class="form-control mb-2"
+                                   placeholder="{{ t('members.address_line1') }}"
+                                   value="{{ member ? member.address_line1 : '' }}">
+                            <input type="text" name="address_line2" class="form-control"
+                                   placeholder="{{ t('members.address_line2') }}"
+                                   value="{{ member ? member.address_line2 : '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="city" class="form-label">{{ t('members.city') }}</label>
+                            <input type="text" name="city" id="city" class="form-control"
+                                   value="{{ member ? member.city : '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="postcode" class="form-label">{{ t('members.postcode') }}</label>
+                            <input type="text" name="postcode" id="postcode" class="form-control"
+                                   value="{{ member ? member.postcode : '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="country" class="form-label">{{ t('members.country') }}</label>
+                            <input type="text" name="country" id="country" class="form-control"
+                                   value="{{ member ? member.country : 'Malta' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Medical notes (admin only, if encryption available) #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="card-title mb-0"><i class="bi bi-shield-exclamation me-2"></i>{{ t('members.medical_notes') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning small mb-3">
+                        <i class="bi bi-lock me-1"></i>{{ t('members.medical_notes_warning') }}
+                    </div>
+                    <textarea name="medical_notes" rows="3" class="form-control"
+                              placeholder="{{ t('members.medical_notes_placeholder') }}">{{ member and member.medical_notes is defined ? member.medical_notes : '' }}</textarea>
+                </div>
+            </div>
+
+            {# Custom fields #}
+            {% if custom_fields is defined and custom_fields is not empty %}
+                {% include "@members/partials/_custom_fields.html.twig" with { custom_fields: custom_fields } %}
+            {% endif %}
+        </div>
+
+        {# Sidebar #}
+        <div class="col-lg-4">
+            {# Status and dates #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="card-title mb-0">{{ t('common.status') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">{{ t('common.status') }}</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="active" {{ member and member.status == 'active' ? 'selected' : '' }}>{{ t('members.status_active') }}</option>
+                            <option value="pending" {{ (not member) or (member and member.status == 'pending') ? 'selected' : '' }}>{{ t('members.status_pending') }}</option>
+                            <option value="suspended" {{ member and member.status == 'suspended' ? 'selected' : '' }}>{{ t('members.status_suspended') }}</option>
+                            <option value="inactive" {{ member and member.status == 'inactive' ? 'selected' : '' }}>{{ t('members.status_inactive') }}</option>
+                            <option value="left" {{ member and member.status == 'left' ? 'selected' : '' }}>{{ t('members.status_left') }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="joined_date" class="form-label">{{ t('members.joined_date') }}</label>
+                        <input type="date" name="joined_date" id="joined_date" class="form-control"
+                               value="{{ member ? member.joined_date : '' }}">
+                    </div>
+                </div>
+            </div>
+
+            {# Node assignments #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="card-title mb-0">{{ t('members.nodes') }}</h5>
+                </div>
+                <div class="card-body" x-data="{ nodes: {{ member and member.node_ids is defined ? member.node_ids|json_encode : '[]' }} }">
+                    <div class="mb-3">
+                        <label class="form-label">{{ t('members.assign_to_nodes') }}</label>
+                        {{ _self.render_node_checkboxes(nodes, member) }}
+                    </div>
+                </div>
+            </div>
+
+            {# GDPR #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="form-check">
+                        <input type="checkbox" name="gdpr_consent" id="gdpr_consent" class="form-check-input" value="1"
+                               {{ member and member.gdpr_consent ? 'checked' : '' }}>
+                        <label for="gdpr_consent" class="form-check-label">{{ t('members.gdpr_consent') }}</label>
+                    </div>
+                </div>
+            </div>
+
+            {# Actions #}
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
+                </button>
+                <a href="{{ member ? '/members/' ~ member.id : '/members' }}" class="btn btn-outline-secondary">
+                    {{ t('common.cancel') }}
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% macro render_node_checkboxes(nodes, member) %}
+    {% for node in nodes %}
+    <div class="form-check ms-{{ loop.depth0 * 3 }}">
+        <input type="checkbox" name="node_ids[]" value="{{ node.id }}" id="node_{{ node.id }}"
+               class="form-check-input"
+               {{ member and member.node_ids is defined and node.id in member.node_ids ? 'checked' : '' }}>
+        <label for="node_{{ node.id }}" class="form-check-label small">{{ node.name }}</label>
+    </div>
+    {% if node.children is defined and node.children is not empty %}
+        {{ _self.render_node_checkboxes(node.children, member) }}
+    {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

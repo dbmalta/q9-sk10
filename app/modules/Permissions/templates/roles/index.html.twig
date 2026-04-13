@@ -1,0 +1,69 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('permissions.roles') }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">{{ t('permissions.roles') }}</h1>
+        {% if has_permission('roles.write') %}
+        <a href="/admin/roles/create" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>{{ t('permissions.add_role') }}
+        </a>
+        {% endif %}
+    </div>
+
+    {% if roles is empty %}
+        {% include "components/_empty_state.html.twig" with {
+            icon: 'bi-shield-lock',
+            message: t('permissions.no_roles'),
+            action_label: t('permissions.add_role'),
+            action_url: '/admin/roles/create'
+        } %}
+    {% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ t('permissions.role_name') }}</th>
+                        <th>{{ t('permissions.description') }}</th>
+                        <th class="text-center">{{ t('permissions.active_assignments') }}</th>
+                        <th class="text-center">{{ t('permissions.special_flags') }}</th>
+                        <th class="text-end">{{ t('common.actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for role in roles %}
+                    <tr>
+                        <td>
+                            <span class="fw-medium">{{ role.name }}</span>
+                            {% if role.is_system %}
+                            <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">{{ t('permissions.system') }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-body-secondary small">{{ role.description|default('—') }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-primary-subtle text-primary-emphasis">{{ role.active_assignments }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if role.can_publish_events %}<i class="bi bi-calendar-event text-success" title="{{ t('permissions.can_publish_events') }}"></i>{% endif %}
+                            {% if role.can_access_medical %}<i class="bi bi-heart-pulse text-danger ms-1" title="{{ t('permissions.can_access_medical') }}"></i>{% endif %}
+                            {% if role.can_access_financial %}<i class="bi bi-currency-exchange text-warning ms-1" title="{{ t('permissions.can_access_financial') }}"></i>{% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if has_permission('roles.write') %}
+                            <a href="/admin/roles/{{ role.id }}/edit" class="btn btn-sm btn-outline-secondary">
+                                {{ t('common.edit') }}
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

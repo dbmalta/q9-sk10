@@ -1,0 +1,12 @@
+{% extends "layouts/auth.html.twig" %}
+
+{% block title %}{{ t('registration.success') }}{% endblock %}
+
+{% block body %}
+<div class="text-center py-3">
+    <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+    <h5 class="mt-3">{{ t('registration.success') }}</h5>
+    <p class="text-body-secondary small">{{ t('registration.success_message') }}</p>
+    <a href="/login" class="btn btn-primary btn-sm mt-2">{{ t('auth.login') }}</a>
+</div>
+{% endblock %}

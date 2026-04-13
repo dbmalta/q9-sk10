@@ -1,0 +1,191 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.events') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('events.calendar') }}</h1>
+    <div class="d-flex gap-2">
+        <a href="/events/ical" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-calendar2-plus me-1"></i>{{ t('events.ical_feed') }}
+        </a>
+        {% if has_permission('events.write') %}
+        <a href="/admin/events" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-gear me-1"></i>{{ t('events.manage') }}
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div x-data="eventCalendar({{ events_json|raw }}, {{ year }}, {{ month }})" class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+        <a :href="prevMonthUrl()" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <h5 class="mb-0" x-text="monthLabel()"></h5>
+        <a :href="nextMonthUrl()" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+    <div class="card-body p-0">
+        {# Day-of-week headers #}
+        <div class="row g-0 border-bottom text-center">
+            <div class="col text-body-secondary small fw-semibold py-2">{{ t('days.mon') }}</div>
+            <div class="col text-body-secondary small fw-semibold py-2">{{ t('days.tue') }}</div>
+            <div class="col text-body-secondary small fw-semibold py-2">{{ t('days.wed') }}</div>
+            <div class="col text-body-secondary small fw-semibold py-2">{{ t('days.thu') }}</div>
+            <div class="col text-body-secondary small fw-semibold py-2">{{ t('days.fri') }}</div>
+            <div class="col text-body-secondary small fw-semibold py-2">{{ t('days.sat') }}</div>
+            <div class="col text-body-secondary small fw-semibold py-2">{{ t('days.sun') }}</div>
+        </div>
+
+        {# Calendar grid — rendered by Alpine #}
+        <template x-for="week in weeks()" :key="week[0].date">
+            <div class="row g-0 border-bottom">
+                <template x-for="day in week" :key="day.date">
+                    <div class="col border-end position-relative"
+                         :class="{ 'bg-body-tertiary': !day.inMonth, 'bg-primary-subtle': day.isSelected }"
+                         style="min-height: 5rem; cursor: pointer;"
+                         @click="selectDate(day.date)">
+                        <div class="p-2">
+                            <span class="small" :class="{ 'text-body-secondary': !day.inMonth, 'fw-bold': day.isToday }"
+                                  x-text="day.dayNum"></span>
+                            <template x-if="day.eventCount > 0">
+                                <span class="badge rounded-pill bg-primary ms-1" x-text="day.eventCount" style="font-size: 0.65rem;"></span>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+
+    {# Selected date event list #}
+    <div class="card-footer bg-transparent" x-show="selectedDate">
+        <h6 class="mb-3" x-text="selectedDateLabel()"></h6>
+        <template x-if="selectedEvents().length === 0">
+            <p class="text-body-secondary mb-0">{{ t('events.no_events_on_date') }}</p>
+        </template>
+        <template x-for="event in selectedEvents()" :key="event.id">
+            <a :href="'/events/' + event.id" class="d-block text-decoration-none mb-2">
+                <div class="d-flex align-items-center gap-2 p-2 rounded hover-bg">
+                    <i class="bi bi-calendar-event text-primary"></i>
+                    <div>
+                        <strong x-text="event.title"></strong>
+                        <template x-if="event.location">
+                            <small class="text-body-secondary d-block" x-text="event.location"></small>
+                        </template>
+                        <template x-if="!event.all_day">
+                            <small class="text-body-secondary d-block" x-text="formatTime(event.start_date)"></small>
+                        </template>
+                        <template x-if="event.all_day">
+                            <small class="text-body-secondary d-block">{{ t('events.all_day') }}</small>
+                        </template>
+                    </div>
+                </div>
+            </a>
+        </template>
+    </div>
+</div>
+
+<script>
+function eventCalendar(events, year, month) {
+    return {
+        events: events,
+        year: year,
+        month: month,
+        selectedDate: null,
+
+        monthNames: [
+            '{{ t("months.january") }}', '{{ t("months.february") }}', '{{ t("months.march") }}',
+            '{{ t("months.april") }}', '{{ t("months.may") }}', '{{ t("months.june") }}',
+            '{{ t("months.july") }}', '{{ t("months.august") }}', '{{ t("months.september") }}',
+            '{{ t("months.october") }}', '{{ t("months.november") }}', '{{ t("months.december") }}'
+        ],
+
+        monthLabel() {
+            return this.monthNames[this.month - 1] + ' ' + this.year;
+        },
+
+        prevMonthUrl() {
+            let m = this.month - 1, y = this.year;
+            if (m < 1) { m = 12; y--; }
+            return '/events?year=' + y + '&month=' + m;
+        },
+
+        nextMonthUrl() {
+            let m = this.month + 1, y = this.year;
+            if (m > 12) { m = 1; y++; }
+            return '/events?year=' + y + '&month=' + m;
+        },
+
+        weeks() {
+            const firstDay = new Date(this.year, this.month - 1, 1);
+            // Monday = 0 offset
+            let startOffset = (firstDay.getDay() + 6) % 7;
+            const daysInMonth = new Date(this.year, this.month, 0).getDate();
+            const today = new Date().toISOString().slice(0, 10);
+
+            let days = [];
+            // Previous month padding
+            for (let i = startOffset - 1; i >= 0; i--) {
+                const d = new Date(this.year, this.month - 1, -i);
+                days.push(this.makeDay(d, false, today));
+            }
+            // Current month
+            for (let i = 1; i <= daysInMonth; i++) {
+                const d = new Date(this.year, this.month - 1, i);
+                days.push(this.makeDay(d, true, today));
+            }
+            // Next month padding
+            while (days.length % 7 !== 0) {
+                const d = new Date(this.year, this.month - 1, daysInMonth + (days.length - startOffset - daysInMonth + 1));
+                days.push(this.makeDay(d, false, today));
+            }
+
+            let weeks = [];
+            for (let i = 0; i < days.length; i += 7) {
+                weeks.push(days.slice(i, i + 7));
+            }
+            return weeks;
+        },
+
+        makeDay(d, inMonth, today) {
+            const dateStr = d.getFullYear() + '-' +
+                String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                String(d.getDate()).padStart(2, '0');
+            const count = this.events.filter(e => e.date_key === dateStr).length;
+            return {
+                date: dateStr,
+                dayNum: d.getDate(),
+                inMonth: inMonth,
+                isToday: dateStr === today,
+                isSelected: dateStr === this.selectedDate,
+                eventCount: count
+            };
+        },
+
+        selectDate(date) {
+            this.selectedDate = this.selectedDate === date ? null : date;
+        },
+
+        selectedDateLabel() {
+            if (!this.selectedDate) return '';
+            const d = new Date(this.selectedDate + 'T00:00:00');
+            return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        },
+
+        selectedEvents() {
+            if (!this.selectedDate) return [];
+            return this.events.filter(e => e.date_key === this.selectedDate);
+        },
+
+        formatTime(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr.replace(' ', 'T'));
+            return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        }
+    };
+}
+</script>
+{% endblock %}

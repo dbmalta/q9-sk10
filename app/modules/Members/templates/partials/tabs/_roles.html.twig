@@ -1,0 +1,28 @@
+{# Role history tab. Expects: assignments #}
+{% if assignments is not empty %}
+<div class="list-group list-group-flush">
+    {% for a in assignments %}
+    <div class="list-group-item px-0 {{ a.is_active ? '' : 'opacity-50' }}">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="fw-medium">{{ a.role_name }}</span>
+                {% if a.context_name %}
+                <span class="text-body-secondary small ms-1">&middot; {{ a.context_name }}</span>
+                {% endif %}
+            </div>
+            {% if a.is_active %}
+            <span class="badge bg-success-subtle text-success">{{ t('permissions.active') }}</span>
+            {% else %}
+            <span class="badge bg-secondary-subtle text-secondary">{{ t('permissions.ended') }}</span>
+            {% endif %}
+        </div>
+        <div class="small text-body-secondary mt-1">
+            {{ a.start_date }}
+            {% if a.end_date %} &mdash; {{ a.end_date }}{% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-body-secondary">{{ t('permissions.no_assignments') }}</p>
+{% endif %}

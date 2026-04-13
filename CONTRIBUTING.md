@@ -41,8 +41,8 @@ ScoutKeeper is built for the global Scout community. We expect all contributors 
 
 ### Requirements
 
-- PHP 8.0+
-- MySQL 5.7+
+- PHP 8.2+
+- MySQL 8.0+ (or MariaDB 10.6+)
 - A local web server (e.g. XAMPP, Laragon, MAMP, or a plain Apache/Nginx setup)
 - PHPUnit (for running tests)
 - Git
@@ -52,7 +52,7 @@ ScoutKeeper is built for the global Scout community. We expect all contributors 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/q9-sk10.git
+   git clone https://github.com/YOUR-USERNAME/scoutkeeper.git
    ```
 3. Create a database and run the setup wizard at `http://localhost/q9-sk10/`
 4. Create a new branch for your work:

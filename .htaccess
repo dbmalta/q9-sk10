@@ -1,0 +1,49 @@
+# ScoutKeeper — Apache Configuration
+# This file is part of the bootstrap tier (Tier 0) and is never auto-updated.
+
+# Enable rewrite engine
+RewriteEngine On
+
+# Deny access to sensitive directories
+RewriteRule ^app/ - [F,L]
+RewriteRule ^config/ - [F,L]
+RewriteRule ^var/ - [F,L]
+RewriteRule ^data/ - [F,L]
+RewriteRule ^vendor/ - [F,L]
+RewriteRule ^tests/ - [F,L]
+RewriteRule ^docs/ - [F,L]
+
+# Allow direct access to specific entry points
+RewriteRule ^updater/run\.php$ - [L]
+RewriteRule ^health\.php$ - [L]
+RewriteRule ^cron/run\.php$ - [L]
+
+# Allow direct access to static assets
+RewriteRule ^assets/ - [L]
+
+# Route all other requests through index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# PHP settings (if configurable via .htaccess)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 12M
+    php_value max_execution_time 120
+</IfModule>

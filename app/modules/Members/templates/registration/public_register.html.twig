@@ -1,0 +1,113 @@
+{% extends "layouts/auth.html.twig" %}
+
+{% block title %}{{ t('registration.register') }}{% endblock %}
+
+{% block body %}
+<h5 class="mb-3">
+    {% if invitation %}
+        {{ t('registration.invitation_register') }}
+    {% else %}
+        {{ t('registration.register') }}
+    {% endif %}
+</h5>
+
+<form method="POST" action="{{ invitation ? '/register/invite/' ~ invitation.token : '/register' }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+    <div class="row g-2 mb-3">
+        <div class="col-6">
+            <label for="first_name" class="form-label small">{{ t('members.first_name') }} <span class="text-danger">*</span></label>
+            <input type="text" name="first_name" id="first_name" class="form-control form-control-sm" required>
+        </div>
+        <div class="col-6">
+            <label for="surname" class="form-label small">{{ t('members.surname') }} <span class="text-danger">*</span></label>
+            <input type="text" name="surname" id="surname" class="form-control form-control-sm" required>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label small">{{ t('members.email') }} <span class="text-danger">*</span></label>
+        <input type="email" name="email" id="email" class="form-control form-control-sm" required
+               {% if invitation and invitation.email %}value="{{ invitation.email }}" readonly{% endif %}>
+    </div>
+
+    <div class="mb-3">
+        <label for="phone" class="form-label small">{{ t('members.phone') }}</label>
+        <input type="tel" name="phone" id="phone" class="form-control form-control-sm">
+    </div>
+
+    <div class="row g-2 mb-3">
+        <div class="col-6">
+            <label for="dob" class="form-label small">{{ t('members.dob') }}</label>
+            <input type="date" name="dob" id="dob" class="form-control form-control-sm">
+        </div>
+        <div class="col-6">
+            <label for="gender" class="form-label small">{{ t('members.gender') }}</label>
+            <select name="gender" id="gender" class="form-select form-select-sm">
+                <option value="">—</option>
+                <option value="male">{{ t('members.gender_male') }}</option>
+                <option value="female">{{ t('members.gender_female') }}</option>
+                <option value="other">{{ t('members.gender_other') }}</option>
+                <option value="prefer_not_to_say">{{ t('members.gender_prefer_not') }}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="address_line1" class="form-label small">{{ t('members.address') }}</label>
+        <input type="text" name="address_line1" id="address_line1" class="form-control form-control-sm mb-1" placeholder="{{ t('members.address_line1') }}">
+        <input type="text" name="address_line2" class="form-control form-control-sm" placeholder="{{ t('members.address_line2') }}">
+    </div>
+
+    <div class="row g-2 mb-3">
+        <div class="col-4">
+            <label for="city" class="form-label small">{{ t('members.city') }}</label>
+            <input type="text" name="city" id="city" class="form-control form-control-sm">
+        </div>
+        <div class="col-4">
+            <label for="postcode" class="form-label small">{{ t('members.postcode') }}</label>
+            <input type="text" name="postcode" id="postcode" class="form-control form-control-sm">
+        </div>
+        <div class="col-4">
+            <label for="country" class="form-label small">{{ t('members.country') }}</label>
+            <input type="text" name="country" id="country" class="form-control form-control-sm" value="Malta">
+        </div>
+    </div>
+
+    {% if not invitation %}
+    <div class="mb-3">
+        <label for="node_id" class="form-label small">{{ t('registration.preferred_group') }}</label>
+        <select name="node_id" id="node_id" class="form-select form-select-sm">
+            <option value="">{{ t('common.select') }}...</option>
+            {{ _self.render_node_options(nodes, '') }}
+        </select>
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="password" class="form-label small">{{ t('registration.password') }} <span class="text-body-secondary">({{ t('common.optional') }})</span></label>
+        <input type="password" name="password" id="password" class="form-control form-control-sm" minlength="8"
+               placeholder="{{ t('registration.password_hint') }}">
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="gdpr_consent" value="1" id="gdpr_consent" required>
+        <label class="form-check-label small" for="gdpr_consent">{{ t('registration.gdpr_consent') }}</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">{{ t('registration.submit') }}</button>
+</form>
+
+<div class="text-center mt-3">
+    <a href="/login" class="small text-body-secondary">{{ t('registration.already_have_account') }}</a>
+</div>
+
+{% macro render_node_options(nodes, prefix) %}
+    {% for node in nodes %}
+    <option value="{{ node.id }}">{{ prefix }}{{ node.name }}</option>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_options(node.children, prefix ~ '  ') }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

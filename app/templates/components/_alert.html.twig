@@ -1,0 +1,19 @@
+{#
+    Alert component
+    Expects: type (success, danger, warning, info), message, dismissible (default true)
+#}
+<div class="alert alert-{{ type|default('info') }}{{ (dismissible|default(true)) ? ' alert-dismissible fade show' : '' }}" role="alert">
+    {% if type|default('info') == 'success' %}
+        <i class="bi bi-check-circle-fill me-2"></i>
+    {% elseif type|default('info') == 'danger' %}
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {% elseif type|default('info') == 'warning' %}
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+    {% else %}
+        <i class="bi bi-info-circle-fill me-2"></i>
+    {% endif %}
+    {{ message }}
+    {% if dismissible|default(true) %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ t('common.close') }}"></button>
+    {% endif %}
+</div>

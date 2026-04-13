@@ -1,0 +1,17 @@
+{# Additional info tab — custom fields. Expects: custom_fields #}
+{% if custom_fields is not empty %}
+<dl class="row mb-0">
+    {% for field in custom_fields %}
+    <dt class="col-sm-4">{{ field.label }}</dt>
+    <dd class="col-sm-8">
+        {% if field.value is not null and field.value != '' %}
+            {{ field.value }}
+        {% else %}
+            <span class="text-body-secondary">&mdash;</span>
+        {% endif %}
+    </dd>
+    {% endfor %}
+</dl>
+{% else %}
+<p class="text-body-secondary">{{ t('profile.no_additional') }}</p>
+{% endif %}

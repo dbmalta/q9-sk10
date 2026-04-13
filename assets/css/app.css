@@ -1,0 +1,330 @@
+/**
+ * ScoutKeeper Design System
+ *
+ * Stripe-inspired aesthetic with comfortable density.
+ * Built on Bootstrap 5.3 — extends via CSS custom properties,
+ * never fights the framework.
+ */
+
+/* ===========================
+   Design Tokens
+   =========================== */
+
+:root {
+    /* Spacing */
+    --sk-spacing-base: 1rem;
+    --sk-content-max-width: 1200px;
+
+    /* Border radius */
+    --sk-radius-lg: 0.5rem;   /* cards, inputs */
+    --sk-radius-md: 0.375rem; /* buttons, badges */
+    --sk-radius-sm: 0.25rem;  /* small elements */
+
+    /* Shadows */
+    --sk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --sk-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --sk-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+    /* Sidebar */
+    --sk-sidebar-width: 260px;
+    --sk-sidebar-collapsed-width: 64px;
+    --sk-topbar-height: 56px;
+
+    /* Light mode palette */
+    --sk-accent: #2563eb;
+    --sk-accent-hover: #1d4ed8;
+    --sk-surface: #ffffff;
+    --sk-surface-secondary: #f8f9fa;
+    --sk-border: #e5e7eb;
+    --sk-text: #111827;
+    --sk-text-secondary: #6b7280;
+}
+
+[data-bs-theme="dark"] {
+    --sk-accent: #3b82f6;
+    --sk-accent-hover: #60a5fa;
+    --sk-surface: #1f2937;
+    --sk-surface-secondary: #111827;
+    --sk-border: #374151;
+    --sk-text: #f9fafb;
+    --sk-text-secondary: #9ca3af;
+}
+
+/* ===========================
+   Global Overrides
+   =========================== */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+/* Focus rings (accessibility) */
+:focus-visible {
+    outline: 2px solid var(--sk-accent) !important;
+    outline-offset: 2px !important;
+}
+
+/* Minimum touch target (44x44px) */
+.btn, .nav-link, .dropdown-item, .sidebar-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ===========================
+   Card Styling
+   =========================== */
+
+.card {
+    border-radius: var(--sk-radius-lg);
+    border-color: var(--sk-border);
+    box-shadow: var(--sk-shadow-sm);
+}
+
+.card:hover {
+    box-shadow: var(--sk-shadow-md);
+}
+
+/* ===========================
+   Button Refinements
+   =========================== */
+
+.btn {
+    border-radius: var(--sk-radius-md);
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background-color: var(--sk-accent);
+    border-color: var(--sk-accent);
+}
+
+.btn-primary:hover {
+    background-color: var(--sk-accent-hover);
+    border-color: var(--sk-accent-hover);
+}
+
+/* ===========================
+   Form Inputs
+   =========================== */
+
+.form-control, .form-select {
+    border-radius: var(--sk-radius-lg);
+    border-color: var(--sk-border);
+    padding: 0.5rem 0.875rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--sk-accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ===========================
+   Table Styling
+   =========================== */
+
+.table {
+    --bs-table-border-color: var(--sk-border);
+}
+
+.table > thead > tr > th {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--sk-text-secondary);
+    border-bottom-width: 2px;
+    padding: 0.75rem;
+}
+
+.table > tbody > tr > td {
+    padding: 0.875rem 0.75rem;
+    vertical-align: middle;
+}
+
+/* ===========================
+   Topbar
+   =========================== */
+
+.topbar {
+    height: var(--sk-topbar-height);
+    z-index: 1030;
+    box-shadow: var(--sk-shadow-sm);
+}
+
+/* ===========================
+   Sidebar
+   =========================== */
+
+.sidebar {
+    position: fixed;
+    top: var(--sk-topbar-height);
+    left: 0;
+    bottom: 0;
+    width: var(--sk-sidebar-width);
+    overflow-y: auto;
+    background: var(--bs-body-bg);
+    border-right: 1px solid var(--sk-border);
+    z-index: 1020;
+    transition: width 0.2s ease;
+    padding-top: 0.5rem;
+}
+
+.sidebar-collapsed {
+    width: var(--sk-sidebar-collapsed-width);
+}
+
+.sidebar-collapsed .sidebar-label,
+.sidebar-collapsed .sidebar-group-label,
+.sidebar-collapsed .badge {
+    display: none;
+}
+
+.sidebar-collapsed .sidebar-link {
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.sidebar-collapsed .sidebar-icon {
+    margin-right: 0;
+    font-size: 1.25rem;
+}
+
+.sidebar-group {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-group-label {
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+}
+
+.sidebar-link {
+    color: var(--bs-body-color);
+    margin: 1px 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.1s ease;
+}
+
+.sidebar-link:hover {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+}
+
+.sidebar-link.active {
+    background-color: var(--sk-accent);
+    color: #fff;
+}
+
+.sidebar-icon {
+    font-size: 1.125rem;
+    width: 1.5rem;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+/* ===========================
+   Main Content
+   =========================== */
+
+.main-content {
+    margin-left: var(--sk-sidebar-width);
+    padding-top: var(--sk-topbar-height);
+    min-height: 100vh;
+    transition: margin-left 0.2s ease;
+}
+
+/* When sidebar is collapsed */
+.sidebar-collapsed ~ .main-content {
+    margin-left: var(--sk-sidebar-collapsed-width);
+}
+
+/* Mobile: no sidebar margin */
+@media (max-width: 991.98px) {
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* ===========================
+   Breadcrumbs
+   =========================== */
+
+.breadcrumb {
+    font-size: 0.8125rem;
+    margin-bottom: 0;
+}
+
+/* ===========================
+   Alerts
+   =========================== */
+
+.alert {
+    border-radius: var(--sk-radius-md);
+}
+
+/* ===========================
+   Badge Styling
+   =========================== */
+
+.badge {
+    border-radius: var(--sk-radius-md);
+    font-weight: 500;
+}
+
+/* ===========================
+   Empty States
+   =========================== */
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--sk-text-secondary);
+}
+
+.empty-state .bi {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* ===========================
+   HTMX Loading Indicator
+   =========================== */
+
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}
+
+/* ===========================
+   Pagination
+   =========================== */
+
+.page-link {
+    border-radius: var(--sk-radius-sm);
+    margin: 0 2px;
+    min-width: 36px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===========================
+   Member shell (topbar only)
+   =========================== */
+
+.member-content {
+    max-width: var(--sk-content-max-width);
+    margin: 0 auto;
+}

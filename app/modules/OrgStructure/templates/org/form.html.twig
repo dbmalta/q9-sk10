@@ -1,0 +1,91 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ node ? t('org.edit_node') : t('org.add_node') }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <h1 class="h3 mb-4">{{ node ? t('org.edit_node') : t('org.add_node') }}</h1>
+
+            <form method="post" action="{{ node ? '/admin/org/nodes/' ~ node.id : '/admin/org/nodes' }}" novalidate>
+                {{ csrf_field() }}
+
+                {% if not node and parent %}
+                <input type="hidden" name="parent_id" value="{{ parent.id }}">
+                <div class="alert alert-info small py-2">
+                    {{ t('org.adding_under', {parent: parent.name}) }}
+                </div>
+                {% endif %}
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">{{ t('org.node_name') }} <span class="text-danger">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   value="{{ node.name|default('') }}" required autofocus>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="short_name" class="form-label">{{ t('org.short_name') }}</label>
+                                <input type="text" id="short_name" name="short_name" class="form-control"
+                                       value="{{ node.short_name|default('') }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="level_type_id" class="form-label">{{ t('org.level_type') }} <span class="text-danger">*</span></label>
+                                <select id="level_type_id" name="level_type_id" class="form-select" required {% if node %}disabled{% endif %}>
+                                    <option value="">{{ t('org.select_level') }}</option>
+                                    {% for lt in level_types %}
+                                    <option value="{{ lt.id }}" {% if node and node.level_type_id == lt.id %}selected{% endif %}>
+                                        {{ lt.name }}{% if lt.is_leaf %} ({{ t('org.leaf') }}){% endif %}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">{{ t('permissions.description') }}</label>
+                            <textarea id="description" name="description" class="form-control" rows="3">{{ node.description|default('') }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="age_group_min" class="form-label">{{ t('org.age_min') }}</label>
+                                <input type="number" id="age_group_min" name="age_group_min" class="form-control"
+                                       value="{{ node.age_group_min|default('') }}" min="0" max="99">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="age_group_max" class="form-label">{{ t('org.age_max') }}</label>
+                                <input type="number" id="age_group_max" name="age_group_max" class="form-control"
+                                       value="{{ node.age_group_max|default('') }}" min="0" max="99">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="sort_order" class="form-label">{{ t('org.sort_order') }}</label>
+                                <input type="number" id="sort_order" name="sort_order" class="form-control"
+                                       value="{{ node.sort_order|default(0) }}" min="0">
+                            </div>
+                        </div>
+
+                        {% if node %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="is_active" value="1" id="is_active"
+                                   {% if node.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">{{ t('org.active') }}</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ node ? '/admin/org/nodes/' ~ node.id : '/admin/org' }}" class="btn btn-link text-body-secondary">
+                        {{ t('common.cancel') }}
+                    </a>
+                    <button type="submit" class="btn btn-primary">{{ t('common.save') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

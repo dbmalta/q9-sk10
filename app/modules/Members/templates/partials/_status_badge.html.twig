@@ -1,0 +1,11 @@
+{# Status badge for a member. Expects: member (with status field) #}
+{% set badge_classes = {
+    active: 'bg-success-subtle text-success-emphasis',
+    pending: 'bg-warning-subtle text-warning-emphasis',
+    suspended: 'bg-danger-subtle text-danger-emphasis',
+    inactive: 'bg-secondary-subtle text-secondary-emphasis',
+    left: 'bg-dark-subtle text-dark-emphasis'
+} %}
+<span class="badge {{ badge_classes[member.status]|default('bg-secondary') }}">
+    {{ t('members.status_' ~ member.status) }}
+</span>

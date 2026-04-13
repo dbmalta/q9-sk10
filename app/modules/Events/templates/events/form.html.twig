@@ -1,0 +1,83 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ event ? t('common.edit') : t('events.create') }}{% endblock %}
+
+{% block body %}
+<h1 class="h3 mb-4">{{ event ? t('common.edit') ~ ': ' ~ event.title : t('events.create') }}</h1>
+
+<form method="POST" action="{{ event ? '/admin/events/' ~ event.id : '/admin/events' }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="title" class="form-label">{{ t('events.event_title') }} <span class="text-danger">*</span></label>
+                <input type="text" name="title" id="title" class="form-control" required
+                       value="{{ event.title|default('') }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">{{ t('events.description') }}</label>
+                <textarea name="description" id="description" class="form-control" rows="5">{{ event.description|default('') }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="location" class="form-label">{{ t('events.location') }}</label>
+                <input type="text" name="location" id="location" class="form-control"
+                       value="{{ event.location|default('') }}" placeholder="{{ t('events.location_placeholder') }}">
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="start_date" class="form-label">{{ t('events.start_date') }} <span class="text-danger">*</span></label>
+                    <input type="datetime-local" name="start_date" id="start_date" class="form-control" required
+                           value="{{ event.start_date|default('')|replace({' ': 'T'}) }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="end_date" class="form-label">{{ t('events.end_date') }}</label>
+                    <input type="datetime-local" name="end_date" id="end_date" class="form-control"
+                           value="{{ event.end_date|default('')|replace({' ': 'T'}) }}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" name="all_day" id="all_day" class="form-check-input" value="1"
+                           {{ event.all_day|default(false) ? 'checked' : '' }}>
+                    <label for="all_day" class="form-check-label">{{ t('events.all_day') }}</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="node_scope_id" class="form-label">{{ t('events.scope') }}</label>
+                <select name="node_scope_id" id="node_scope_id" class="form-select">
+                    <option value="">{{ t('events.all_nodes') }}</option>
+                    {{ _self.render_node_options(nodes, '', event.node_scope_id|default('')) }}
+                </select>
+                <div class="form-text">{{ t('events.scope_help') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
+        </button>
+        {% if not event %}
+        <button type="submit" name="publish" value="1" class="btn btn-success">
+            <i class="bi bi-eye me-1"></i>{{ t('events.save_and_publish') }}
+        </button>
+        {% endif %}
+        <a href="/admin/events" class="btn btn-outline-secondary">{{ t('common.cancel') }}</a>
+    </div>
+</form>
+
+{% macro render_node_options(nodes, prefix, selected) %}
+    {% for node in nodes %}
+    <option value="{{ node.id }}" {{ selected == node.id ? 'selected' : '' }}>{{ prefix }}{{ node.name }}</option>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_options(node.children, prefix ~ '  ', selected) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

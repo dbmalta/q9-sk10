@@ -1,0 +1,107 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('logs.title') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('logs.title') }}</h1>
+</div>
+
+{# Tab pills #}
+<ul class="nav nav-pills mb-4" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'errors' ? 'active' : '' }}" href="/admin/logs?tab=errors">
+            {{ t('logs.errors') }}
+            {% if counts['errors'] is defined and counts['errors'] > 0 %}
+            <span class="badge bg-danger ms-1">{{ counts['errors'] }}</span>
+            {% endif %}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'slow-queries' ? 'active' : '' }}" href="/admin/logs?tab=slow-queries">
+            {{ t('logs.slow_queries') }}
+            {% if counts['slow-queries'] is defined and counts['slow-queries'] > 0 %}
+            <span class="badge bg-warning text-dark ms-1">{{ counts['slow-queries'] }}</span>
+            {% endif %}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'cron' ? 'active' : '' }}" href="/admin/logs?tab=cron">
+            {{ t('logs.cron') }}
+            {% if counts['cron'] is defined and counts['cron'] > 0 %}
+            <span class="badge bg-info ms-1">{{ counts['cron'] }}</span>
+            {% endif %}
+        </a>
+    </li>
+</ul>
+
+{# Clear button #}
+<div class="mb-3">
+    <form method="POST" action="/admin/logs/{{ active_tab }}/clear" class="d-inline"
+          onsubmit="return confirm('{{ t('logs.confirm_clear') }}')">
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash me-1"></i>{{ t('logs.clear_log') }}
+        </button>
+    </form>
+</div>
+
+{# Log entries table #}
+{% if entries is empty %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-check-circle text-success" style="font-size: 2.5rem;"></i>
+        <p class="mt-3 text-body-secondary">{{ t('logs.no_entries') }}</p>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3" style="width: 200px;">{{ t('logs.timestamp') }}</th>
+                    <th class="pe-3">{{ t('logs.details') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td class="ps-3 small text-nowrap">{{ entry.timestamp|default(entry.date|default('—')) }}</td>
+                    <td class="pe-3">
+                        <div class="small">{{ entry.message|default('') }}</div>
+                        {% if entry.context is defined and entry.context %}
+                        <pre class="mb-0 mt-1 small bg-body-tertiary p-2 rounded" style="max-height: 120px; overflow: auto;">{{ entry.context is iterable ? entry.context|json_encode(constant('JSON_PRETTY_PRINT')) : entry.context }}</pre>
+                        {% endif %}
+                        {% if entry.query is defined and entry.query %}
+                        <code class="small d-block mt-1">{{ entry.query }}</code>
+                        {% if entry.duration is defined %}
+                        <span class="badge bg-warning text-dark small">{{ entry.duration }}ms</span>
+                        {% endif %}
+                        {% endif %}
+                        {% if entry.task is defined and entry.task %}
+                        <span class="badge bg-secondary small">{{ entry.task }}</span>
+                        {% if entry.status is defined %}
+                        <span class="badge bg-{{ entry.status == 'success' ? 'success' : 'danger' }} small">{{ entry.status }}</span>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Pagination #}
+{% if pagination.pages > 1 %}
+<div class="mt-4">
+    {% include "components/_pagination.html.twig" with {
+        current_page: pagination.page,
+        total_pages: pagination.pages,
+        base_url: '/admin/logs?tab=' ~ active_tab ~ '&'
+    } %}
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

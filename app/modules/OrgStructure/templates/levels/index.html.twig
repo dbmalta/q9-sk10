@@ -1,0 +1,96 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('org.level_types') }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">{{ t('org.level_types') }}</h1>
+                <a href="/admin/org" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>{{ t('org.back_to_tree') }}
+                </a>
+            </div>
+
+            <p class="text-body-secondary mb-4">{{ t('org.level_types_help') }}</p>
+
+            {# Existing level types #}
+            {% if levels is not empty %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="list-group list-group-flush">
+                    {% for level in levels %}
+                    <div class="list-group-item">
+                        <form method="post" action="/admin/org/levels/{{ level.id }}" class="row g-2 align-items-center">
+                            {{ csrf_field() }}
+                            <div class="col-md-3">
+                                <input type="text" name="name" class="form-control form-control-sm"
+                                       value="{{ level.name }}" required>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="depth" class="form-control form-control-sm"
+                                       value="{{ level.depth }}" min="0" placeholder="{{ t('org.depth') }}">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="sort_order" class="form-control form-control-sm"
+                                       value="{{ level.sort_order }}" min="0" placeholder="{{ t('org.sort_order') }}">
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="is_leaf" value="1"
+                                           id="leaf_{{ level.id }}" {% if level.is_leaf %}checked{% endif %}>
+                                    <label class="form-check-label small" for="leaf_{{ level.id }}">{{ t('org.leaf') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">{{ t('common.save') }}</button>
+                                <button type="submit" formaction="/admin/org/levels/{{ level.id }}/delete"
+                                        class="btn btn-sm btn-outline-danger ms-1"
+                                        onclick="return confirm('{{ t('org.delete_level_confirm') }}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# Add new level type #}
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h2 class="h6 mb-0">{{ t('org.add_level_type') }}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/admin/org/levels" class="row g-2 align-items-end">
+                        {{ csrf_field() }}
+                        <div class="col-md-3">
+                            <label class="form-label small">{{ t('org.level_name') }}</label>
+                            <input type="text" name="name" class="form-control form-control-sm" required
+                                   placeholder="e.g. District">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small">{{ t('org.depth') }}</label>
+                            <input type="number" name="depth" class="form-control form-control-sm" value="0" min="0">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small">{{ t('org.sort_order') }}</label>
+                            <input type="number" name="sort_order" class="form-control form-control-sm" value="0" min="0">
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" name="is_leaf" value="1" id="new_leaf">
+                                <label class="form-check-label small" for="new_leaf">{{ t('org.leaf') }}</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-sm btn-primary w-100">{{ t('common.add') }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('reports.status_changes') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('reports.status_changes') }}</h1>
+    <a href="/admin/reports" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+    </a>
+</div>
+
+{# ── Filter form ────────────────────────────────────────────── #}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="/admin/reports/status-changes" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="start_date" class="form-label">{{ t('reports.start_date') }}</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date|default('') }}">
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">{{ t('reports.end_date') }}</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date|default('') }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i>{{ t('common.filter') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# ── Results table ──────────────────────────────────────────── #}
+{% if changes is empty %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-arrow-left-right text-body-secondary" style="font-size: 2.5rem;"></i>
+        <p class="mt-3 text-body-secondary">{{ t('reports.no_status_changes') }}</p>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('common.name') }}</th>
+                    <th>{{ t('reports.changed_by') }}</th>
+                    <th>{{ t('reports.old_status') }}</th>
+                    <th>{{ t('reports.new_status') }}</th>
+                    <th class="text-end pe-3">{{ t('common.date') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for change in changes %}
+                <tr>
+                    <td class="ps-3">
+                        <strong>{{ change.first_name }} {{ change.surname }}</strong>
+                        {% if change.membership_number %}
+                            <div class="text-body-secondary small">{{ change.membership_number }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="small">{{ change.changed_by_email|default('—') }}</td>
+                    <td>
+                        {% set old_vals = change.old_values ? change.old_values|json_decode : {} %}
+                        <span class="badge bg-secondary">{{ old_vals.status|default('—') }}</span>
+                    </td>
+                    <td>
+                        {% set new_vals = change.new_values ? change.new_values|json_decode : {} %}
+                        <span class="badge bg-primary">{{ new_vals.status|default('—') }}</span>
+                    </td>
+                    <td class="text-end pe-3 small">{{ change.changed_at|date('d M Y H:i') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

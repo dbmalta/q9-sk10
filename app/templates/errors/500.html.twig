@@ -1,0 +1,13 @@
+{% extends "layouts/base.html.twig" %}
+
+{% block title %}{{ t('error.500.title') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+    <div class="text-center">
+        <h1 class="display-1 fw-bold text-body-secondary">500</h1>
+        <h2 class="mb-3">{{ t('error.500.title') }}</h2>
+        <p class="text-body-secondary mb-4">{{ t('error.500.message') }}</p>
+    </div>
+</div>
+{% endblock %}

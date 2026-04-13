@@ -36,7 +36,7 @@
 - Signed release zips (signed in CI via GitHub Actions); updater verifies signature against a static public key in the bootstrap before staging anything — failure aborts the update
 - Fully responsive — mobile, tablet, desktop
 - Dark mode built in from day one
-- Branding: custom logo + choice of one of 3 colour schemes
+- Branding: custom logo + organisation name; single neutral palette (light/dark mode)
 - Multi-language: English at launch; JSON language files in GitHub repo; DB overrides per installation; AI-generated starter packs; community-shareable translations
 - GDPR compliance features (consent, data retention, right-to-erasure) — toggleable on/off in setup/config
 - Every record change logged for full audit trail

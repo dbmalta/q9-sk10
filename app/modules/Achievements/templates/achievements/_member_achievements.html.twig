@@ -1,0 +1,78 @@
+{# Member profile achievements tab partial.
+   Expects: member_achievements, definitions, member #}
+
+{% if member_achievements is not empty %}
+<div class="list-group list-group-flush mb-4">
+    {% for award in member_achievements %}
+    <div class="list-group-item px-0">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <span class="fw-medium">{{ award.achievement_name }}</span>
+                <span class="badge bg-{{ award.category == 'training' ? 'info' : 'primary' }}-subtle text-{{ award.category == 'training' ? 'info' : 'primary' }} ms-1">
+                    {{ award.category == 'training' ? t('achievements.category_training') : t('achievements.category_achievement') }}
+                </span>
+                <div class="small text-body-secondary mt-1">
+                    {{ t('achievements.awarded_on') }} {{ award.awarded_date|date('d M Y') }}
+                    {% if award.awarded_by_name is defined and award.awarded_by_name %}
+                        &middot; {{ t('achievements.awarded_by') }} {{ award.awarded_by_name }}
+                    {% endif %}
+                </div>
+                {% if award.notes %}
+                <div class="small text-body-secondary mt-1">{{ award.notes }}</div>
+                {% endif %}
+            </div>
+            <form method="POST" action="/members/{{ member.id }}/achievements/{{ award.id }}/revoke" class="ms-2">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ t('achievements.revoke') }}"
+                        onclick="return confirm('{{ t('achievements.confirm_revoke') }}')">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-body-secondary mb-4">{{ t('achievements.no_member_achievements') }}</p>
+{% endif %}
+
+{# Award form #}
+<div class="card border-0 bg-body-tertiary">
+    <div class="card-body">
+        <h6 class="card-title mb-3">{{ t('achievements.award_new') }}</h6>
+        <form method="POST" action="/members/{{ member.id }}/achievements">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label for="achievement_id" class="form-label">{{ t('achievements.select_achievement') }}</label>
+                    <select name="achievement_id" id="achievement_id" class="form-select" required>
+                        <option value="">{{ t('common.select') }}...</option>
+                        {% for def in definitions %}
+                        <option value="{{ def.id }}">
+                            {{ def.name }}
+                            ({{ def.category == 'training' ? t('achievements.category_training') : t('achievements.category_achievement') }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="awarded_date" class="form-label">{{ t('achievements.awarded_date') }}</label>
+                    <input type="date" name="awarded_date" id="awarded_date" class="form-control" required
+                           value="{{ "now"|date("Y-m-d") }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="notes" class="form-label">{{ t('achievements.notes') }}</label>
+                    <input type="text" name="notes" id="notes" class="form-control"
+                           placeholder="{{ t('achievements.notes_placeholder') }}">
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-trophy me-1"></i>{{ t('achievements.award') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

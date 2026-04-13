@@ -1,0 +1,60 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('email.compose') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('email.compose') }}</h1>
+    <a href="/admin/email/log" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-list-ul me-1"></i>{{ t('email.log') }}
+        {% if queue_stats.pending > 0 %}
+        <span class="badge bg-warning ms-1">{{ queue_stats.pending }}</span>
+        {% endif %}
+    </a>
+</div>
+
+<form method="POST" action="/admin/email/send">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">{{ t('email.recipients') }}</label>
+                <div class="small text-body-secondary mb-2">{{ t('email.recipients_help') }}</div>
+                <div class="d-flex flex-wrap gap-2">
+                    {{ _self.render_node_checkboxes(nodes, '') }}
+                </div>
+                <div class="form-text">{{ t('email.no_nodes_means_all') }}</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="subject" class="form-label">{{ t('email.subject') }} <span class="text-danger">*</span></label>
+                <input type="text" name="subject" id="subject" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="body" class="form-label">{{ t('email.body') }} <span class="text-danger">*</span></label>
+                <textarea name="body" id="body" class="form-control" rows="10" required></textarea>
+                <div class="form-text">{{ t('email.html_allowed') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" onclick="return confirm('{{ t('email.confirm_send') }}')">
+        <i class="bi bi-send me-1"></i>{{ t('email.send') }}
+    </button>
+    <a href="/admin/articles" class="btn btn-outline-secondary ms-2">{{ t('common.cancel') }}</a>
+</form>
+
+{% macro render_node_checkboxes(nodes, prefix) %}
+    {% for node in nodes %}
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="node_ids[]" value="{{ node.id }}" id="node-{{ node.id }}">
+        <label class="form-check-label small" for="node-{{ node.id }}">{{ prefix }}{{ node.name }}</label>
+    </div>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_checkboxes(node.children, prefix ~ '  ') }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

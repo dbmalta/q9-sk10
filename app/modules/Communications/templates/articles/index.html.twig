@@ -1,0 +1,61 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.communications') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('articles.title') }}</h1>
+    {% if has_permission('communications.write') %}
+    <a href="/admin/articles" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-gear me-1"></i>{{ t('articles.manage') }}
+    </a>
+    {% endif %}
+</div>
+
+{% if articles is empty %}
+    <div class="text-center py-5 text-body-secondary">
+        <i class="bi bi-newspaper" style="font-size: 2.5rem;"></i>
+        <p class="mt-3">{{ t('articles.no_articles') }}</p>
+    </div>
+{% else %}
+    {% for article in articles %}
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <a href="/articles/{{ article.slug }}" class="text-decoration-none">{{ article.title }}</a>
+                    </h5>
+                    <small class="text-body-secondary">
+                        {{ article.published_at|date('d M Y') }}
+                        {% if article.author_email %} &middot; {{ article.author_email }}{% endif %}
+                    </small>
+                </div>
+                <span class="badge bg-{{ article.visibility == 'public' ? 'success' : (article.visibility == 'portal' ? 'info' : 'secondary') }}">
+                    {{ article.visibility }}
+                </span>
+            </div>
+            {% if article.excerpt %}
+            <p class="card-text mt-2 text-body-secondary">{{ article.excerpt }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if pagination.pages > 1 %}
+    <nav class="d-flex justify-content-center">
+        <ul class="pagination pagination-sm">
+            {% if pagination.page > 1 %}
+            <li class="page-item"><a class="page-link" href="/articles?page={{ pagination.page - 1 }}">{{ t('pagination.previous') }}</a></li>
+            {% endif %}
+            {% for p in range(max(1, pagination.page - 2), min(pagination.pages, pagination.page + 2)) %}
+            <li class="page-item {{ p == pagination.page ? 'active' : '' }}"><a class="page-link" href="/articles?page={{ p }}">{{ p }}</a></li>
+            {% endfor %}
+            {% if pagination.page < pagination.pages %}
+            <li class="page-item"><a class="page-link" href="/articles?page={{ pagination.page + 1 }}">{{ t('pagination.next') }}</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('custom_fields.title') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('custom_fields.title') }}</h1>
+    <div class="d-flex gap-2">
+        {% if show_inactive %}
+        <a href="/admin/custom-fields" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-eye-slash me-1"></i>{{ t('common.filter') }}
+        </a>
+        {% else %}
+        <a href="/admin/custom-fields?show_inactive=1" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-eye me-1"></i>{{ t('custom_fields.show_inactive') }}
+        </a>
+        {% endif %}
+        <a href="/admin/custom-fields/create" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>{{ t('custom_fields.add_field') }}
+        </a>
+    </div>
+</div>
+
+{% if definitions is empty %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5 text-body-secondary">
+        <i class="bi bi-sliders d-block mb-2" style="font-size:2rem;"></i>
+        {{ t('custom_fields.no_fields') }}
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width:40px;"></th>
+                    <th>{{ t('custom_fields.label') }}</th>
+                    <th>{{ t('custom_fields.field_key') }}</th>
+                    <th>{{ t('custom_fields.field_type') }}</th>
+                    <th class="text-center">{{ t('custom_fields.is_required') }}</th>
+                    <th class="text-center">{{ t('common.status') }}</th>
+                    <th class="text-end">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody id="sortable-fields">
+                {% for def in definitions %}
+                <tr data-id="{{ def.id }}" class="{{ not def.is_active ? 'table-secondary opacity-75' : '' }}">
+                    <td class="text-center text-body-secondary drag-handle" style="cursor:grab;">
+                        <i class="bi bi-grip-vertical"></i>
+                    </td>
+                    <td>
+                        <span class="fw-medium">{{ def.label }}</span>
+                        {% if def.description %}
+                        <div class="small text-body-secondary">{{ def.description }}</div>
+                        {% endif %}
+                    </td>
+                    <td><code class="small">{{ def.field_key }}</code></td>
+                    <td>
+                        <span class="badge bg-body-secondary text-body">
+                            {{ t('custom_fields.type.' ~ def.field_type) }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        {% if def.is_required %}
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                        <i class="bi bi-dash text-body-secondary"></i>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if def.is_active %}
+                        <span class="badge bg-success-subtle text-success">{{ t('org.active') }}</span>
+                        {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary">{{ t('org.inactive') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="/admin/custom-fields/{{ def.id }}/edit" class="btn btn-outline-secondary" title="{{ t('common.edit') }}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% if def.is_active %}
+                            <form method="post" action="/admin/custom-fields/{{ def.id }}/deactivate" class="d-inline"
+                                  onsubmit="return confirm('{{ t('custom_fields.deactivate_confirm') }}')">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-outline-warning" title="{{ t('custom_fields.deactivate') }}">
+                                    <i class="bi bi-pause-circle"></i>
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="post" action="/admin/custom-fields/{{ def.id }}/activate" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-outline-success" title="{{ t('custom_fields.activate') }}">
+                                    <i class="bi bi-play-circle"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Drag-and-drop reorder via Alpine.js + HTMX #}
+<script>
+document.addEventListener('alpine:init', () => {
+    // Simple drag-and-drop reorder for the field table
+    const tbody = document.getElementById('sortable-fields');
+    if (!tbody) return;
+
+    let dragRow = null;
+
+    tbody.querySelectorAll('tr').forEach(row => {
+        row.draggable = true;
+
+        row.addEventListener('dragstart', (e) => {
+            dragRow = row;
+            row.classList.add('opacity-50');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        row.addEventListener('dragend', () => {
+            row.classList.remove('opacity-50');
+            dragRow = null;
+        });
+
+        row.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        row.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (dragRow && dragRow !== row) {
+                const rows = [...tbody.querySelectorAll('tr')];
+                const fromIdx = rows.indexOf(dragRow);
+                const toIdx = rows.indexOf(row);
+                if (fromIdx < toIdx) {
+                    row.after(dragRow);
+                } else {
+                    row.before(dragRow);
+                }
+                saveOrder();
+            }
+        });
+    });
+
+    function saveOrder() {
+        const ids = [...tbody.querySelectorAll('tr[data-id]')].map(r => r.dataset.id);
+        const params = new URLSearchParams();
+        ids.forEach(id => params.append('ids[]', id));
+        params.append('_csrf', '{{ csrf_token }}');
+
+        fetch('/admin/custom-fields/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+            body: params.toString()
+        });
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

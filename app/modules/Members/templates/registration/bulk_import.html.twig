@@ -1,0 +1,69 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('registration.bulk_import') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('registration.bulk_import') }}</h1>
+    <a href="/admin/registrations" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('registration.pending') }}
+    </a>
+</div>
+
+<div class="row g-4">
+    {# Step 1: Download template #}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="card-title mb-3">
+                    <span class="badge bg-primary me-2">1</span>{{ t('registration.download_template') }}
+                </h6>
+                <p class="text-body-secondary small mb-3">{{ t('registration.template_description') }}</p>
+                <a href="/admin/bulk-import/template" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-download me-1"></i>{{ t('registration.download_csv') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Step 2: Upload filled CSV #}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="card-title mb-3">
+                    <span class="badge bg-primary me-2">2</span>{{ t('registration.upload_csv') }}
+                </h6>
+                <form method="POST" action="/admin/bulk-import/upload" enctype="multipart/form-data">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+                    <div class="mb-3">
+                        <label for="import-node" class="form-label small">{{ t('registration.target_node') }}</label>
+                        <select name="node_id" id="import-node" class="form-select form-select-sm" required>
+                            <option value="">{{ t('common.select') }}...</option>
+                            {{ _self.render_node_options(nodes, '') }}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="csv-file" class="form-label small">{{ t('registration.csv_file') }}</label>
+                        <input type="file" name="csv_file" id="csv-file" class="form-control form-control-sm" accept=".csv" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-upload me-1"></i>{{ t('registration.upload_and_preview') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% macro render_node_options(nodes, prefix) %}
+    {% for node in nodes %}
+    <option value="{{ node.id }}">{{ prefix }}{{ node.name }}</option>
+        {% if node.children is defined and node.children is not empty %}
+            {{ _self.render_node_options(node.children, prefix ~ '  ') }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "layouts/auth.html.twig" %}
+
+{% block title %}{{ t('auth.mfa_title') }}{% endblock %}
+
+{% block body %}
+    <h2 class="h5 fw-semibold mb-2">{{ t('auth.mfa_title') }}</h2>
+    <p class="text-body-secondary small mb-3">{{ t('auth.mfa_help') }}</p>
+
+    <form method="post" action="/login/mfa" novalidate>
+        {{ csrf_field() }}
+
+        <div class="mb-3">
+            <label for="code" class="form-label">{{ t('auth.mfa_code') }}</label>
+            <input
+                type="text"
+                id="code"
+                name="code"
+                class="form-control form-control-lg text-center font-monospace"
+                inputmode="numeric"
+                pattern="[0-9]{6}"
+                maxlength="6"
+                autocomplete="one-time-code"
+                autofocus
+                required
+            >
+        </div>
+
+        <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary">
+                {{ t('auth.mfa_verify') }}
+            </button>
+        </div>
+
+        <div class="text-center">
+            <a href="/login" class="small text-body-secondary">
+                {{ t('auth.back_to_login') }}
+            </a>
+        </div>
+    </form>
+{% endblock %}

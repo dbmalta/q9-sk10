@@ -1,0 +1,70 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('members.pending_changes') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('members.pending_changes') }}</h1>
+    <a href="/members" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+    </a>
+</div>
+
+{% if changes is empty %}
+    {% include "components/_empty_state.html.twig" with {
+        icon: 'bi-clock-history',
+        message: t('members.no_pending_changes')
+    } %}
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('members.member') }}</th>
+                    <th>{{ t('members.field') }}</th>
+                    <th>{{ t('members.old_value') }}</th>
+                    <th>{{ t('members.new_value') }}</th>
+                    <th>{{ t('members.requested_by') }}</th>
+                    <th>{{ t('common.created') }}</th>
+                    <th class="text-end pe-3">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for change in changes %}
+                <tr>
+                    <td class="ps-3">
+                        <a href="/members/{{ change.member_id }}" class="text-decoration-none">
+                            {{ change.first_name }} {{ change.surname }}
+                        </a>
+                        <div class="text-body-secondary small">{{ change.membership_number }}</div>
+                    </td>
+                    <td>{{ change.field_name }}</td>
+                    <td><span class="text-body-secondary">{{ change.old_value|default('-') }}</span></td>
+                    <td><span class="fw-medium">{{ change.new_value|default('-') }}</span></td>
+                    <td class="small">{{ change.requested_by_email }}</td>
+                    <td class="small">{{ change.created_at|date('Y-m-d H:i') }}</td>
+                    <td class="text-end pe-3">
+                        <form method="POST" action="/members/pending-changes/{{ change.id }}/review" class="d-inline">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                            <input type="hidden" name="decision" value="approved">
+                            <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('members.approve') }}">
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                        </form>
+                        <form method="POST" action="/members/pending-changes/{{ change.id }}/review" class="d-inline">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                            <input type="hidden" name="decision" value="rejected">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ t('members.reject') }}">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
