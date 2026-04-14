@@ -40,6 +40,20 @@ $configExists = file_exists(ROOT_PATH . '/config/config.php');
 
 if (!$configExists || $requestUri === '/setup') {
     // The setup wizard is self-contained (no Twig, no module registry)
+    if (!file_exists(ROOT_PATH . '/vendor/autoload.php')) {
+        http_response_code(500);
+        echo '<!DOCTYPE html><html><head><title>Dependencies Missing</title>'
+           . '<style>body{font-family:system-ui,sans-serif;max-width:600px;margin:80px auto;padding:0 20px;color:#333}'
+           . 'h1{color:#dc3545}code{background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:0.9em}'
+           . '.box{background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;padding:20px;margin:20px 0}</style></head>'
+           . '<body><h1>Dependencies Not Installed</h1>'
+           . '<p>ScoutKeeper requires Composer dependencies to run.</p>'
+           . '<div class="box"><p>Run this command in the site root directory:</p>'
+           . '<pre><code>composer install --no-dev</code></pre></div>'
+           . '<p>If Composer is not installed, see <a href="https://getcomposer.org">getcomposer.org</a>.</p>'
+           . '</body></html>';
+        exit;
+    }
     require ROOT_PATH . '/vendor/autoload.php';
 
     session_start();
