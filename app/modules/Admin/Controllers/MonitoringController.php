@@ -207,7 +207,7 @@ class MonitoringController extends Controller
             // Fall through
         }
 
-        return $this->app->getConfigValue('app.version', 'dev');
+        return $this->app->getConfigValue('app.version', '0.1.6');
     }
 
     /**

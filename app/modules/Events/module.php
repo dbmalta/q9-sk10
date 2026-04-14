@@ -8,7 +8,7 @@ use App\Modules\Events\Controllers\ICalController;
 return [
     'id' => 'events',
     'name' => 'Events',
-    'version' => '1.0.0',
+    'version' => '0.1.6',
 
     'nav' => [
         [

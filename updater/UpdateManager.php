@@ -176,10 +176,11 @@ class UpdateManager
      * 2. Extract the new /app/ from the zip
      * 3. Swap via rename() for atomicity
      * 4. Run new migrations
+     * 5. Update app_version in settings table
      *
      * @return array{success: bool, steps_completed: string[], error: string|null}
      */
-    public function applyUpdate(string $zipPath): array
+    public function applyUpdate(string $zipPath, ?string $newVersion = null): array
     {
         $steps = [];
 
@@ -246,6 +247,22 @@ class UpdateManager
             } catch (\Throwable $e) {
                 $steps[] = 'migration_warning: ' . $e->getMessage();
                 // Don't fail the whole update for migration issues
+            }
+
+            // Step 5: Update app_version in settings table
+            if ($newVersion !== null) {
+                try {
+                    $pdo = $pdo ?? $this->createPdo($config['db']);
+                    $stmt = $pdo->prepare(
+                        "INSERT INTO `settings` (`key`, `value`, `group`)
+                         VALUES ('app_version', :ver, 'general')
+                         ON DUPLICATE KEY UPDATE `value` = :ver2"
+                    );
+                    $stmt->execute(['ver' => $newVersion, 'ver2' => $newVersion]);
+                    $steps[] = 'version_updated: ' . $newVersion;
+                } catch (\Throwable $e) {
+                    $steps[] = 'version_update_warning: ' . $e->getMessage();
+                }
             }
 
             // Clean up extract directory
@@ -344,7 +361,7 @@ class UpdateManager
             // Fall through
         }
 
-        return $config['app']['version'] ?? '1.0.0';
+        return $config['app']['version'] ?? '0.1.0';
     }
 
     /**
@@ -373,9 +390,12 @@ class UpdateManager
      * Call this after downloadRelease() and verifySignature() succeed.
      * Returns the token to pass as ?token= when redirecting to run.php.
      */
-    public function prepareDownload(string $zipPath): string
+    public function prepareDownload(string $zipPath, ?string $version = null): string
     {
         $this->saveState('zip_path', $zipPath);
+        if ($version !== null) {
+            $this->saveState('new_version', $version);
+        }
         return $this->generateUpdateToken();
     }
 

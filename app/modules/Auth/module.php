@@ -7,7 +7,7 @@ use App\Modules\Auth\Controllers\AuthController;
 return [
     'id' => 'auth',
     'name' => 'Authentication',
-    'version' => '1.0.0',
+    'version' => '0.1.6',
     'system' => true,
 
     // No nav entry — auth is a system module

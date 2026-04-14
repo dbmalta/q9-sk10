@@ -116,7 +116,7 @@ class UpdateController extends Controller
             }
         }
 
-        $token = $this->updater->prepareDownload($zipPath);
+        $token = $this->updater->prepareDownload($zipPath, $version);
 
         $baseUrl = rtrim($this->app->getConfigValue('app.url', ''), '/');
         return $this->redirect($baseUrl . '/updater/run.php?token=' . urlencode($token));

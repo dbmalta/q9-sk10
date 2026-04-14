@@ -8,7 +8,7 @@ use App\Modules\OrgStructure\Controllers\LevelTypesController;
 return [
     'id' => 'org_structure',
     'name' => 'Org Structure',
-    'version' => '1.0.0',
+    'version' => '0.1.6',
 
     'nav' => [
         'label' => 'nav.org_structure',

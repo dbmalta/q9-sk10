@@ -67,7 +67,8 @@ if ($zipPath === null || !file_exists($zipPath)) {
     exit(1);
 }
 
-$result = $updater->applyUpdate($zipPath);
+$newVersion = $state['new_version'] ?? null;
+$result = $updater->applyUpdate($zipPath, $newVersion);
 
 // ── Step 4: Clean up ────────────────────────────────────────────────
 

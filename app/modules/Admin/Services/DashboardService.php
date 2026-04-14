@@ -262,7 +262,7 @@ class DashboardService
             }
         }
 
-        return '1.0.0-dev';
+        return '0.1.6';
     }
 
     /**

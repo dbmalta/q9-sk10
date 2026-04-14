@@ -577,8 +577,8 @@ class SetupWizard
             // Store app version
             $stmt = $pdo->prepare(
                 "INSERT INTO `settings` (`key`, `value`, `group`)
-                 VALUES ('app_version', '1.0.0', 'general')
-                 ON DUPLICATE KEY UPDATE `value` = '1.0.0'"
+                 VALUES ('app_version', '0.1.6', 'general')
+                 ON DUPLICATE KEY UPDATE `value` = '0.1.6'"
             );
             $stmt->execute();
         } catch (\Throwable $e) {
