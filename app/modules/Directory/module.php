@@ -7,7 +7,7 @@ use App\Modules\Directory\Controllers\DirectoryController;
 return [
     'id' => 'directory',
     'name' => 'Directory',
-    'version' => '0.1.6',
+    'version' => '0.1.9',
 
     'nav' => [
         [

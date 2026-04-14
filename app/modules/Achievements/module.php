@@ -7,7 +7,7 @@ use App\Modules\Achievements\Controllers\AchievementController;
 return [
     'id' => 'achievements',
     'name' => 'Achievements',
-    'version' => '0.1.6',
+    'version' => '0.1.9',
 
     'nav' => [
         [

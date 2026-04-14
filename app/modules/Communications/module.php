@@ -8,7 +8,7 @@ use App\Modules\Communications\Controllers\EmailController;
 return [
     'id' => 'communications',
     'name' => 'Communications',
-    'version' => '0.1.6',
+    'version' => '0.1.9',
 
     'nav' => [
         [

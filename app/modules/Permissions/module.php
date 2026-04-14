@@ -8,7 +8,7 @@ use App\Modules\Permissions\Controllers\AssignmentsController;
 return [
     'id' => 'permissions',
     'name' => 'Permissions',
-    'version' => '0.1.6',
+    'version' => '0.1.9',
 
     'nav' => [
         'label' => 'permissions.roles',

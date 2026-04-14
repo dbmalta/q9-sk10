@@ -14,7 +14,7 @@ use App\Modules\Members\Controllers\PublicRegistrationController;
 return [
     'id' => 'members',
     'name' => 'Members',
-    'version' => '0.1.6',
+    'version' => '0.1.9',
 
     'nav' => [
         [

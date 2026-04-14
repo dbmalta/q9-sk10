@@ -94,7 +94,11 @@ class Application
         // CSRF validation for state-changing requests
         if ($app->request->isStateChanging()) {
             $csrf = new Csrf($app->session);
-            if (!$csrf->validateToken($app->request->getParam('_csrf_token') ?? $app->request->getHeader('X-CSRF-Token') ?? '')) {
+            $csrfToken = $app->request->getParam('_csrf_token')
+                ?? $app->request->getParam('_csrf')
+                ?? $app->request->getHeader('X-CSRF-Token')
+                ?? '';
+            if (!$csrf->validateToken((string) $csrfToken)) {
                 $app->sendResponse(new Response(403, 'CSRF token validation failed'));
                 return;
             }
