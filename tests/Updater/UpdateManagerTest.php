@@ -192,16 +192,12 @@ class UpdateManagerTest extends TestCase
         $this->assertSame('unknown', $version);
     }
 
-    public function testGetCurrentVersionReadsFromConfig(): void
+    public function testGetCurrentVersionReadsFromVersionFile(): void
     {
-        $configContent = "<?php\nreturn ['db' => ['host' => 'x', 'name' => 'x', 'user' => 'x', 'password' => 'x'], 'app' => ['version' => '2.5.0']];";
-        file_put_contents($this->tempDir . '/config/config.php', $configContent);
+        // VERSION file is the primary source of truth
+        file_put_contents($this->tempDir . '/VERSION', "2.5.0\n");
 
-        // Pass config directly to avoid DB lookup
-        $config = require $this->tempDir . '/config/config.php';
-        $version = $this->updater->getCurrentVersion($config);
-
-        // Can't connect to DB, falls back to config
+        $version = $this->updater->getCurrentVersion();
         $this->assertSame('2.5.0', $version);
     }
 
