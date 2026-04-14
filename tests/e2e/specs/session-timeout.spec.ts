@@ -23,7 +23,7 @@ test.describe('Session & Timeout', () => {
   test('CSRF token is present in forms', async ({ page }) => {
     await login(page, 'admin');
     await page.goto('/members/create');
-    const csrfInput = page.locator('input[name="csrf_token"], input[name="_csrf"], input[name="_token"]');
+    const csrfInput = page.locator('input[name="_csrf_token"], input[name="_csrf"], input[name="csrf_token"], input[name="_token"]');
     await expect(csrfInput).toBeAttached();
     const value = await csrfInput.getAttribute('value');
     expect(value).toBeTruthy();
@@ -35,7 +35,7 @@ test.describe('Session & Timeout', () => {
     await page.goto('/members/create');
     // Remove CSRF token from form
     await page.evaluate(() => {
-      const csrf = document.querySelector('input[name="csrf_token"], input[name="_csrf"], input[name="_token"]');
+      const csrf = document.querySelector('input[name="_csrf_token"], input[name="_csrf"], input[name="csrf_token"], input[name="_token"]');
       if (csrf) csrf.remove();
     });
     await page.fill('input[name="first_name"]', 'Test');

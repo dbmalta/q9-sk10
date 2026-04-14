@@ -28,7 +28,7 @@ test.describe('Administration', () => {
   });
 
   test('backup page loads', async ({ page }) => {
-    await page.goto('/admin/backup');
+    await page.goto('/admin/backups');
     await expect(page.locator('body')).toContainText(/backup|restore|download/i);
   });
 

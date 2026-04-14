@@ -68,7 +68,7 @@ class ICalController extends Controller
         }
 
         $user = $this->app->getSession()->get('user');
-        $memberId = (int) $user['member_id'];
+        $memberId = (int) ($user['member_id'] ?? 0);
 
         $tokenRecord = $this->icalService->getTokenForMember($memberId);
 
@@ -104,7 +104,7 @@ class ICalController extends Controller
         }
 
         $user = $this->app->getSession()->get('user');
-        $memberId = (int) $user['member_id'];
+        $memberId = (int) ($user['member_id'] ?? 0);
 
         // Regenerate replaces any existing token
         $this->icalService->regenerateToken($memberId);

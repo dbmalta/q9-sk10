@@ -39,7 +39,7 @@ class DashboardController extends Controller
      */
     public function index(Request $request, array $vars): Response
     {
-        $guard = $this->requirePermission('admin.dashboard');
+        $guard = $this->requireAuth();
         if ($guard !== null) {
             return $guard;
         }

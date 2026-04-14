@@ -216,11 +216,17 @@ class PermissionResolver
 
         // Union permissions and flags across all assignments
         foreach ($assignments as $assignment) {
-            // Parse role permissions JSON
+            // Parse role permissions JSON — format: {"module": ["read","write"]}
+            // Expand to dot-notation keys: "module.read", "module.write"
             $rolePermissions = json_decode($assignment['role_permissions'], true) ?? [];
-            foreach ($rolePermissions as $perm => $granted) {
-                if ($granted) {
-                    $this->permissions[$perm] = true;
+            foreach ($rolePermissions as $module => $actions) {
+                if (is_array($actions)) {
+                    foreach ($actions as $action) {
+                        $this->permissions["$module.$action"] = true;
+                    }
+                } elseif ($actions) {
+                    // Backward compat: simple key => bool
+                    $this->permissions[$module] = true;
                 }
             }
 

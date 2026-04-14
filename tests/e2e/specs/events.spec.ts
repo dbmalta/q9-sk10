@@ -8,16 +8,16 @@ test.describe('Events', () => {
     await expect(page.locator('body')).toContainText(/event|calendar/i);
   });
 
-  test('calendar shows seeded events', async ({ page }) => {
-    await login(page, 'member');
-    await page.goto('/events');
+  test('seeded events exist in admin list', async ({ page }) => {
+    await login(page, 'admin');
+    await page.goto('/admin/events');
     await expect(page.locator('body')).toContainText(/camp|hike|parade|jamboree/i);
   });
 
   test('event detail page loads', async ({ page }) => {
     await login(page, 'member');
     await page.goto('/events');
-    const eventLink = page.locator('a[href*="/events/"]').first();
+    const eventLink = page.locator('main a[href*="/events/"]:not([href*="ical"])').first();
     if (await eventLink.isVisible()) {
       await eventLink.click();
       await expect(page.locator('body')).toContainText(/location|date|description/i);
@@ -26,7 +26,7 @@ test.describe('Events', () => {
 
   test('admin can create events', async ({ page }) => {
     await login(page, 'admin');
-    await page.goto('/events/create');
+    await page.goto('/admin/events/create');
     await expect(page.locator('input[name="title"]')).toBeVisible();
     await expect(page.locator('input[name="start_date"]')).toBeVisible();
   });

@@ -563,6 +563,8 @@
     "terms.content_required": "Content is required.",
     "terms.acceptance_count": "Acceptances",
     "terms.view": "View",
+    "terms.no_acceptances": "No acceptances recorded yet.",
+    "terms.status": "Status",
 
     "notices.title": "Notices",
     "notices.manage": "Manage Notices",

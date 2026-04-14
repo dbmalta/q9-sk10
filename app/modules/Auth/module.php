@@ -23,6 +23,7 @@ return [
         $router->post('/login/mfa', [AuthController::class, 'processMfa'], 'auth.mfa.process');
 
         // Logout
+        $router->get('/logout', [AuthController::class, 'logout'], 'auth.logout.get');
         $router->post('/logout', [AuthController::class, 'logout'], 'auth.logout');
 
         // Forgot password

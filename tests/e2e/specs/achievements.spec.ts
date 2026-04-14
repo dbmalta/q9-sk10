@@ -4,19 +4,19 @@ import { login } from '../helpers/auth';
 test.describe('Achievements & Training', () => {
   test('achievement definitions list loads', async ({ page }) => {
     await login(page, 'admin');
-    await page.goto('/achievements');
+    await page.goto('/admin/achievements');
     await expect(page.locator('body')).toContainText(/woodcraft|navigation|first aid/i);
   });
 
   test('achievement definitions include training courses', async ({ page }) => {
     await login(page, 'admin');
-    await page.goto('/achievements');
+    await page.goto('/admin/achievements');
     await expect(page.locator('body')).toContainText(/safeguarding|leadership/i);
   });
 
   test('create achievement form loads', async ({ page }) => {
     await login(page, 'admin');
-    await page.goto('/achievements/create');
+    await page.goto('/admin/achievements/create');
     await expect(page.locator('input[name="name"]')).toBeVisible();
     await expect(page.locator('select[name="category"]')).toBeVisible();
   });

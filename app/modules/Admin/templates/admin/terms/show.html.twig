@@ -1,0 +1,57 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ version.title }} — {{ t('nav.terms') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ version.title }}</h1>
+    <div>
+        <a href="/admin/terms/{{ version.id }}/edit" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i>{{ t('common.edit') }}
+        </a>
+        <a href="/admin/terms" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex gap-3 mb-3">
+                    <span class="text-body-secondary">{{ t('terms.version_number') }}: <code>{{ version.version_number }}</code></span>
+                    {% if version.is_published %}
+                        <span class="badge bg-success">{{ t('terms.is_published') }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ t('terms.draft') }}</span>
+                    {% endif %}
+                </div>
+                <hr>
+                <div class="terms-content">{{ version.content|raw }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent">
+                <h2 class="h6 mb-0">{{ t('terms.acceptance_count') }}</h2>
+            </div>
+            <div class="card-body">
+                {% if acceptances is empty %}
+                    <p class="text-body-secondary mb-0">{{ t('terms.no_acceptances') }}</p>
+                {% else %}
+                    <ul class="list-unstyled mb-0">
+                        {% for acceptance in acceptances %}
+                        <li class="d-flex justify-content-between py-1 border-bottom">
+                            <span class="small">{{ acceptance.user_email }}</span>
+                            <span class="small text-body-secondary">{{ acceptance.accepted_at|date('d M Y') }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

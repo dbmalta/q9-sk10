@@ -234,7 +234,7 @@ class NorthlandSeeder
             [
                 'name'                => 'Super Admin',
                 'description'         => 'Full system access',
-                'permissions'         => json_encode(['members' => ['read', 'write'], 'org' => ['read', 'write'], 'admin' => ['read', 'write'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read']]),
+                'permissions'         => json_encode(['members' => ['read', 'write'], 'org_structure' => ['read', 'write'], 'admin' => ['dashboard', 'reports', 'terms', 'notices', 'settings', 'audit', 'logs', 'export', 'backup', 'languages', 'updates', 'monitoring'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read'], 'custom_fields' => ['write'], 'registrations' => ['manage']]),
                 'can_publish_events'  => 1,
                 'can_access_medical'  => 1,
                 'can_access_financial'=> 1,
@@ -244,7 +244,7 @@ class NorthlandSeeder
             [
                 'name'                => 'Group Leader',
                 'description'         => 'Manages a Scout Group',
-                'permissions'         => json_encode(['members' => ['read', 'write'], 'org' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read']]),
+                'permissions'         => json_encode(['members' => ['read', 'write'], 'org_structure' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read'], 'registrations' => ['manage']]),
                 'can_publish_events'  => 1,
                 'can_access_medical'  => 1,
                 'can_access_financial'=> 0,
@@ -264,7 +264,7 @@ class NorthlandSeeder
             [
                 'name'                => 'District Commissioner',
                 'description'         => 'Oversees a District',
-                'permissions'         => json_encode(['members' => ['read', 'write'], 'org' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read'], 'directory' => ['read']]),
+                'permissions'         => json_encode(['members' => ['read', 'write'], 'org_structure' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read'], 'directory' => ['read']]),
                 'can_publish_events'  => 1,
                 'can_access_medical'  => 0,
                 'can_access_financial'=> 0,

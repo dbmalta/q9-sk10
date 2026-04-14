@@ -176,16 +176,17 @@
     </div>
 </form>
 
-{% macro render_node_checkboxes(nodes, member) %}
+{% macro render_node_checkboxes(nodes, member, depth) %}
+    {% set depth = depth|default(0) %}
     {% for node in nodes %}
-    <div class="form-check ms-{{ loop.depth0 * 3 }}">
+    <div class="form-check ms-{{ depth * 3 }}">
         <input type="checkbox" name="node_ids[]" value="{{ node.id }}" id="node_{{ node.id }}"
                class="form-check-input"
                {{ member and member.node_ids is defined and node.id in member.node_ids ? 'checked' : '' }}>
         <label for="node_{{ node.id }}" class="form-check-label small">{{ node.name }}</label>
     </div>
     {% if node.children is defined and node.children is not empty %}
-        {{ _self.render_node_checkboxes(node.children, member) }}
+        {{ _self.render_node_checkboxes(node.children, member, depth + 1) }}
     {% endif %}
     {% endfor %}
 {% endmacro %}
