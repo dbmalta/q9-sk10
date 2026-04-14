@@ -24,7 +24,11 @@ $configFile = $rootPath . '/config/config.php';
 if (file_exists($configFile)) {
     $config = require $configFile;
 } else {
-    require_once $rootPath . '/tests/fixtures/bootstrap.php';
+    $bootstrapFile = $rootPath . '/tests/fixtures/bootstrap.php';
+    if (!file_exists($bootstrapFile)) {
+        $bootstrapFile = $rootPath . '/tests/fixtures/bootstrap2.php';
+    }
+    require_once $bootstrapFile;
     $config = TEST_CONFIG;
 }
 
