@@ -14,7 +14,7 @@ use App\Modules\Members\Controllers\PublicRegistrationController;
 return [
     'id' => 'members',
     'name' => 'Members',
-    'version' => '0.1.9',
+    'version' => trim(@file_get_contents(ROOT_PATH . '/VERSION') ?: '0.0.0'),
 
     'nav' => [
         [

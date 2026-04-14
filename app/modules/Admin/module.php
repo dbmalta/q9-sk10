@@ -18,7 +18,7 @@ use App\Modules\Admin\Controllers\UpdateController;
 return [
     'id' => 'admin',
     'name' => 'Administration',
-    'version' => '0.1.9',
+    'version' => trim(@file_get_contents(ROOT_PATH . '/VERSION') ?: '0.0.0'),
 
     'nav' => [
         [

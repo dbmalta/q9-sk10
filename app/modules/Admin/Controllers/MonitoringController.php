@@ -196,6 +196,15 @@ class MonitoringController extends Controller
      */
     private function getAppVersion(): string
     {
+        $versionFile = ROOT_PATH . '/VERSION';
+
+        if (file_exists($versionFile)) {
+            $version = trim(file_get_contents($versionFile));
+            if ($version !== '') {
+                return $version;
+            }
+        }
+
         try {
             $row = $this->app->getDb()->fetchOne(
                 "SELECT `value` FROM `settings` WHERE `key` = 'app_version'"
@@ -207,7 +216,7 @@ class MonitoringController extends Controller
             // Fall through
         }
 
-        return $this->app->getConfigValue('app.version', '0.1.9');
+        return 'unknown';
     }
 
     /**

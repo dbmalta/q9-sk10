@@ -35,6 +35,9 @@ jobs:
         id: tag
         run: echo "TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
 
+      - name: Write version to VERSION file
+        run: echo "${GITHUB_REF#refs/tags/v}" > VERSION
+
       - name: Strip dev files
         run: |
           rm -rf tests/

@@ -574,13 +574,14 @@ class SetupWizard
             );
             $stmt->execute(['val' => $apiKey, 'val2' => $apiKey]);
 
-            // Store app version
+            // Store app version (read from VERSION file)
+            $appVersion = trim(@file_get_contents($this->rootPath . '/VERSION') ?: '0.0.0');
             $stmt = $pdo->prepare(
                 "INSERT INTO `settings` (`key`, `value`, `group`)
-                 VALUES ('app_version', '0.1.9', 'general')
-                 ON DUPLICATE KEY UPDATE `value` = '0.1.9'"
+                 VALUES ('app_version', :ver, 'general')
+                 ON DUPLICATE KEY UPDATE `value` = :ver2"
             );
-            $stmt->execute();
+            $stmt->execute(['ver' => $appVersion, 'ver2' => $appVersion]);
         } catch (\Throwable $e) {
             return [
                 'success' => false,

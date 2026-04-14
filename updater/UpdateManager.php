@@ -249,8 +249,12 @@ class UpdateManager
                 // Don't fail the whole update for migration issues
             }
 
-            // Step 5: Update app_version in settings table
+            // Step 5: Update version everywhere
             if ($newVersion !== null) {
+                // Update VERSION file (primary source of truth)
+                @file_put_contents($this->rootPath . '/VERSION', $newVersion . "\n");
+
+                // Update settings table (fallback source)
                 try {
                     $pdo = $pdo ?? $this->createPdo($config['db']);
                     $stmt = $pdo->prepare(
@@ -341,6 +345,16 @@ class UpdateManager
      */
     public function getCurrentVersion(?array $config = null): string
     {
+        // Primary source: VERSION file at project root
+        $versionFile = $this->rootPath . '/VERSION';
+        if (file_exists($versionFile)) {
+            $version = trim(file_get_contents($versionFile));
+            if ($version !== '') {
+                return $version;
+            }
+        }
+
+        // Fallback: settings table
         if ($config === null) {
             $config = $this->loadConfig();
         }
@@ -348,7 +362,6 @@ class UpdateManager
             return 'unknown';
         }
 
-        // Try settings table first
         try {
             $pdo = $this->createPdo($config['db']);
             $stmt = $pdo->prepare("SELECT `value` FROM `settings` WHERE `key` = 'app_version'");
@@ -361,7 +374,7 @@ class UpdateManager
             // Fall through
         }
 
-        return $config['app']['version'] ?? '0.1.0';
+        return 'unknown';
     }
 
     /**

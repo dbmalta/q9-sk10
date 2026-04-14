@@ -253,16 +253,17 @@ class DashboardService
      */
     private function getAppVersion(): string
     {
-        $versionFile = (defined('ROOT_PATH') ? ROOT_PATH : '.') . '/data/version.json';
+        $rootPath = defined('ROOT_PATH') ? ROOT_PATH : dirname(__DIR__, 5);
+        $versionFile = $rootPath . '/VERSION';
 
         if (file_exists($versionFile)) {
-            $data = json_decode(file_get_contents($versionFile), true);
-            if (isset($data['version'])) {
-                return $data['version'];
+            $version = trim(file_get_contents($versionFile));
+            if ($version !== '') {
+                return $version;
             }
         }
 
-        return '0.1.9';
+        return 'unknown';
     }
 
     /**

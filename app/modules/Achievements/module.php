@@ -7,7 +7,7 @@ use App\Modules\Achievements\Controllers\AchievementController;
 return [
     'id' => 'achievements',
     'name' => 'Achievements',
-    'version' => '0.1.9',
+    'version' => trim(@file_get_contents(ROOT_PATH . '/VERSION') ?: '0.0.0'),
 
     'nav' => [
         [

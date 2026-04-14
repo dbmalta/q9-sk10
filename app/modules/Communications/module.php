@@ -8,7 +8,7 @@ use App\Modules\Communications\Controllers\EmailController;
 return [
     'id' => 'communications',
     'name' => 'Communications',
-    'version' => '0.1.9',
+    'version' => trim(@file_get_contents(ROOT_PATH . '/VERSION') ?: '0.0.0'),
 
     'nav' => [
         [
