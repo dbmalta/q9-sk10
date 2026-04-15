@@ -14,6 +14,7 @@ use App\Modules\Admin\Controllers\BackupController;
 use App\Modules\Admin\Controllers\LanguageController;
 use App\Modules\Admin\Controllers\MonitoringController;
 use App\Modules\Admin\Controllers\UpdateController;
+use App\Modules\Admin\Controllers\SearchController;
 
 return [
     'id' => 'admin',
@@ -118,6 +119,9 @@ return [
 
         // Root redirect
         $router->get('/', [DashboardController::class, 'root'], 'home');
+
+        // Global topbar search (HTMX partial)
+        $router->get('/search', [SearchController::class, 'index'], 'search');
 
         // Dashboard
         $router->get('/admin/dashboard', [DashboardController::class, 'index'], 'admin.dashboard');

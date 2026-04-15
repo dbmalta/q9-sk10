@@ -53,6 +53,8 @@
     "common.delete": "Delete",
     "common.edit": "Edit",
     "common.search": "Search",
+    "search.too_short": "Type at least 2 characters to search.",
+    "search.no_results": "No results for \"{query}\".",
     "common.confirm": "Confirm",
     "common.back": "Back",
     "common.loading": "Loading...",

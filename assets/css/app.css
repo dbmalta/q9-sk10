@@ -154,6 +154,27 @@ body {
     box-shadow: var(--sk-shadow-sm);
 }
 
+/* Global topbar search dropdown */
+.topbar-search {
+    position: relative;
+}
+.topbar-search .global-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.25rem;
+    z-index: 1050;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.topbar-search .global-search-results:empty {
+    display: none;
+}
+.topbar-search .global-search-results-inner {
+    background: var(--bs-body-bg);
+}
+
 /* ===========================
    Sidebar
    =========================== */

@@ -24,12 +24,20 @@
         </div>
 
         {# Centre: search (desktop only) #}
-        <div class="d-none d-md-flex flex-grow-1 justify-content-center" style="max-width: 400px; margin: 0 auto;">
-            <div class="input-group input-group-sm">
+        {# No <form> wrapper: avoids Enter-key race with form submission. #}
+        {# input[type=search] natively fires the 'search' event on Enter. #}
+        <div class="d-none d-md-flex flex-grow-1 justify-content-center position-relative topbar-search" style="max-width: 400px; margin: 0 auto;">
+            <div class="input-group input-group-sm w-100">
                 <span class="input-group-text bg-body border-end-0"><i class="bi bi-search"></i></span>
-                <input type="search" class="form-control border-start-0" placeholder="{{ t('common.search') }}..."
-                       hx-get="/search" hx-trigger="keyup changed delay:300ms" hx-target="#search-results">
+                <input type="search" name="q" class="form-control border-start-0"
+                       placeholder="{{ t('common.search') }}..."
+                       autocomplete="off"
+                       hx-get="/search"
+                       hx-trigger="keyup changed delay:300ms, search, keyup[key=='Enter']"
+                       hx-target="#search-results"
+                       hx-sync="this:replace">
             </div>
+            <div id="search-results" class="global-search-results"></div>
         </div>
 
         {# Right: utilities #}
@@ -109,12 +117,19 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ t('common.close') }}"></button>
     </div>
     <div class="offcanvas-body p-0">
-        {# Search (mobile) #}
+        {# Search (mobile) — no <form> wrapper, same rationale as desktop. #}
         <div class="p-3 border-bottom">
             <div class="input-group input-group-sm">
                 <span class="input-group-text bg-body border-end-0"><i class="bi bi-search"></i></span>
-                <input type="search" class="form-control border-start-0" placeholder="{{ t('common.search') }}...">
+                <input type="search" name="q" class="form-control border-start-0"
+                       placeholder="{{ t('common.search') }}..."
+                       autocomplete="off"
+                       hx-get="/search"
+                       hx-trigger="keyup changed delay:300ms, search, keyup[key=='Enter']"
+                       hx-target="#search-results-mobile"
+                       hx-sync="this:replace">
             </div>
+            <div id="search-results-mobile" class="mt-2"></div>
         </div>
 
         <nav class="py-2">
@@ -175,9 +190,6 @@
         {% block body %}{% endblock %}
     </main>
 </div>
-
-{# Search results overlay #}
-<div id="search-results"></div>
 
 {# Session timeout modal #}
 <div class="modal fade" id="sessionTimeoutModal" tabindex="-1" data-bs-backdrop="static">

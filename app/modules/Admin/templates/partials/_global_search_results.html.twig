@@ -1,0 +1,36 @@
+{# Global topbar search results. Expects: members, total, query, too_short #}
+<div class="global-search-results-inner card shadow-sm border">
+    {% if too_short %}
+    <div class="p-3 text-center text-body-secondary small">
+        {{ t('search.too_short')|default('Type at least 2 characters to search.') }}
+    </div>
+    {% elseif members is empty %}
+    <div class="p-3 text-center text-body-secondary small">
+        {{ t('search.no_results', { query: query })|default('No results for "' ~ query ~ '".') }}
+    </div>
+    {% else %}
+    <div class="px-3 pt-2 pb-1 text-uppercase small fw-semibold text-body-secondary">
+        {{ t('nav.members')|default('Members') }}
+    </div>
+    <div class="list-group list-group-flush">
+        {% for member in members %}
+        <a href="/members/{{ member.id }}" class="list-group-item list-group-item-action d-flex align-items-center py-2">
+            <div class="avatar-circle bg-primary-subtle text-primary me-2 d-inline-flex align-items-center justify-content-center rounded-circle" style="width:32px;height:32px;font-size:0.7rem;">
+                {{ member.first_name|first|upper }}{{ member.surname|first|upper }}
+            </div>
+            <div class="flex-grow-1">
+                <span class="fw-medium">{{ member.first_name }} {{ member.surname }}</span>
+                <span class="text-body-secondary small ms-2">{{ member.membership_number }}</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% if total > members|length %}
+    <div class="p-2 text-center border-top">
+        <a href="/members?q={{ query|url_encode }}" class="small text-decoration-none">
+            {{ t('members.view_all_results', { count: total }) }}
+        </a>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
