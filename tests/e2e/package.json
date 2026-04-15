@@ -2,10 +2,14 @@
   "name": "scoutkeeper-e2e",
   "private": true,
   "scripts": {
-    "test": "npx playwright test",
-    "test:headed": "npx playwright test --headed",
+    "test": "bash run-tests.sh",
+    "test:file": "bash run-tests.sh",
+    "test:original": "npx playwright test --project=chromium specs/auth.spec.ts specs/admin.spec.ts specs/dashboard.spec.ts specs/members.spec.ts specs/events.spec.ts specs/communications.spec.ts specs/org-structure.spec.ts specs/registration.spec.ts specs/achievements.spec.ts specs/terms.spec.ts specs/directory.spec.ts",
+    "test:comprehensive": "bash run-tests.sh specs/comprehensive",
+    "test:headed": "npx playwright test --project=chromium --headed specs/comprehensive",
     "test:ui": "npx playwright test --ui",
-    "report": "npx playwright show-report"
+    "report": "npx playwright show-report",
+    "extract": "node scripts/extract-failures.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.45.0"

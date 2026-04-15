@@ -44,3 +44,7 @@ Thumbs.db
 
 # Node (for Playwright)
 /node_modules/
+
+# Personal / machine-specific files
+/tests/e2e/readme.txt
+/tests/e2e/run.bat
