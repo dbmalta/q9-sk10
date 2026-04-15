@@ -2,6 +2,20 @@
 
 **A free, open-source membership management system for Scout organisations.**
 
+![Status](https://img.shields.io/badge/status-under%20active%20development-orange)
+![Not production ready](https://img.shields.io/badge/production%20ready-no-red)
+
+---
+
+> [!WARNING]
+> **ScoutKeeper is under active development and is not ready for production use.**
+>
+> This codebase is a work in progress. Features are incomplete, breaking changes happen between commits, and there is no data migration guarantee for anything created before a stable v1.0 release.
+>
+> **Do not use this to manage real member data.** A stable release will be announced when the system is ready for production deployment.
+
+---
+
 ScoutKeeper is a web-based membership management platform built for Scout organisations of any size — from a single group to a national organisation. It is aligned with WOSM best practices, designed to replace paper and spreadsheet-based systems, and built to be installed and run by anyone with basic web hosting.
 
 ---
