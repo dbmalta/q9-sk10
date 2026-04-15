@@ -176,6 +176,42 @@ class AuthController extends Controller
     }
 
     /**
+     * GET /account — landing page for the logged-in user.
+     *
+     * If the user has a linked member record, redirects to the member view.
+     * Otherwise renders a minimal account page with email and logout.
+     */
+    public function account(Request $request, array $vars): Response
+    {
+        $authCheck = $this->requireAuth();
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
+
+        $user = $this->app->getSession()->get('user');
+        $memberId = (int) ($user['member_id'] ?? 0);
+
+        // If the user is linked to a member record, send them there
+        if ($memberId > 0) {
+            return $this->redirect('/members/' . $memberId);
+        }
+
+        // Otherwise look it up in the DB (session may be stale)
+        $row = $this->app->getDb()->fetchOne(
+            "SELECT id FROM members WHERE user_id = :uid LIMIT 1",
+            ['uid' => (int) $user['id']]
+        );
+        if ($row && (int) $row['id'] > 0) {
+            return $this->redirect('/members/' . (int) $row['id']);
+        }
+
+        // No linked member — render a minimal account page
+        return $this->render('@auth/auth/account.html.twig', [
+            'email' => $user['email'] ?? '',
+        ]);
+    }
+
+    /**
      * GET /forgot-password — show the forgot password form.
      */
     public function showForgotPassword(Request $request, array $vars): Response

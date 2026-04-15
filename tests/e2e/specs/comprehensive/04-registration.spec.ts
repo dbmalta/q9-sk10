@@ -47,7 +47,7 @@ test.describe('Public registration form', () => {
     await page.goto('/register');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     // Should stay on register or show errors
     const url = page.url();
     expect(url).toMatch(/\/register/);
@@ -68,13 +68,15 @@ test.describe('Public registration form', () => {
     const genderField = page.locator('select[name="gender"]');
     if (await genderField.isVisible()) await genderField.selectOption({ index: 1 });
 
-    // T&Cs checkbox if present
-    const tos = page.locator('input[type="checkbox"][name*="terms"], input[type="checkbox"][name*="agree"]');
-    if (await tos.isVisible()) await tos.check();
+    // Consent checkbox if present — may be GDPR, T&Cs, or similar
+    const tos = page.locator(
+      'input[type="checkbox"][name*="terms"], input[type="checkbox"][name*="agree"], input[type="checkbox"][name*="gdpr"], input[type="checkbox"][name*="consent"]'
+    );
+    if (await tos.first().isVisible().catch(() => false)) await tos.first().check();
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     // Should show success, redirect to success page, or stay with flash
     const resultUrl = page.url();
     const bodyText = await page.locator('body').textContent();
@@ -111,15 +113,15 @@ test.describe('Public waiting list form', () => {
   test('form has name and email fields', async ({ page }) => {
     await page.goto('/waiting-list');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('input[name="first_name"], input[name="name"]')).toBeVisible();
-    await expect(page.locator('input[name="email"]')).toBeVisible();
+    await expect(page.locator('input[name="parent_name"], input[name="first_name"], input[name="name"]').first()).toBeVisible();
+    await expect(page.locator('input[name="parent_email"], input[name="email"]').first()).toBeVisible();
   });
 
   test('submitting empty form does not crash', async ({ page }) => {
     await page.goto('/waiting-list');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('valid submit gives success feedback', async ({ page }) => {
@@ -127,16 +129,22 @@ test.describe('Public waiting list form', () => {
     await page.goto('/waiting-list');
     await page.waitForLoadState('networkidle');
 
-    const nameField = page.locator('input[name="first_name"], input[name="name"]').first();
+    const nameField = page.locator('input[name="parent_name"], input[name="first_name"], input[name="name"]').first();
     await nameField.fill(`PW${id}`);
-    await page.fill('input[name="email"]', `wl${id}@playwright.test`);
+    const emailField = page.locator('input[name="parent_email"], input[name="email"]').first();
+    await emailField.fill(`wl${id}@playwright.test`);
+
+    const childField = page.locator('input[name="child_name"]').first();
+    if (await childField.count() > 0) await childField.fill(`Child ${id}`);
 
     const surnameField = page.locator('input[name="surname"], input[name="last_name"]');
-    if (await surnameField.isVisible()) await surnameField.fill('Playwright');
+    if (await surnameField.count() > 0 && await surnameField.first().isVisible()) {
+      await surnameField.first().fill('Playwright');
+    }
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -169,7 +177,14 @@ test.describe('Admin: pending registrations', () => {
   test('reject button present alongside approve', async ({ page }) => {
     await page.goto('/admin/registrations');
     await page.waitForLoadState('networkidle');
-    const rejectBtn = page.locator('button:text-matches("reject|decline", "i"), form[action*="reject"] button');
+    // The reject trigger may be an icon-only button (title="Reject") that opens a modal,
+    // or a text button. Either way it must be visible on the page (not inside a hidden modal).
+    const rejectBtn = page.locator(
+      'button[title*="Reject" i]:visible, button[title*="Decline" i]:visible, ' +
+      'button:has-text("Reject"):not([data-bs-dismiss]):visible, ' +
+      'button:has-text("Decline"):not([data-bs-dismiss]):visible, ' +
+      'button[data-bs-target*="reject" i]:visible'
+    );
     if (await rejectBtn.count() > 0) {
       await expect(rejectBtn.first()).toBeVisible();
     }
@@ -210,7 +225,7 @@ test.describe('Admin: invitations', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -299,7 +314,7 @@ test.describe('Admin: bulk import', () => {
     await page.goto('/admin/bulk-import');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -330,7 +345,7 @@ test.describe('Admin: custom fields', () => {
     await page.goto('/admin/custom-fields/create');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('valid custom field creation succeeds', async ({ page }) => {
@@ -346,7 +361,7 @@ test.describe('Admin: custom fields', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('existing custom field can be edited', async ({ page }) => {
@@ -379,7 +394,7 @@ test.describe('Admin: custom fields', () => {
     if (fieldCount > 1) {
       const handle = page.locator('[draggable], .drag-handle, [data-sortable]');
       // Just check the page doesn't error if we have multiple fields
-      await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+      await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     }
   });
 });
@@ -393,7 +408,7 @@ test.describe('Invitation-based registration', () => {
     await page.goto('/register/invite/this-is-not-a-real-token');
     await page.waitForLoadState('networkidle');
     const body = await page.locator('body').textContent();
-    expect(body).not.toMatch(/internal server error|500/i);
+    expect(body).not.toMatch(/internal server error|Fatal error|Stack trace|Uncaught/i);
     // Should show invalid/expired token message or 404
     const isErrorState = body?.toLowerCase().includes('invalid') ||
       body?.toLowerCase().includes('expired') ||

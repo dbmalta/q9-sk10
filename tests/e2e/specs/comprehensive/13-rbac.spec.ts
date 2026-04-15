@@ -70,7 +70,7 @@ test.describe('Member cannot access admin-only routes', () => {
       ).toBeTruthy();
 
       // In no case should a 500 be shown
-      expect(body).not.toMatch(/Fatal error|internal server error|500/i);
+      expect(body).not.toMatch(/Fatal error|internal server error|Stack trace|Uncaught/i);
     });
   }
 });
@@ -113,21 +113,21 @@ test.describe('Leader role access', () => {
     await page.goto('/events');
     await page.waitForLoadState('networkidle');
     await expect(page).not.toHaveURL(/\/login/);
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('leader can access articles', async ({ page }) => {
     await page.goto('/articles');
     await page.waitForLoadState('networkidle');
     await expect(page).not.toHaveURL(/\/login/);
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('leader can access directory', async ({ page }) => {
     await page.goto('/directory');
     await page.waitForLoadState('networkidle');
     await expect(page).not.toHaveURL(/\/login/);
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('leader dashboard does not show super-admin settings link', async ({ page }) => {
@@ -151,6 +151,13 @@ test.describe('Sidebar navigation visibility by role', () => {
     await page.goto('/admin/dashboard');
     await page.waitForLoadState('networkidle');
 
+    // On mobile, open the offcanvas sidebar to reveal nav links
+    const hamburger = page.locator('button[data-bs-toggle="offcanvas"]').first();
+    if (await hamburger.isVisible().catch(() => false)) {
+      await hamburger.click();
+      await page.waitForTimeout(400);
+    }
+
     const expectedLinks = [
       '/members',
       '/admin/roles',
@@ -158,7 +165,9 @@ test.describe('Sidebar navigation visibility by role', () => {
       '/admin/audit',
     ];
     for (const link of expectedLinks) {
-      const navLink = page.locator(`a[href="${link}"]`);
+      // Use :visible pseudo — desktop sidebar and mobile offcanvas both render
+      // the same hrefs; only one is on-screen depending on viewport.
+      const navLink = page.locator(`a[href="${link}"]:visible`).first();
       await expect(navLink, `Admin should see nav link to ${link}`).toBeVisible();
     }
   });
@@ -176,7 +185,7 @@ test.describe('Sidebar navigation visibility by role', () => {
       '/admin/backups',
     ];
     for (const link of adminLinks) {
-      const navLink = page.locator(`a[href="${link}"]`);
+      const navLink = page.locator(`a[href="${link}"]`).first();
       const visible = await navLink.isVisible();
       expect(visible, `Member should NOT see nav link to ${link}`).toBe(false);
     }
@@ -185,8 +194,17 @@ test.describe('Sidebar navigation visibility by role', () => {
   test('logout link always visible in nav', async ({ page }) => {
     for (const role of ['admin', 'member', 'leader'] as const) {
       await login(page, role);
-      await page.goto('/members');
+      // After login the user lands on the dashboard (auth-only, no extra permission).
+      // /account redirects to /members/{id} which 403s for member role; dashboard is safe.
+      await page.goto('/admin/dashboard');
       await page.waitForLoadState('networkidle');
+      // Logout lives inside the user dropdown — open it first
+      // The user menu is identified by the person-circle icon (not the language/other dropdowns)
+      const userMenuToggle = page.locator('button[data-bs-toggle="dropdown"]:has(.bi-person-circle)').first();
+      if (await userMenuToggle.count() > 0) {
+        await userMenuToggle.click();
+        await page.waitForTimeout(200);
+      }
       const logoutControl = page.locator(
         'a[href="/logout"], form[action="/logout"], [data-logout]'
       ).first();

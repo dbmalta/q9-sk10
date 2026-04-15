@@ -106,6 +106,13 @@ class ICalController extends Controller
         $user = $this->app->getSession()->get('user');
         $memberId = (int) ($user['member_id'] ?? 0);
 
+        // Users with no linked member record (e.g. admin-only accounts) cannot
+        // have a personal iCal feed — their subscription FKs to members.id.
+        if ($memberId <= 0) {
+            $this->flash('error', $this->t('events.ical_no_member_profile'));
+            return $this->redirect('/events/ical');
+        }
+
         // Regenerate replaces any existing token
         $this->icalService->regenerateToken($memberId);
 

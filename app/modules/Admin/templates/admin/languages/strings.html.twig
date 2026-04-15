@@ -1,0 +1,71 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ language_name }} — {{ t('languages.strings') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ t('languages.strings') }}</h1>
+        <p class="text-body-secondary mb-0">{{ language_name }}</p>
+    </div>
+    <a href="/admin/languages" class="btn btn-link btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+    </a>
+</div>
+
+{% if strings is empty %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-translate text-body-secondary" style="font-size: 2.5rem;"></i>
+        <p class="mt-3 text-body-secondary">{{ t('languages.no_languages') }}</p>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3" style="width: 30%;">{{ t('languages.string_key') }}</th>
+                    <th style="width: 25%;">{{ t('languages.english_value') }}</th>
+                    <th style="width: 35%;">{{ t('languages.translated_value') }}</th>
+                    <th class="text-end pe-3">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in strings %}
+                <tr data-string-key="{{ row.key }}">
+                    <td class="ps-3"><code class="small">{{ row.key }}</code></td>
+                    <td class="small text-body-secondary">{{ row.english|default('') }}</td>
+                    <td>
+                        <form method="POST" action="/admin/languages/{{ code }}/overrides" class="d-flex gap-2">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                            <input type="hidden" name="key" value="{{ row.key }}">
+                            <input type="text" name="value" class="form-control form-control-sm" value="{{ row.translated|default('') }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" title="{{ t('languages.save_override') }}">
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                        </form>
+                        {% if row.has_override %}
+                            <small class="text-warning"><i class="bi bi-asterisk"></i> {{ t('languages.has_override') }}</small>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-3">
+                        {% if row.has_override %}
+                        <form method="POST" action="/admin/languages/{{ code }}/overrides/clear" class="d-inline">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                            <input type="hidden" name="key" value="{{ row.key }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ t('languages.clear_override') }}">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

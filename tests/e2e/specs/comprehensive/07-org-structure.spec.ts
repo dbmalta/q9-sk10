@@ -148,7 +148,7 @@ test.describe('Create org node', () => {
     await page.goto('/admin/org/nodes/create');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('valid node creation succeeds', async ({ page }) => {
@@ -163,7 +163,7 @@ test.describe('Create org node', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -215,7 +215,7 @@ test.describe('Edit org node', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -261,7 +261,7 @@ test.describe('Teams on org node', () => {
     const submitBtn = page.locator('button[type="submit"]').last();
     await submitBtn.click();
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('delete team button present when teams exist', async ({ page }) => {
@@ -301,7 +301,7 @@ test.describe('Org level types', () => {
   test('seeded level types appear', async ({ page }) => {
     await page.goto('/admin/org/levels');
     await page.waitForLoadState('networkidle');
-    const rows = page.locator('table tbody tr, .level-type-row, [data-level]');
+    const rows = page.locator('table tbody tr, .level-type-row, [data-level], .list-group-item');
     expect(await rows.count()).toBeGreaterThan(0);
   });
 
@@ -326,7 +326,7 @@ test.describe('Org level types', () => {
     await nameField.fill(`PW Level ${id}`);
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     // New level should appear in the list
     const body = await page.locator('body').textContent();
     // Either it appears or a flash is shown

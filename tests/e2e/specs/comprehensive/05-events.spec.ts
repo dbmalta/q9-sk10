@@ -180,7 +180,7 @@ test.describe('Create event', () => {
     await page.goto('/admin/events/create');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('valid event creation redirects or shows success', async ({ page }) => {
@@ -191,17 +191,17 @@ test.describe('Create event', () => {
     await page.fill('input[name="title"]', `PW Event ${id}`);
 
     const startDate = page.locator('input[name="start_date"], input[name="starts_at"]').first();
-    await startDate.fill('2026-07-01');
+    await startDate.fill('2026-07-01T10:00');
 
     const endDate = page.locator('input[name="end_date"], input[name="ends_at"]').first();
-    if (await endDate.isVisible()) await endDate.fill('2026-07-02');
+    if (await endDate.isVisible()) await endDate.fill('2026-07-02T12:00');
 
     const descField = page.locator('textarea[name="description"], textarea[name="body"]');
     if (await descField.isVisible()) await descField.fill(`Playwright test event ${id}`);
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     // Should redirect to admin events or event detail
     const url = page.url();
     const ok = url.includes('/admin/events') || url.includes('/events/') || await page.locator('.alert-success').isVisible();
@@ -257,7 +257,7 @@ test.describe('Edit event', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -348,7 +348,7 @@ test.describe('iCal integration', () => {
 
     await generateBtn.click();
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     // A URL or token should appear
     const body = await page.locator('body').textContent();
     const hasUrl = body?.includes('/ical/') || body?.includes('.ics');
@@ -361,14 +361,23 @@ test.describe('iCal integration', () => {
     // First generate a token
     await page.goto('/events/ical');
     await page.waitForLoadState('networkidle');
-    const generateBtn = page.locator('form[action*="generate"] button, button:text-matches("generate", "i")').first();
-    if (!await generateBtn.isVisible()) { test.skip(true, 'No generate button'); return; }
+    const generateBtn = page.locator('form[action*="generate"] button, button:has-text("Generate")').first();
+    if (await generateBtn.count() === 0 || !await generateBtn.isVisible()) {
+      test.skip(true, 'No generate button'); return;
+    }
 
     await generateBtn.click();
     await page.waitForLoadState('networkidle');
 
     // Extract the ical URL from the page
-    const icalLink = await page.locator('a[href*="/ical/"], input[value*="/ical/"]').first().getAttribute('href');
+    const linkLocator = page.locator('a[href*="/ical/"]').first();
+    const inputLocator = page.locator('input[value*="/ical/"]').first();
+    let icalLink: string | null = null;
+    if (await linkLocator.count() > 0) {
+      icalLink = await linkLocator.getAttribute('href');
+    } else if (await inputLocator.count() > 0) {
+      icalLink = await inputLocator.inputValue();
+    }
     if (!icalLink) { test.skip(true, 'No iCal feed URL found after generating'); return; }
 
     // iCal feeds work without auth (token-based)

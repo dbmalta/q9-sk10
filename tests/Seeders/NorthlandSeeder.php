@@ -230,11 +230,23 @@ class NorthlandSeeder
 
     private function seedRoles(): void
     {
+        // Permissions are stored in flat "module.action" => true format
+        // to match RolesController output and the edit form template.
+        $flat = static function (array $nested): string {
+            $out = [];
+            foreach ($nested as $module => $actions) {
+                foreach ($actions as $action) {
+                    $out["$module.$action"] = true;
+                }
+            }
+            return json_encode($out);
+        };
+
         $roles = [
             [
                 'name'                => 'Super Admin',
                 'description'         => 'Full system access',
-                'permissions'         => json_encode(['members' => ['read', 'write'], 'org_structure' => ['read', 'write'], 'admin' => ['dashboard', 'reports', 'terms', 'notices', 'settings', 'audit', 'logs', 'export', 'backup', 'languages', 'updates', 'monitoring'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read'], 'custom_fields' => ['write'], 'registrations' => ['manage']]),
+                'permissions'         => $flat(['members' => ['read', 'write'], 'org_structure' => ['read', 'write'], 'admin' => ['dashboard', 'reports', 'terms', 'notices', 'settings', 'audit', 'logs', 'export', 'backup', 'languages', 'updates', 'monitoring'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read'], 'custom_fields' => ['write'], 'registrations' => ['manage']]),
                 'can_publish_events'  => 1,
                 'can_access_medical'  => 1,
                 'can_access_financial'=> 1,
@@ -244,7 +256,7 @@ class NorthlandSeeder
             [
                 'name'                => 'Group Leader',
                 'description'         => 'Manages a Scout Group',
-                'permissions'         => json_encode(['members' => ['read', 'write'], 'org_structure' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read'], 'registrations' => ['manage']]),
+                'permissions'         => $flat(['members' => ['read', 'write'], 'org_structure' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read'], 'registrations' => ['manage']]),
                 'can_publish_events'  => 1,
                 'can_access_medical'  => 1,
                 'can_access_financial'=> 0,
@@ -254,7 +266,7 @@ class NorthlandSeeder
             [
                 'name'                => 'Section Leader',
                 'description'         => 'Leads a Section within a Group',
-                'permissions'         => json_encode(['members' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read']]),
+                'permissions'         => $flat(['members' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read', 'write'], 'directory' => ['read']]),
                 'can_publish_events'  => 1,
                 'can_access_medical'  => 1,
                 'can_access_financial'=> 0,
@@ -264,7 +276,7 @@ class NorthlandSeeder
             [
                 'name'                => 'District Commissioner',
                 'description'         => 'Oversees a District',
-                'permissions'         => json_encode(['members' => ['read', 'write'], 'org_structure' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read'], 'directory' => ['read']]),
+                'permissions'         => $flat(['members' => ['read', 'write'], 'org_structure' => ['read'], 'communications' => ['read', 'write'], 'events' => ['read', 'write'], 'achievements' => ['read'], 'directory' => ['read']]),
                 'can_publish_events'  => 1,
                 'can_access_medical'  => 0,
                 'can_access_financial'=> 0,
@@ -274,7 +286,7 @@ class NorthlandSeeder
             [
                 'name'                => 'Member',
                 'description'         => 'Basic member access — view only',
-                'permissions'         => json_encode(['directory' => ['read'], 'events' => ['read']]),
+                'permissions'         => $flat(['directory' => ['read'], 'events' => ['read']]),
                 'can_publish_events'  => 0,
                 'can_access_medical'  => 0,
                 'can_access_financial'=> 0,
@@ -313,10 +325,22 @@ class NorthlandSeeder
             ]);
         }
 
-        // Enable MFA for the mfa user (dummy TOTP secret for testing)
+        // Enable MFA for the mfa user (dummy TOTP secret for testing).
+        // AuthService decrypts mfa_secret at verify time — store it encrypted.
+        $plainSecret = 'JBSWY3DPEHPK3PXP'; // well-known test secret, base32 encoded
+        $encryptedSecret = $plainSecret;
+        try {
+            $keyPath = defined('ROOT_PATH') ? ROOT_PATH . '/config/encryption.key' : __DIR__ . '/../../config/encryption.key';
+            if (file_exists($keyPath)) {
+                $enc = new \App\Core\Encryption($keyPath);
+                $encryptedSecret = $enc->encrypt($plainSecret);
+            }
+        } catch (\Throwable $e) {
+            // Fall back to plaintext — tests that don't use MFA still pass.
+        }
         $this->db->update('users', [
             'mfa_enabled' => 1,
-            'mfa_secret'  => 'JBSWY3DPEHPK3PXP', // well-known test secret, base32 encoded
+            'mfa_secret'  => $encryptedSecret,
         ], ['id' => $this->users['mfa@northland.test']]);
 
         // Additional leader/member accounts (25 more)

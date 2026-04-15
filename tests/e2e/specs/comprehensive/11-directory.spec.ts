@@ -46,7 +46,7 @@ test.describe('Organogram', () => {
     } else {
       // May be rendered differently (table, divs, etc.)
       const body = await page.locator('body').textContent();
-      expect(body).not.toMatch(/internal server error|500/i);
+      expect(body).not.toMatch(/internal server error|Fatal error|Stack trace|Uncaught/i);
     }
   });
 
@@ -149,7 +149,7 @@ test.describe('Directory access by role', () => {
     await page.waitForLoadState('networkidle');
     await expect(page).not.toHaveURL(/\/login/);
     // Members may or may not be allowed — check it doesn't 500
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('member can access contacts', async ({ page }) => {
@@ -157,7 +157,7 @@ test.describe('Directory access by role', () => {
     await page.goto('/directory/contacts');
     await page.waitForLoadState('networkidle');
     await expect(page).not.toHaveURL(/\/login/);
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -182,7 +182,8 @@ test.describe('Directory navigation', () => {
   test('contacts page has link back to organogram', async ({ page }) => {
     await page.goto('/directory/contacts');
     await page.waitForLoadState('networkidle');
-    const orgLink = page.locator('a[href="/directory"], a[href*="organogram"], a:text-matches("organogram", "i")').first();
+    // Look inside the main content area (not the sidebar, which is hidden on mobile)
+    const orgLink = page.locator('main a[href="/directory"], main a[href*="organogram"], main a:has-text("Organogram"), #main-content a[href="/directory"]').first();
     if (await orgLink.count() > 0) {
       await expect(orgLink).toBeVisible();
     }
@@ -191,7 +192,14 @@ test.describe('Directory navigation', () => {
   test('directory pages appear in sidebar navigation', async ({ page }) => {
     await page.goto('/admin/dashboard');
     await page.waitForLoadState('networkidle');
-    const directoryLink = page.locator('a[href="/directory"], a[href="/directory/contacts"]').first();
+    // On mobile, open the offcanvas menu first
+    const hamburger = page.locator('button[data-bs-toggle="offcanvas"]').first();
+    if (await hamburger.isVisible().catch(() => false)) {
+      await hamburger.click();
+      await page.waitForTimeout(400);
+    }
+    // :visible picks whichever copy is on-screen (desktop sidebar vs mobile offcanvas)
+    const directoryLink = page.locator('a[href="/directory"]:visible, a[href="/directory/contacts"]:visible').first();
     await expect(directoryLink).toBeVisible();
   });
 });

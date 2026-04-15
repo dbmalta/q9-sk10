@@ -78,6 +78,24 @@ class RolesController extends Controller
 
         if (empty($data['name'])) {
             $this->flash('error', $this->t('permissions.name_required'));
+            $data['id'] = null;
+            $data['is_system'] = 0;
+            return $this->render('@permissions/roles/form.html.twig', [
+                'role' => $data,
+                'module_permissions' => $this->getModulePermissions(),
+            ]);
+        }
+
+        // Uniqueness check — roles.name has a UNIQUE constraint; surface a
+        // friendly validation error instead of letting PDO throw.
+        $existing = $this->app->getDb()->fetchOne(
+            "SELECT id FROM roles WHERE name = :name",
+            ['name' => $data['name']]
+        );
+        if ($existing !== null) {
+            $this->flash('error', $this->t('permissions.name_duplicate'));
+            $data['id'] = null;
+            $data['is_system'] = 0;
             return $this->render('@permissions/roles/form.html.twig', [
                 'role' => $data,
                 'module_permissions' => $this->getModulePermissions(),

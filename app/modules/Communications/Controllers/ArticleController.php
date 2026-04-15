@@ -30,10 +30,15 @@ class ArticleController extends Controller
     }
 
     /**
-     * GET /articles — public article listing.
+     * GET /articles — article listing (members only).
      */
     public function index(Request $request, array $vars): Response
     {
+        $authCheck = $this->requireAuth();
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
+
         $page = max(1, (int) $request->getParam('page', 1));
         $nodeId = $request->getParam('node_id') ? (int) $request->getParam('node_id') : null;
 
@@ -49,10 +54,15 @@ class ArticleController extends Controller
     }
 
     /**
-     * GET /articles/{slug} — view a single published article.
+     * GET /articles/{slug} — view a single published article (members only).
      */
     public function show(Request $request, array $vars): Response
     {
+        $authCheck = $this->requireAuth();
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
+
         $slug = $vars['slug'] ?? '';
         $article = $this->articleService->getBySlug($slug);
 

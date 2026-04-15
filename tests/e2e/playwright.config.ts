@@ -23,7 +23,11 @@ export default defineConfig({
     },
     {
       name: 'mobile',
-      use: { ...devices['iPhone 13'] },
+      // Use Chromium with iPhone-like viewport/userAgent to verify responsive CSS
+      // without requiring WebKit (which needs extra Linux system deps in WSL).
+      use: {
+        ...devices['Pixel 5'],
+      },
     },
   ],
 

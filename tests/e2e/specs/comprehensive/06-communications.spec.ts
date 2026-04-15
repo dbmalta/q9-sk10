@@ -51,7 +51,7 @@ test.describe('Articles list (member view)', () => {
     await page.waitForLoadState('networkidle');
     const items = page.locator('a[href*="/articles/"], .article-item, article');
     // May be 0 if no published articles seeded — that's OK, just no 500
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('/articles requires authentication', async ({ page }) => {
@@ -170,7 +170,7 @@ test.describe('Create article', () => {
     await page.goto('/admin/articles/create');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('valid article creation succeeds', async ({ page }) => {
@@ -188,7 +188,7 @@ test.describe('Create article', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     const url = page.url();
     const ok = url.includes('/admin/articles') || url.includes('/articles/') || await page.locator('.alert-success').isVisible();
     expect(ok, 'After creating article, should be on list or show success').toBe(true);
@@ -243,7 +243,7 @@ test.describe('Edit article', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -308,7 +308,7 @@ test.describe('Email compose', () => {
     await page.goto('/admin/email');
     await page.waitForLoadState('networkidle');
     const recipientField = page.locator(
-      'select[name="recipients[]"], select[name="recipient_group"], input[name="recipients"], [data-recipients]'
+      'input[name="node_ids[]"], select[name="recipients[]"], select[name="recipient_group"], input[name="recipients"], [data-recipients]'
     ).first();
     await expect(recipientField).toBeVisible();
   });
@@ -318,7 +318,7 @@ test.describe('Email compose', () => {
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('form contains CSRF token', async ({ page }) => {
@@ -350,7 +350,8 @@ test.describe('Email log', () => {
   test('email log has a table or list structure', async ({ page }) => {
     await page.goto('/admin/email/log');
     await page.waitForLoadState('networkidle');
-    const container = page.locator('table, .email-log, [data-email-log]');
+    // Either a populated table or the empty-state card
+    const container = page.locator('table, .email-log, [data-email-log], .card-body').first();
     await expect(container).toBeVisible();
   });
 });

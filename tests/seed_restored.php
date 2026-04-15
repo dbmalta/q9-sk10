@@ -33,6 +33,7 @@ if (file_exists($configFile)) {
 }
 
 require_once $rootPath . '/app/src/Core/Database.php';
+require_once $rootPath . '/app/src/Core/Encryption.php';
 require_once $rootPath . '/tests/Seeders/NorthlandSeeder.php';
 require_once $rootPath . '/tests/Seeders/PlaywrightFixtures.php';
 

@@ -26,6 +26,9 @@ return [
         $router->get('/logout', [AuthController::class, 'logout'], 'auth.logout.get');
         $router->post('/logout', [AuthController::class, 'logout'], 'auth.logout');
 
+        // Account / profile landing page
+        $router->get('/account', [AuthController::class, 'account'], 'auth.account');
+
         // Forgot password
         $router->get('/forgot-password', [AuthController::class, 'showForgotPassword'], 'auth.forgot');
         $router->post('/forgot-password', [AuthController::class, 'processForgotPassword'], 'auth.forgot.process');

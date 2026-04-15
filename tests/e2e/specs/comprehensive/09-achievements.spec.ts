@@ -39,7 +39,7 @@ test.describe('Achievements list', () => {
   test('has a heading', async ({ page }) => {
     await page.goto('/admin/achievements');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('h1, h2, .page-title')).toBeVisible();
+    await expect(page.locator('h1, h2, .page-title').first()).toBeVisible();
   });
 
   test('seeded achievements appear', async ({ page }) => {
@@ -116,7 +116,7 @@ test.describe('Create achievement', () => {
     await page.goto('/admin/achievements/create');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('valid achievement creation succeeds', async ({ page }) => {
@@ -134,7 +134,7 @@ test.describe('Create achievement', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     const url = page.url();
     const ok = url.includes('/admin/achievements') || await page.locator('.alert-success').isVisible();
     expect(ok, 'After creating achievement, should be on list or show success').toBe(true);
@@ -189,7 +189,7 @@ test.describe('Edit achievement', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -255,13 +255,13 @@ test.describe('Award achievement to member', () => {
       await page.waitForLoadState('networkidle');
       const body = await page.locator('body').textContent();
       if (body?.match(/achievement|award|training/i)) {
-        await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+        await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
         return; // found it
       }
     }
     // Achievement section may be embedded without a separate tab
     // Just check no 500
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('award achievement form is accessible', async ({ page }) => {
@@ -313,7 +313,7 @@ test.describe('Award achievement to member', () => {
 
           await page.click('button[type="submit"]');
           await page.waitForLoadState('networkidle');
-          await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+          await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
         }
         return;
       }

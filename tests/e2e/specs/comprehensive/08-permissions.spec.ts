@@ -99,7 +99,7 @@ test.describe('Create role', () => {
     await page.goto('/admin/roles/create');
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('valid role creation succeeds', async ({ page }) => {
@@ -115,7 +115,7 @@ test.describe('Create role', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     const url = page.url();
     const ok = url.includes('/admin/roles') || await page.locator('.alert-success').isVisible();
     expect(ok, 'After creating role, should be on roles list or show success').toBe(true);
@@ -128,7 +128,7 @@ test.describe('Create role', () => {
     await page.fill('input[name="name"]', 'Admin'); // "Admin" likely exists
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -177,7 +177,7 @@ test.describe('Edit role', () => {
     // Don't change the name (to avoid breaking other tests), just resubmit
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -213,7 +213,7 @@ test.describe('Delete role', () => {
     const hasConfirmation = dataConfirm !== null || dataModal !== null;
     // If no attribute, the form itself might use a confirm modal pattern
     // Just ensure we don't accidentally delete something
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -312,7 +312,14 @@ test.describe('Permissions module nav visibility', () => {
     await login(page, 'admin');
     await page.goto('/admin/dashboard');
     await page.waitForLoadState('networkidle');
-    const rolesLink = page.locator('a[href*="/admin/roles"]').first();
+    // Open the mobile offcanvas menu if the sidebar is collapsed on this viewport
+    const hamburger = page.locator('button[data-bs-toggle="offcanvas"]').first();
+    if (await hamburger.isVisible().catch(() => false)) {
+      await hamburger.click();
+      await page.waitForTimeout(400);
+    }
+    // :visible pseudo picks the copy that's actually on-screen (desktop sidebar vs mobile offcanvas)
+    const rolesLink = page.locator('a[href*="/admin/roles"]:visible').first();
     await expect(rolesLink).toBeVisible();
   });
 

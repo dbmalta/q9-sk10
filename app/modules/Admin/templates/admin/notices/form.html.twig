@@ -1,0 +1,47 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ notice ? t('common.edit') : t('notices.create') }} — {{ t('nav.notices') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ notice ? t('common.edit') : t('notices.create') }}</h1>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form method="POST" action="{{ notice ? '/admin/notices/' ~ notice.id : '/admin/notices' }}">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+            <div class="row g-3">
+                <div class="col-12">
+                    <label for="title" class="form-label">{{ t('notices.title') }}</label>
+                    <input type="text" name="title" id="title" class="form-control"
+                           value="{{ notice.title|default('') }}" required>
+                </div>
+                <div class="col-12">
+                    <label for="content" class="form-label">{{ t('terms.content') }}</label>
+                    <textarea name="content" id="content" class="form-control" rows="8" required>{{ notice.content|default('') }}</textarea>
+                </div>
+                <div class="col-md-6">
+                    <label for="type" class="form-label">{{ t('notices.type') }}</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="informational" {{ notice.type|default('informational') == 'informational' ? 'selected' : '' }}>
+                            {{ t('notices.type_informational') }}
+                        </option>
+                        <option value="must_acknowledge" {{ notice.type|default('') == 'must_acknowledge' ? 'selected' : '' }}>
+                            {{ t('notices.type_must_acknowledge') }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
+                </button>
+                <a href="/admin/notices" class="btn btn-link">{{ t('common.cancel') }}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

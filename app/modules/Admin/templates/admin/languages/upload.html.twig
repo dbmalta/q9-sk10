@@ -1,0 +1,48 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('languages.upload') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">{{ t('languages.upload') }}</h1>
+    <a href="/admin/languages" class="btn btn-link btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <p class="text-body-secondary mb-4">{{ t('languages.upload_desc') }}</p>
+
+        <form method="POST" action="/admin/languages/upload" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="code" class="form-label">{{ t('languages.code') }}</label>
+                    <input type="text" name="code" id="code" class="form-control" required maxlength="10" placeholder="e.g. fr">
+                </div>
+                <div class="col-md-5">
+                    <label for="name" class="form-label">{{ t('languages.name') }}</label>
+                    <input type="text" name="name" id="name" class="form-control" required placeholder="e.g. French">
+                </div>
+                <div class="col-md-4">
+                    <label for="native_name" class="form-label">{{ t('languages.native_name') }}</label>
+                    <input type="text" name="native_name" id="native_name" class="form-control" required placeholder="e.g. Français">
+                </div>
+                <div class="col-12">
+                    <label for="file" class="form-label">{{ t('languages.file') }}</label>
+                    <input type="file" name="file" id="file" class="form-control" accept="application/json,.json" required>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload me-1"></i>{{ t('languages.upload') }}
+                </button>
+                <a href="/admin/languages" class="btn btn-link">{{ t('common.cancel') }}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('notices.acknowledgements') }} — {{ notice.title }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ t('notices.acknowledgements') }}</h1>
+        <p class="text-body-secondary mb-0">{{ notice.title }}</p>
+    </div>
+    <a href="/admin/notices" class="btn btn-link btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
+    </a>
+</div>
+
+{% if acknowledgements is empty %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-check2-all text-body-secondary" style="font-size: 2.5rem;"></i>
+        <p class="mt-3 text-body-secondary">{{ t('notices.no_acknowledgements') }}</p>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-3">{{ t('notices.acknowledged_by') }}</th>
+                    <th class="text-end pe-3">{{ t('notices.acknowledged_at') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ack in acknowledgements %}
+                <tr>
+                    <td class="ps-3">{{ ack.user_email }}</td>
+                    <td class="text-end pe-3 small">{{ ack.acknowledged_at|date('d M Y H:i') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

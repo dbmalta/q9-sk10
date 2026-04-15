@@ -30,10 +30,15 @@ class EventController extends Controller
     }
 
     /**
-     * GET /events — public month calendar view.
+     * GET /events — month calendar view (members only).
      */
     public function calendar(Request $request, array $vars): Response
     {
+        $authCheck = $this->requireAuth();
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
+
         $now = new \DateTimeImmutable();
         $year = (int) ($request->getParam('year') ?: $now->format('Y'));
         $month = (int) ($request->getParam('month') ?: $now->format('n'));
@@ -74,10 +79,15 @@ class EventController extends Controller
     }
 
     /**
-     * GET /events/{id} — view a single published event.
+     * GET /events/{id} — view a single published event (members only).
      */
     public function show(Request $request, array $vars): Response
     {
+        $authCheck = $this->requireAuth();
+        if ($authCheck !== null) {
+            return $authCheck;
+        }
+
         $id = (int) $vars['id'];
         $event = $this->eventService->getById($id);
 

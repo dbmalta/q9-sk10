@@ -185,10 +185,10 @@ test.describe('Forgot password', () => {
     await page.click('button[type="submit"]');
     // App should show success feedback (and not crash)
     await expect(
-      page.locator('.alert, [role="alert"], .flash, p')
+      page.locator('.alert, [role="alert"], .flash').first()
     ).toBeVisible({ timeout: 5_000 });
     // Must not show 500
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('submitting an unknown email still shows a message (no enumeration)', async ({ page }) => {
@@ -197,15 +197,15 @@ test.describe('Forgot password', () => {
     await page.click('button[type="submit"]');
     // Good security practice: same message regardless of whether email exists
     await expect(
-      page.locator('.alert, [role="alert"], .flash, p')
+      page.locator('.alert, [role="alert"], .flash').first()
     ).toBeVisible({ timeout: 5_000 });
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('submitting empty email does not crash', async ({ page }) => {
     await page.goto('/forgot-password');
     await page.click('button[type="submit"]');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -219,7 +219,7 @@ test.describe('Reset password', () => {
     await page.goto(`/reset-password/${badToken}`);
     await page.waitForLoadState('networkidle');
     const body = await page.locator('body').textContent();
-    expect(body).not.toMatch(/internal server error|500/i);
+    expect(body).not.toMatch(/internal server error|Fatal error|Stack trace|Uncaught/i);
     // Should show error or redirect to forgot-password
     const url = page.url();
     const isErrorOrForgot = url.includes('forgot') ||

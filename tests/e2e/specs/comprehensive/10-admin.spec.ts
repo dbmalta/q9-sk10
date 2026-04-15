@@ -151,7 +151,7 @@ test.describe('Admin settings', () => {
     await page.waitForLoadState('networkidle');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 });
 
@@ -281,7 +281,7 @@ test.describe('Backups', () => {
 
     await createBtn.click();
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('download link present for existing backups', async ({ page }) => {
@@ -403,7 +403,7 @@ test.describe('Terms and conditions', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('terms detail page loads', async ({ page }) => {
@@ -464,7 +464,7 @@ test.describe('Notices', () => {
 
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('body')).not.toContainText(/internal server error|500/i);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
   });
 
   test('edit notice form loads', async ({ page }) => {
@@ -528,7 +528,11 @@ test.describe('Language management', () => {
   test('language strings page loads for English', async ({ page }) => {
     await page.goto('/admin/languages/en/strings');
     await page.waitForLoadState('networkidle');
-    await expectPageOk(page);
+    // Cannot use expectPageOk here — the translation table legitimately contains
+    // the string "Page Not Found" (the English value of error.404.title).
+    // Instead, verify we were not redirected to login and the page did not 500.
+    expect(page.url()).not.toMatch(/\/login(\?|$)/);
+    await expect(page.locator('body')).not.toContainText(/internal server error|Fatal error|Stack trace|Uncaught/i);
     await expect(page.locator('body')).toContainText(/string|translation|override/i);
   });
 

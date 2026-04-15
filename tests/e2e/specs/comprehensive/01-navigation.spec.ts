@@ -313,6 +313,13 @@ test.describe('User account menu', () => {
     await page.goto('/admin/dashboard');
     await page.waitForLoadState('networkidle');
 
+    // Open the user menu dropdown — logout lives inside it
+    // The user menu is identified by the person-circle icon (not the language/other dropdowns)
+    const userMenuToggle = page.locator('button[data-bs-toggle="dropdown"]:has(.bi-person-circle)').first();
+    if (await userMenuToggle.count() > 0) {
+      await userMenuToggle.click();
+    }
+
     // Logout must be accessible somehow (link or form button)
     const logout = page.locator(
       'a[href="/logout"], form[action="/logout"] button, [data-logout]'
@@ -342,7 +349,12 @@ test.describe('Global topbar search', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test('search input is present in the topbar (desktop)', async ({ page }) => {
+  test('search input is present in the topbar (desktop)', async ({ page, viewport }) => {
+    // Topbar search is hidden on mobile viewports (d-none d-md-flex parent).
+    if (viewport && viewport.width < 768) {
+      test.skip(true, 'Topbar search is hidden on mobile viewport');
+      return;
+    }
     // The input is inside the topbar, NOT the sidebar member-list search
     const input = page.locator('.topbar input[type="search"], nav.topbar input[type="search"]').first();
     await expect(input).toBeVisible();
