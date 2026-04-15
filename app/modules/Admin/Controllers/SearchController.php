@@ -36,7 +36,7 @@ class SearchController extends Controller
             return $authCheck;
         }
 
-        $query = trim((string) $request->getParam('q', ''));
+        $query = trim((string) $request->getParam('search', ''));
         if ($query === '') {
             return Response::html('');
         }
