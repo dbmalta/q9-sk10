@@ -45,8 +45,11 @@ function walkSuites(suites, filePath = '') {
 
     for (const spec of suite.specs || []) {
       for (const test of spec.tests || []) {
-        const status = test.status || 'unknown';
-        const ok     = test.ok;
+        // spec.ok is the overall pass/fail for the spec (boolean)
+        // test.results[0].status is the actual run outcome: passed/failed/skipped/timedOut
+        const result = test.results?.[0] || {};
+        const status = result.status || 'unknown';
+        const ok     = spec.ok;
         results.push({
           file:    currentFile,
           suite:   suite.title || '',

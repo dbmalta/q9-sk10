@@ -12,6 +12,9 @@
  *  - Theme toggle toggles data-bs-theme attribute
  *  - Back / cancel links don't result in 404
  *  - Root "/" redirects to dashboard (not a blank page or error)
+ *  - Global topbar search: input present, /search route exists, Enter produces results
+ *  - User menu /account link resolves
+ *  - Notifications bell is wired up (not purely decorative)
  */
 
 import { test, expect } from '@playwright/test';
@@ -323,6 +326,113 @@ test.describe('User account menu', () => {
     // 200 or redirect (e.g. file download) — just not 404/500
     expect(resp.status()).not.toBe(404);
     expect(resp.status()).not.toBe(500);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Global topbar search
+// Issue #39: search input fires hx-get="/search" which returns 404;
+// Enter key produces no visible result; mobile search has no HTMX at all.
+// ---------------------------------------------------------------------------
+
+test.describe('Global topbar search', () => {
+  test.beforeEach(async ({ page }) => {
+    await login(page, 'admin');
+    await page.goto('/admin/dashboard');
+    await page.waitForLoadState('networkidle');
+  });
+
+  test('search input is present in the topbar (desktop)', async ({ page }) => {
+    // The input is inside the topbar, NOT the sidebar member-list search
+    const input = page.locator('.topbar input[type="search"], nav.topbar input[type="search"]').first();
+    await expect(input).toBeVisible();
+  });
+
+  test('/search route exists and returns non-404', async ({ page }) => {
+    // The topbar input fires hx-get="/search" — this route must be registered.
+    // Currently FAILS: no /search route exists in any module.
+    const resp = await page.request.get('/search?q=test', { failOnStatusCode: false });
+    expect(resp.status(), '/search route returned 404 — route is not registered').not.toBe(404);
+    expect(resp.status(), '/search route returned 500').not.toBe(500);
+  });
+
+  test('typing and pressing Enter in the search bar produces visible output', async ({ page }) => {
+    // Currently FAILS: Enter produces nothing because /search does not exist.
+    const input = page.locator('.topbar input[type="search"], nav.topbar input[type="search"]').first();
+    if (!await input.isVisible()) { test.skip(true, 'No topbar search input'); return; }
+
+    await input.fill('test');
+    await input.press('Enter');
+    await page.waitForTimeout(600); // allow HTMX round-trip
+
+    // Either a results dropdown appears, or navigation occurs, or a results section is shown.
+    const results = page.locator('#search-results, .search-results, [data-search-results]');
+    const hasContent = await results.evaluate(el => el.textContent?.trim().length ?? 0) > 0;
+    expect(hasContent, 'Pressing Enter in search bar should show results').toBe(true);
+  });
+
+  test('search results appear below the input, not at the bottom of the page', async ({ page }) => {
+    // #search-results is currently an unstyled div at the bottom of the DOM.
+    // It must be positioned as a dropdown beneath the search bar.
+    const input = page.locator('.topbar input[type="search"], nav.topbar input[type="search"]').first();
+    if (!await input.isVisible()) { test.skip(true, 'No topbar search input'); return; }
+
+    await input.fill('a');
+    await page.waitForTimeout(600);
+
+    const results = page.locator('#search-results, .search-results');
+    if (await results.isVisible()) {
+      const inputBox   = await input.boundingBox();
+      const resultsBox = await results.boundingBox();
+      if (inputBox && resultsBox) {
+        // Results must appear below and roughly aligned with the input, not at the page bottom
+        expect(
+          resultsBox.y,
+          'Search results are rendering at the bottom of the page, not as a dropdown'
+        ).toBeLessThan(inputBox.y + inputBox.height + 300);
+      }
+    }
+  });
+
+  test('mobile offcanvas search input has HTMX attributes wired up', async ({ page }) => {
+    // The desktop input has hx-get/hx-trigger; the mobile offcanvas one does not.
+    // Currently FAILS: mobile input is completely inert.
+    const mobileInput = page.locator('.offcanvas input[type="search"]').first();
+    if (!await mobileInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      test.skip(true, 'Mobile offcanvas not open — test at mobile viewport');
+      return;
+    }
+    const hxGet = await mobileInput.getAttribute('hx-get');
+    expect(hxGet, 'Mobile search input has no hx-get attribute').not.toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// User menu dead links
+// Issue: /account link in user dropdown points to an unregistered route.
+// ---------------------------------------------------------------------------
+
+test.describe('User menu links', () => {
+  test.beforeEach(async ({ page }) => {
+    await login(page, 'admin');
+    await page.goto('/admin/dashboard');
+    await page.waitForLoadState('networkidle');
+  });
+
+  test('logout link is inside the user dropdown and resolves', async ({ page }) => {
+    // Logout is inside a Bootstrap dropdown — open it first.
+    const userMenuBtn = page.locator('.topbar .dropdown button[data-bs-toggle="dropdown"]').last();
+    await userMenuBtn.click();
+    await page.waitForTimeout(200);
+    const logoutLink = page.locator('a[href="/logout"].dropdown-item');
+    await expect(logoutLink).toBeVisible();
+  });
+
+  test('/account link in user dropdown resolves (not 404)', async ({ page }) => {
+    // Currently FAILS: no /account route is registered.
+    const resp = await page.request.get('/account', { failOnStatusCode: false });
+    expect(resp.status(), '/account returned 404 — route not registered').not.toBe(404);
+    expect(resp.status(), '/account returned 500').not.toBe(500);
   });
 });
 
