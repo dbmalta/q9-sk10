@@ -292,6 +292,48 @@ class LanguageController extends Controller
     }
 
     /**
+     * POST /language/switch — set the current user's UI language for this session.
+     *
+     * Open to all visitors (including unauthenticated) so the switcher works
+     * on the login screen. Validates the code against active languages and
+     * only redirects to relative URLs to avoid open-redirect abuse.
+     */
+    public function switchLanguage(Request $request, array $vars): Response
+    {
+        $csrfCheck = $this->validateCsrf($request);
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
+
+        $code = trim((string) $request->getParam('code', ''));
+        $redirectTo = (string) $request->getParam('redirect_to', '/');
+        // Only accept relative paths to prevent open-redirect
+        if ($redirectTo === '' || $redirectTo[0] !== '/' || str_starts_with($redirectTo, '//')) {
+            $redirectTo = '/';
+        }
+
+        if ($code === '' || !preg_match('/^[a-z]{2}(-[A-Z]{2})?$/', $code)) {
+            return $this->redirect($redirectTo);
+        }
+
+        // Confirm the language is available and active
+        $available = $this->app->getI18n()->getAvailableLanguages();
+        $valid = false;
+        foreach ($available as $lang) {
+            if ($lang['code'] === $code && $lang['is_active']) {
+                $valid = true;
+                break;
+            }
+        }
+        if (!$valid) {
+            return $this->redirect($redirectTo);
+        }
+
+        $this->app->getSession()->set('language', $code);
+        return $this->redirect($redirectTo);
+    }
+
+    /**
      * GET /admin/languages/export-master — download en.json master file.
      */
     public function exportMaster(Request $request, array $vars): Response

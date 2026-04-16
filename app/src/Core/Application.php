@@ -76,8 +76,25 @@ class Application
         // Initialise database
         $app->db = new Database($app->config['db']);
 
-        // Initialise i18n
-        $language = $app->session->get('language', $app->config['app']['language'] ?? 'en');
+        // Initialise i18n. Resolution order:
+        //   1. Session — explicit user choice via the topbar switcher
+        //   2. languages.is_default in the DB — admin-configured installation default
+        //   3. config['app']['language'] — config file fallback
+        //   4. 'en' — last-resort hard fallback
+        $language = $app->session->get('language');
+        if ($language === null || $language === '') {
+            try {
+                $dbDefault = $app->db->fetchColumn(
+                    "SELECT code FROM languages WHERE is_default = 1 AND is_active = 1 LIMIT 1"
+                );
+                if (is_string($dbDefault) && $dbDefault !== '') {
+                    $language = $dbDefault;
+                }
+            } catch (\PDOException) {
+                // languages table may not exist yet during setup
+            }
+        }
+        $language = $language ?: ($app->config['app']['language'] ?? 'en');
         $app->i18n = new I18n(ROOT_PATH . '/lang', $app->db, $language);
 
         // Initialise Twig

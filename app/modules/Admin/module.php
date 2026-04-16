@@ -180,6 +180,9 @@ return [
         $router->get('/admin/updates/check', [UpdateController::class, 'check'], 'admin.updates.check');
         $router->post('/admin/updates/download', [UpdateController::class, 'download'], 'admin.updates.download');
 
+        // User-facing language switch (no admin permission required)
+        $router->post('/language/switch', [LanguageController::class, 'switchLanguage'], 'language.switch');
+
         // Languages
         $router->get('/admin/languages', [LanguageController::class, 'index'], 'admin.languages');
         $router->get('/admin/languages/upload', [LanguageController::class, 'upload'], 'admin.languages.upload');

@@ -18,6 +18,7 @@ class I18n
     private string $language;
     private array $translations = [];
     private bool $loaded = false;
+    private ?array $availableLanguagesCache = null;
 
     /**
      * @param string $langPath Path to the /lang/ directory
@@ -109,17 +110,24 @@ class I18n
      */
     public function getAvailableLanguages(): array
     {
+        if ($this->availableLanguagesCache !== null) {
+            return $this->availableLanguagesCache;
+        }
+
         $languages = [];
 
-        // Scan filesystem for language files
+        // Scan filesystem for language files. Any file present is considered
+        // available and active by default; the DB overlay below can override
+        // these flags for languages that have been explicitly registered.
         $files = glob($this->langPath . '/*.json');
         foreach ($files as $file) {
             $code = pathinfo($file, PATHINFO_FILENAME);
             $languages[$code] = [
                 'code' => $code,
                 'name' => $code,
-                'native_name' => $code,
-                'is_active' => $code === 'en',
+                'native_name' => strtoupper($code),
+                'is_active' => true,
+                'is_default' => $code === 'en',
                 'completion_pct' => $code === 'en' ? 100 : $this->getCompletionPercentage($code),
             ];
         }
@@ -133,6 +141,7 @@ class I18n
                         $languages[$row['code']]['name'] = $row['name'];
                         $languages[$row['code']]['native_name'] = $row['native_name'];
                         $languages[$row['code']]['is_active'] = (bool) $row['is_active'];
+                        $languages[$row['code']]['is_default'] = (bool) $row['is_default'];
                     }
                 }
             } catch (\PDOException) {
@@ -140,7 +149,8 @@ class I18n
             }
         }
 
-        return array_values($languages);
+        $this->availableLanguagesCache = array_values($languages);
+        return $this->availableLanguagesCache;
     }
 
     /**

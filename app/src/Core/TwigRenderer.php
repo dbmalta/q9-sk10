@@ -121,6 +121,14 @@ class TwigRenderer
         $this->twig->addFunction(new TwigFunction('flash', function () use ($app): array {
             return $app->getSession()->getFlash();
         }));
+
+        // Active languages for the topbar switcher: {% for lang in available_languages() %}
+        $this->twig->addFunction(new TwigFunction('available_languages', function () use ($app): array {
+            return array_values(array_filter(
+                $app->getI18n()->getAvailableLanguages(),
+                fn(array $lang): bool => (bool) $lang['is_active']
+            ));
+        }));
     }
 
     /**
