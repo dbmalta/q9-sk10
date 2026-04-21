@@ -192,6 +192,7 @@ class LanguageService
             $this->db->update('languages', [
                 'name'           => $name,
                 'native_name'    => $nativeName,
+                'is_active'      => 1,
                 'completion_pct' => $completionPct,
                 'source'         => 'uploaded',
             ], ['code' => $code]);

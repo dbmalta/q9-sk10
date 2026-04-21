@@ -142,6 +142,18 @@ class I18n
                         $languages[$row['code']]['native_name'] = $row['native_name'];
                         $languages[$row['code']]['is_active'] = (bool) $row['is_active'];
                         $languages[$row['code']]['is_default'] = (bool) $row['is_default'];
+                    } else {
+                        // Language registered in DB but JSON file not found by glob() — include it
+                        // so it appears in the switcher even if the translation file is unavailable
+                        // (falls back to English strings at runtime).
+                        $languages[$row['code']] = [
+                            'code'           => $row['code'],
+                            'name'           => $row['name'],
+                            'native_name'    => $row['native_name'],
+                            'is_active'      => (bool) $row['is_active'],
+                            'is_default'     => (bool) $row['is_default'],
+                            'completion_pct' => (float) ($row['completion_pct'] ?? 0),
+                        ];
                     }
                 }
             } catch (\PDOException) {
