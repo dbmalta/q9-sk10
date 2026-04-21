@@ -372,12 +372,11 @@ class MemberService
         $conditions = [];
         $params = [];
 
-        // FULLTEXT search
+        // FULLTEXT search on name/email + LIKE fallback on membership_number for partial matches
         if ($query !== '') {
-            // Use boolean mode for partial matching with wildcard
-            $conditions[] = "MATCH(m.first_name, m.surname, m.email) AGAINST(:query IN BOOLEAN MODE)";
-            // Append wildcard for partial matching
+            $conditions[] = "(MATCH(m.first_name, m.surname, m.email) AGAINST(:query IN BOOLEAN MODE) OR m.membership_number LIKE :query_like)";
             $params['query'] = $query . '*';
+            $params['query_like'] = '%' . $query . '%';
         }
 
         // Status filter

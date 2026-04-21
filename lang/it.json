@@ -713,6 +713,7 @@
     "nav.waiting_list": "Lista d'Attesa",
     "nav.bulk_import": "Importazione in Blocco",
     "nav.admin": "Amministrazione",
+    "search.topbar_placeholder": "Cerca membri per nome, email o ID…",
     "search.too_short": "Inserisci almeno 2 caratteri.",
     "search.no_results": "Nessun risultato.",
     "common.name": "Nome",
