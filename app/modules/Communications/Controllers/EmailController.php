@@ -72,6 +72,7 @@ class EmailController extends Controller
         $subject = trim((string) $request->getParam('subject', ''));
         $body = (string) $request->getParam('body', '');
         $nodeIds = $request->getParam('node_ids', []);
+        $mode = (string) $request->getParam('recipients_mode', 'me');
 
         if (empty($subject) || empty($body)) {
             $this->flash('error', $this->t('email.subject_body_required'));
@@ -83,8 +84,30 @@ class EmailController extends Controller
         }
         $nodeIds = array_map('intval', $nodeIds);
 
-        // Get opted-in members
-        $recipients = $this->prefService->getOptedInMembers('general', !empty($nodeIds) ? $nodeIds : null);
+        if ($mode === 'selected' && empty($nodeIds)) {
+            $this->flash('error', $this->t('email.select_nodes_required'));
+            return $this->redirect('/admin/email');
+        }
+
+        if ($mode === 'me') {
+            $user = $this->app->getSession()->getUser();
+            if (empty($user['email'])) {
+                $this->flash('error', $this->t('email.no_recipients'));
+                return $this->redirect('/admin/email');
+            }
+            $name = trim(($user['first_name'] ?? '') . ' ' . ($user['surname'] ?? ''));
+            $recipients = [[
+                'email' => $user['email'],
+                'first_name' => $user['first_name'] ?? '',
+                'surname' => $user['surname'] ?? '',
+            ]];
+            if ($name === '') {
+                $recipients[0]['first_name'] = $user['email'];
+            }
+        } else {
+            $filterNodeIds = ($mode === 'selected' && !empty($nodeIds)) ? $nodeIds : null;
+            $recipients = $this->prefService->getOptedInMembers('general', $filterNodeIds);
+        }
 
         if (empty($recipients)) {
             $this->flash('error', $this->t('email.no_recipients'));

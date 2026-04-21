@@ -393,6 +393,11 @@
     "email.recipients": "Destinatari",
     "email.recipients_help": "Seleziona i nodi per indirizzare gruppi specifici, oppure lascia vuoto per inviare a tutti i membri che hanno dato il consenso.",
     "email.no_nodes_means_all": "Nessuna selezione = tutti i membri con consenso attivo.",
+    "email.node_picker_placeholder": "Cerca unità…",
+    "email.recipients_me": "Solo io (test)",
+    "email.recipients_all": "Tutti i membri con consenso",
+    "email.recipients_selected": "Unità selezionate",
+    "email.select_nodes_required": "Seleziona almeno un'unità, oppure passa a \"Tutti i membri con consenso\".",
     "email.subject": "Oggetto",
     "email.body": "Corpo del Messaggio",
     "email.html_allowed": "L'HTML è supportato.",
@@ -770,5 +775,6 @@
     "logs.clear_log": "Cancella Log",
     "export.admin_description": "Scarica esportazioni complete dei dati per scopi amministrativi o di backup.",
     "export.gdpr_title": "Esportazione Self-Service GDPR",
-    "export.gdpr_description": "Scarica una copia dei tuoi dati personali come previsto dal GDPR."
+    "export.gdpr_description": "Scarica una copia dei tuoi dati personali come previsto dal GDPR.",
+    "email.node_picker_placeholder": "Cerca unità…"
 }
