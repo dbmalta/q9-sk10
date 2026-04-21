@@ -6,6 +6,18 @@
     <meta name="robots" content="noindex, nofollow">
     <title>{% block title %}{{ app_name|default('ScoutKeeper') }}{% endblock %} — {{ app_name|default('ScoutKeeper') }}</title>
 
+    {# Apply theme before any CSS/content to prevent FOUC (flash of light content in dark mode) #}
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('sk-theme');
+                var theme = stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-bs-theme', theme);
+                document.documentElement.style.colorScheme = theme;
+            } catch (e) {}
+        })();
+    </script>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
     <!-- Bootstrap Icons -->

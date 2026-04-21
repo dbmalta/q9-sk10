@@ -10,6 +10,44 @@
     </a>
 </div>
 
+{% set month_names = {
+    1:'months.january', 2:'months.february', 3:'months.march', 4:'months.april',
+    5:'months.may', 6:'months.june', 7:'months.july', 8:'months.august',
+    9:'months.september', 10:'months.october', 11:'months.november', 12:'months.december'
+} %}
+
+<form method="GET" action="/admin/events" class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <label class="col-form-label-sm text-body-secondary mb-0">{{ t('events.filter_by_date') }}</label>
+            </div>
+            <div class="col-auto">
+                <select name="year" class="form-select form-select-sm">
+                    <option value="">{{ t('events.all_years') }}</option>
+                    {% for y in available_years %}
+                    <option value="{{ y }}" {{ filter_year == y ? 'selected' : '' }}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select name="month" class="form-select form-select-sm">
+                    <option value="">{{ t('events.all_months') }}</option>
+                    {% for m, key in month_names %}
+                    <option value="{{ m }}" {{ filter_month == m ? 'selected' : '' }}>{{ t(key) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-sm btn-primary">{{ t('common.filter') }}</button>
+                {% if filter_year or filter_month %}
+                <a href="/admin/events" class="btn btn-sm btn-outline-secondary">{{ t('common.clear') }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
 {% if events is empty %}
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
@@ -52,9 +90,9 @@
                     </td>
                     <td>
                         {% if event.is_published %}
-                            <span class="badge bg-success">{{ t('events.published') }}</span>
+                            <span class="badge text-bg-success"><i class="bi bi-check-circle-fill me-1"></i>{{ t('events.published') }}</span>
                         {% else %}
-                            <span class="badge bg-warning">{{ t('events.draft') }}</span>
+                            <span class="badge text-bg-warning"><i class="bi bi-pencil-fill me-1"></i>{{ t('events.draft') }}</span>
                         {% endif %}
                     </td>
                     <td class="small">{{ event.created_at|date('d M Y') }}</td>
@@ -65,15 +103,15 @@
                         {% if event.is_published %}
                         <form method="POST" action="/admin/events/{{ event.id }}/unpublish" class="d-inline">
                             <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-                            <button type="submit" class="btn btn-sm btn-outline-warning" title="{{ t('events.unpublish') }}">
-                                <i class="bi bi-eye-slash"></i>
+                            <button type="submit" class="btn btn-sm btn-warning" title="{{ t('events.unpublish') }}">
+                                <i class="bi bi-eye-slash-fill"></i>
                             </button>
                         </form>
                         {% else %}
                         <form method="POST" action="/admin/events/{{ event.id }}/publish" class="d-inline">
                             <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-                            <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('events.publish') }}">
-                                <i class="bi bi-eye"></i>
+                            <button type="submit" class="btn btn-sm btn-success" title="{{ t('events.publish') }}">
+                                <i class="bi bi-eye-fill"></i>
                             </button>
                         </form>
                         {% endif %}
@@ -96,13 +134,13 @@
 <nav class="d-flex justify-content-center mt-4">
     <ul class="pagination pagination-sm">
         {% if pagination.page > 1 %}
-        <li class="page-item"><a class="page-link" href="/admin/events?page={{ pagination.page - 1 }}">{{ t('pagination.previous') }}</a></li>
+        <li class="page-item"><a class="page-link" href="/admin/events?{% if filter_year %}year={{ filter_year }}&{% endif %}{% if filter_month %}month={{ filter_month }}&{% endif %}page={{ pagination.page - 1 }}">{{ t('pagination.previous') }}</a></li>
         {% endif %}
         {% for p in range(max(1, pagination.page - 2), min(pagination.pages, pagination.page + 2)) %}
-        <li class="page-item {{ p == pagination.page ? 'active' : '' }}"><a class="page-link" href="/admin/events?page={{ p }}">{{ p }}</a></li>
+        <li class="page-item {{ p == pagination.page ? 'active' : '' }}"><a class="page-link" href="/admin/events?{% if filter_year %}year={{ filter_year }}&{% endif %}{% if filter_month %}month={{ filter_month }}&{% endif %}page={{ p }}">{{ p }}</a></li>
         {% endfor %}
         {% if pagination.page < pagination.pages %}
-        <li class="page-item"><a class="page-link" href="/admin/events?page={{ pagination.page + 1 }}">{{ t('pagination.next') }}</a></li>
+        <li class="page-item"><a class="page-link" href="/admin/events?{% if filter_year %}year={{ filter_year }}&{% endif %}{% if filter_month %}month={{ filter_month }}&{% endif %}page={{ pagination.page + 1 }}">{{ t('pagination.next') }}</a></li>
         {% endif %}
     </ul>
 </nav>

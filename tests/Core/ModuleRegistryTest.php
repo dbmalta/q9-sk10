@@ -22,7 +22,7 @@ class ModuleRegistryTest extends TestCase
             'name' => 'Test Module',
             'version' => '1.0.0',
             'nav' => [
-                'group' => 'main',
+                'group' => 'members',
                 'label' => 'nav.test',
                 'icon' => 'bi-test',
                 'route' => '/test',
@@ -43,7 +43,7 @@ class ModuleRegistryTest extends TestCase
             'name' => 'Admin Module',
             'version' => '1.0.0',
             'nav' => [
-                'group' => 'administration',
+                'group' => 'admin',
                 'label' => 'nav.admin_test',
                 'icon' => 'bi-gear',
                 'route' => '/admin/test',
@@ -97,13 +97,11 @@ class ModuleRegistryTest extends TestCase
 
         $navItems = $registry->getNavItems(['id' => 1]);
 
-        // Should have 'main' and 'administration' groups
-        $this->assertArrayHasKey('main', $navItems);
-        $this->assertArrayHasKey('administration', $navItems);
+        $this->assertArrayHasKey('members', $navItems);
+        $this->assertArrayHasKey('admin', $navItems);
 
-        // 'operations' and 'engagement' should be empty (no modules registered)
-        $this->assertArrayNotHasKey('operations', $navItems);
-        $this->assertArrayNotHasKey('engagement', $navItems);
+        $this->assertArrayNotHasKey('communications', $navItems);
+        $this->assertArrayNotHasKey('config', $navItems);
     }
 
     public function testEmptyGroupsAreHidden(): void
@@ -112,8 +110,9 @@ class ModuleRegistryTest extends TestCase
         $registry->loadModules($this->modulesPath);
 
         $navItems = $registry->getNavItems(['id' => 1]);
-        $this->assertArrayNotHasKey('engagement', $navItems);
-        $this->assertArrayNotHasKey('operations', $navItems);
+        $this->assertArrayNotHasKey('communications', $navItems);
+        $this->assertArrayNotHasKey('training', $navItems);
+        $this->assertArrayNotHasKey('config', $navItems);
     }
 
     public function testNavItemsHiddenForUnauthenticatedUsers(): void

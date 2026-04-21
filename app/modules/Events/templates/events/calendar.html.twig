@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<div x-data="eventCalendar({{ events_json|raw }}, {{ year }}, {{ month }})" class="card border-0 shadow-sm">
+<div x-data="eventCalendar({{ events_json|e('html_attr') }}, {{ year }}, {{ month }})" class="card border-0 shadow-sm">
     <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
         <a :href="prevMonthUrl()" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-chevron-left"></i>
@@ -45,14 +45,19 @@
                 <template x-for="day in week" :key="day.date">
                     <div class="col border-end position-relative"
                          :class="{ 'bg-body-tertiary': !day.inMonth, 'bg-primary-subtle': day.isSelected }"
-                         style="min-height: 5rem; cursor: pointer;"
+                         style="min-height: 5rem; min-width: 0; cursor: pointer;"
                          @click="selectDate(day.date)">
-                        <div class="p-2">
+                        <div class="p-2" style="min-width: 0; overflow: hidden;">
                             <span class="small" :class="{ 'text-body-secondary': !day.inMonth, 'fw-bold': day.isToday }"
                                   x-text="day.dayNum"></span>
-                            <template x-if="day.eventCount > 0">
-                                <span class="badge rounded-pill bg-primary ms-1" x-text="day.eventCount" style="font-size: 0.65rem;"></span>
-                            </template>
+                            <div class="mt-1 d-flex flex-column gap-1" style="min-width: 0;">
+                                <template x-for="event in eventsForDate(day.date)" :key="event.id">
+                                    <span class="badge bg-primary-subtle text-primary-emphasis text-start d-block"
+                                          style="font-size: 0.7rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                                          :title="event.title"
+                                          x-text="event.title"></span>
+                                </template>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -178,6 +183,10 @@ function eventCalendar(events, year, month) {
         selectedEvents() {
             if (!this.selectedDate) return [];
             return this.events.filter(e => e.date_key === this.selectedDate);
+        },
+
+        eventsForDate(date) {
+            return this.events.filter(e => e.date_key === date);
         },
 
         formatTime(dateStr) {

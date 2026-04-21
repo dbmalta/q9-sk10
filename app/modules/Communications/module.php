@@ -12,10 +12,18 @@ return [
 
     'nav' => [
         [
-            'label' => 'nav.communications',
+            'label' => 'nav.articles',
             'icon' => 'bi-megaphone',
             'route' => '/articles',
-            'group' => 'engagement',
+            'group' => 'communications',
+            'order' => 20,
+            'requires_auth' => true,
+        ],
+        [
+            'label' => 'nav.email_composer',
+            'icon' => 'bi-envelope',
+            'route' => '/admin/email',
+            'group' => 'communications',
             'order' => 30,
             'requires_auth' => true,
         ],

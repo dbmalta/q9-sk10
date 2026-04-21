@@ -14,8 +14,8 @@ return [
         'label' => 'nav.org_structure',
         'icon' => 'bi-diagram-3',
         'route' => '/admin/org',
-        'group' => 'administration',
-        'order' => 10,
+        'group' => 'config',
+        'order' => 20,
         'requires_auth' => true,
     ],
 

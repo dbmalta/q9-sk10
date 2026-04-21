@@ -237,9 +237,23 @@ class EventService
      * @param int $perPage Items per page
      * @return array{items: array, total: int, page: int, pages: int, per_page: int}
      */
-    public function getAll(int $page = 1, int $perPage = 20): array
+    public function getAll(int $page = 1, int $perPage = 20, ?int $year = null, ?int $month = null): array
     {
-        $total = (int) $this->db->fetchColumn("SELECT COUNT(*) FROM events");
+        $conditions = '1=1';
+        $params = [];
+        if ($year !== null) {
+            $conditions .= ' AND YEAR(e.start_date) = :year';
+            $params['year'] = $year;
+        }
+        if ($month !== null) {
+            $conditions .= ' AND MONTH(e.start_date) = :month';
+            $params['month'] = $month;
+        }
+
+        $total = (int) $this->db->fetchColumn(
+            "SELECT COUNT(*) FROM events e WHERE $conditions",
+            $params
+        );
 
         $pages = max(1, (int) ceil($total / $perPage));
         $page = max(1, min($page, $pages));
@@ -249,9 +263,10 @@ class EventService
             "SELECT e.*, u.email AS created_by_email
              FROM events e
              LEFT JOIN users u ON u.id = e.created_by
-             ORDER BY e.created_at DESC
+             WHERE $conditions
+             ORDER BY e.start_date DESC
              LIMIT :limit OFFSET :offset",
-            ['limit' => $perPage, 'offset' => $offset]
+            $params + ['limit' => $perPage, 'offset' => $offset]
         );
 
         $items = array_map([$this, 'castTypes'], $items);
@@ -263,6 +278,19 @@ class EventService
             'pages' => $pages,
             'per_page' => $perPage,
         ];
+    }
+
+    /**
+     * Get the distinct years that have events, sorted descending.
+     *
+     * @return int[]
+     */
+    public function getDistinctYears(): array
+    {
+        $rows = $this->db->fetchAll(
+            "SELECT DISTINCT YEAR(start_date) AS y FROM events ORDER BY y DESC"
+        );
+        return array_map(fn($r) => (int) $r['y'], $rows);
     }
 
     /**

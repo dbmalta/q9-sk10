@@ -115,11 +115,23 @@ class EventController extends Controller
         }
 
         $page = max(1, (int) $request->getParam('page', 1));
-        $result = $this->eventService->getAll($page, 20);
+        $yearParam = $request->getParam('year');
+        $monthParam = $request->getParam('month');
+        $year = ($yearParam !== null && $yearParam !== '') ? (int) $yearParam : null;
+        $month = ($monthParam !== null && $monthParam !== '') ? (int) $monthParam : null;
+        if ($month !== null && ($month < 1 || $month > 12)) {
+            $month = null;
+        }
+
+        $result = $this->eventService->getAll($page, 20, $year, $month);
+        $years = $this->eventService->getDistinctYears();
 
         return $this->render('@events/events/admin_index.html.twig', [
             'events' => $result['items'],
             'pagination' => $result,
+            'filter_year' => $year,
+            'filter_month' => $month,
+            'available_years' => $years,
             'breadcrumbs' => [
                 ['label' => $this->t('nav.events'), 'url' => '/events'],
                 ['label' => $this->t('events.manage')],
@@ -189,7 +201,7 @@ class EventController extends Controller
 
         $id = $this->eventService->create($data, $userId);
 
-        if ($request->getParam('publish')) {
+        if ($request->getParam('status') === 'published' || $request->getParam('publish')) {
             $this->eventService->publish($id);
         }
 
@@ -264,6 +276,14 @@ class EventController extends Controller
         }
 
         $this->eventService->update($id, $data);
+
+        $status = $request->getParam('status');
+        if ($status === 'published') {
+            $this->eventService->publish($id);
+        } elseif ($status === 'draft') {
+            $this->eventService->unpublish($id);
+        }
+
         $this->flash('success', $this->t('flash.saved'));
         return $this->redirect('/admin/events');
     }

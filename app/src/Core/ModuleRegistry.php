@@ -17,12 +17,19 @@ class ModuleRegistry
     /** @var array<string, array> Registered module definitions keyed by module ID */
     private array $modules = [];
 
-    /** Nav group definitions and their sort order */
+    /**
+     * Nav group definitions and their sort order.
+     * Keys starting with `_` are "standalone" — the template renders their
+     * items without a group header and without the collapsible wrapper.
+     */
     private const NAV_GROUPS = [
-        'main' => 1,
-        'engagement' => 2,
-        'operations' => 3,
-        'administration' => 4,
+        '_top' => 1,
+        'members' => 2,
+        'communications' => 3,
+        'training' => 4,
+        'reporting' => 5,
+        'admin' => 6,
+        'config' => 7,
     ];
 
     /**

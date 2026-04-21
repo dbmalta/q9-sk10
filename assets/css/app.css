@@ -209,6 +209,25 @@ body {
     letter-spacing: 0.05em;
 }
 
+.sidebar-group-toggle {
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
+
+.sidebar-group-toggle:hover {
+    color: var(--bs-body-color);
+}
+
+.sidebar-group-chevron {
+    font-size: 0.75rem;
+    transition: transform 0.15s ease;
+}
+
+.sidebar-group-toggle[aria-expanded="false"] .sidebar-group-chevron {
+    transform: rotate(-90deg);
+}
+
 .sidebar-link {
     color: var(--bs-body-color);
     margin: 1px 0.5rem;

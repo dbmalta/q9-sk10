@@ -104,22 +104,59 @@
 </nav>
 
 {# --- Sidebar (desktop) --- #}
+{#
+    Pick the single active nav item: the one whose route is the longest prefix
+    of the current URI (exact match or followed by `/`). This stops shorter
+    parent routes (e.g. /members) from highlighting when the user is on a
+    sibling detail page (e.g. /members/pending-changes).
+#}
+{% set active_route = '' %}
+{% set active_group = null %}
+{% for group_id, items in nav_items %}
+    {% for item in items %}
+        {% if (current_uri == item.route or current_uri starts with item.route ~ '/') and item.route|length > active_route|length %}
+            {% set active_route = item.route %}
+            {% set active_group = group_id %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
 <aside class="sidebar d-none d-lg-block" x-data :class="$store.sidebar.collapsed ? 'sidebar-collapsed' : ''">
     <nav class="sidebar-nav">
         {% for group_id, items in nav_items %}
         <div class="sidebar-group">
-            <div class="sidebar-group-label text-uppercase small fw-semibold text-body-secondary px-3 py-2">
-                {{ t('nav.group.' ~ group_id) }}
-            </div>
-            {% for item in items %}
-            <a href="{{ item.route }}" class="sidebar-link d-flex align-items-center px-3 py-2 text-decoration-none rounded-2 {{ current_uri starts with item.route ? 'active' : '' }}">
-                <i class="bi {{ item.icon }} sidebar-icon"></i>
-                <span class="sidebar-label">{{ t(item.label) }}</span>
-                {% if item.badge %}
-                <span class="badge bg-primary rounded-pill ms-auto">{{ item.badge }}</span>
-                {% endif %}
-            </a>
-            {% endfor %}
+            {% if group_id starts with '_' %}
+                {% for item in items %}
+                <a href="{{ item.route }}" class="sidebar-link d-flex align-items-center px-3 py-2 text-decoration-none rounded-2 {{ item.route == active_route ? 'active' : '' }}">
+                    <i class="bi {{ item.icon }} sidebar-icon"></i>
+                    <span class="sidebar-label">{{ t(item.label) }}</span>
+                    {% if item.badge %}
+                    <span class="badge bg-primary rounded-pill ms-auto">{{ item.badge }}</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            {% else %}
+                {% set is_open = (group_id == active_group) %}
+                <button class="sidebar-group-toggle d-flex align-items-center w-100 text-uppercase small fw-semibold text-body-secondary px-3 py-2 border-0 bg-transparent"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#sidebar-group-{{ group_id }}"
+                        aria-expanded="{{ is_open ? 'true' : 'false' }}"
+                        aria-controls="sidebar-group-{{ group_id }}">
+                    <span class="sidebar-label">{{ t('nav.group.' ~ group_id) }}</span>
+                    <i class="bi bi-chevron-down ms-auto sidebar-group-chevron"></i>
+                </button>
+                <div class="collapse {{ is_open ? 'show' : '' }}" id="sidebar-group-{{ group_id }}">
+                    {% for item in items %}
+                    <a href="{{ item.route }}" class="sidebar-link d-flex align-items-center px-3 py-2 text-decoration-none rounded-2 {{ item.route == active_route ? 'active' : '' }}">
+                        <i class="bi {{ item.icon }} sidebar-icon"></i>
+                        <span class="sidebar-label">{{ t(item.label) }}</span>
+                        {% if item.badge %}
+                        <span class="badge bg-primary rounded-pill ms-auto">{{ item.badge }}</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
         {% endfor %}
     </nav>
@@ -150,19 +187,39 @@
         <nav class="py-2">
             {% for group_id, items in nav_items %}
             <div class="px-3 py-2">
-                <div class="text-uppercase small fw-semibold text-body-secondary mb-1">
-                    {{ t('nav.group.' ~ group_id) }}
-                </div>
-                {% for item in items %}
-                <a href="{{ item.route }}" class="d-flex align-items-center px-2 py-2 text-decoration-none rounded-2 {{ current_uri starts with item.route ? 'active' : '' }}"
-                   data-bs-dismiss="offcanvas">
-                    <i class="bi {{ item.icon }} me-2"></i>
-                    <span>{{ t(item.label) }}</span>
-                    {% if item.badge %}
-                    <span class="badge bg-primary rounded-pill ms-auto">{{ item.badge }}</span>
-                    {% endif %}
-                </a>
-                {% endfor %}
+                {% if group_id starts with '_' %}
+                    {% for item in items %}
+                    <a href="{{ item.route }}" class="d-flex align-items-center px-2 py-2 text-decoration-none rounded-2 {{ item.route == active_route ? 'active' : '' }}">
+                        <i class="bi {{ item.icon }} me-2"></i>
+                        <span>{{ t(item.label) }}</span>
+                        {% if item.badge %}
+                        <span class="badge bg-primary rounded-pill ms-auto">{{ item.badge }}</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    {% set is_open = (group_id == active_group) %}
+                    <button class="sidebar-group-toggle d-flex align-items-center w-100 text-uppercase small fw-semibold text-body-secondary px-2 py-1 mb-1 border-0 bg-transparent"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#sidebar-group-{{ group_id }}-mobile"
+                            aria-expanded="{{ is_open ? 'true' : 'false' }}"
+                            aria-controls="sidebar-group-{{ group_id }}-mobile">
+                        <span>{{ t('nav.group.' ~ group_id) }}</span>
+                        <i class="bi bi-chevron-down ms-auto sidebar-group-chevron"></i>
+                    </button>
+                    <div class="collapse {{ is_open ? 'show' : '' }}" id="sidebar-group-{{ group_id }}-mobile">
+                        {% for item in items %}
+                        <a href="{{ item.route }}" class="d-flex align-items-center px-2 py-2 text-decoration-none rounded-2 {{ item.route == active_route ? 'active' : '' }}">
+                            <i class="bi {{ item.icon }} me-2"></i>
+                            <span>{{ t(item.label) }}</span>
+                            {% if item.badge %}
+                            <span class="badge bg-primary rounded-pill ms-auto">{{ item.badge }}</span>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             {% endfor %}
         </nav>

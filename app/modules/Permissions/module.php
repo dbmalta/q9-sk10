@@ -14,8 +14,8 @@ return [
         'label' => 'permissions.roles',
         'icon' => 'bi-shield-lock',
         'route' => '/admin/roles',
-        'group' => 'administration',
-        'order' => 20,
+        'group' => 'admin',
+        'order' => 50,
         'requires_auth' => true,
     ],
 
