@@ -3,40 +3,150 @@
 {% block title %}{{ t('logs.title') }}{% endblock %}
 
 {% block body %}
+{% set level_badge = {
+    'error':    'bg-danger',
+    'warning':  'bg-warning text-dark',
+    'fatal':    'bg-danger',
+    'info':     'bg-info text-dark',
+    'debug':    'bg-secondary'
+} %}
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">{{ t('logs.title') }}</h1>
 </div>
 
 {# Tab pills #}
-<ul class="nav nav-pills mb-4" role="tablist">
+<ul class="nav nav-pills mb-3" role="tablist">
+    {% for key, label_key in {
+        'errors': 'logs.errors',
+        'requests': 'logs.requests',
+        'slow-queries': 'logs.slow_queries',
+        'cron': 'logs.cron',
+        'app': 'logs.app'
+    } %}
+    {% set c = counts[key] is defined ? counts[key] : 0 %}
+    {% set badge_class = key == 'errors' ? 'bg-danger' : (key == 'slow-queries' ? 'bg-warning text-dark' : (key == 'requests' ? 'bg-primary' : (key == 'cron' ? 'bg-info text-dark' : 'bg-secondary'))) %}
     <li class="nav-item">
-        <a class="nav-link {{ active_tab == 'errors' ? 'active' : '' }}" href="/admin/logs?tab=errors">
-            {{ t('logs.errors') }}
-            {% if counts['errors'] is defined and counts['errors'] > 0 %}
-            <span class="badge bg-danger ms-1">{{ counts['errors'] }}</span>
-            {% endif %}
+        <a class="nav-link {{ active_tab == key ? 'active' : '' }}" href="/admin/logs?tab={{ key }}">
+            {{ t(label_key) }}
+            {% if c > 0 %}<span class="badge {{ badge_class }} ms-1">{{ c }}</span>{% endif %}
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link {{ active_tab == 'slow-queries' ? 'active' : '' }}" href="/admin/logs?tab=slow-queries">
-            {{ t('logs.slow_queries') }}
-            {% if counts['slow-queries'] is defined and counts['slow-queries'] > 0 %}
-            <span class="badge bg-warning text-dark ms-1">{{ counts['slow-queries'] }}</span>
-            {% endif %}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ active_tab == 'cron' ? 'active' : '' }}" href="/admin/logs?tab=cron">
-            {{ t('logs.cron') }}
-            {% if counts['cron'] is defined and counts['cron'] > 0 %}
-            <span class="badge bg-info ms-1">{{ counts['cron'] }}</span>
-            {% endif %}
-        </a>
-    </li>
+    {% endfor %}
 </ul>
 
-{# Clear button #}
-<div class="mb-3">
+{# Filter bar #}
+<form method="GET" action="/admin/logs" class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-3">
+        <input type="hidden" name="tab" value="{{ active_tab }}">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small text-body-secondary mb-1">{{ t('logs.filter.search') }}</label>
+                <input type="text" name="q" value="{{ filters.search }}" class="form-control form-control-sm" placeholder="{{ t('logs.filter.search_placeholder') }}">
+            </div>
+
+            {% if active_tab in ['errors', 'app'] %}
+            <div class="col-md-2">
+                <label class="form-label small text-body-secondary mb-1">{{ t('logs.filter.level') }}</label>
+                <select name="level" class="form-select form-select-sm">
+                    <option value="">{{ t('logs.filter.any') }}</option>
+                    {% for lvl in ['error','warning','fatal','info','debug'] %}
+                    <option value="{{ lvl }}" {{ filters.level == lvl ? 'selected' : '' }}>{{ lvl }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            {% if active_tab in ['slow-queries', 'requests'] %}
+            <div class="col-md-2">
+                <label class="form-label small text-body-secondary mb-1">{{ t('logs.filter.min_ms') }}</label>
+                <input type="number" step="1" min="0" name="min_ms" value="{{ filters.min_ms > 0 ? filters.min_ms : '' }}" class="form-control form-control-sm" placeholder="0">
+            </div>
+            {% endif %}
+
+            {% if active_tab == 'cron' %}
+            <div class="col-md-2">
+                <label class="form-label small text-body-secondary mb-1">{{ t('logs.filter.status') }}</label>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">{{ t('logs.filter.any') }}</option>
+                    {% for s in ['ok','success','error','failed'] %}
+                    <option value="{{ s }}" {{ filters.status == s ? 'selected' : '' }}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-funnel me-1"></i>{{ t('logs.filter.apply') }}
+                </button>
+                <a href="/admin/logs?tab={{ active_tab }}" class="btn btn-outline-secondary btn-sm">{{ t('logs.filter.reset') }}</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+{# Slow-query stats #}
+{% if active_tab == 'slow-queries' and stats and stats.count > 0 %}
+<div class="row g-3 mb-3">
+    {% for item in [
+        {'label': 'logs.stats.count',  'value': stats.count,  'unit': ''},
+        {'label': 'logs.stats.avg',    'value': stats.avg_ms, 'unit': 'ms'},
+        {'label': 'logs.stats.p50',    'value': stats.p50_ms, 'unit': 'ms'},
+        {'label': 'logs.stats.p95',    'value': stats.p95_ms, 'unit': 'ms'},
+        {'label': 'logs.stats.max',    'value': stats.max_ms, 'unit': 'ms'}
+    ] %}
+    <div class="col">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body py-2 text-center">
+                <div class="small text-body-secondary">{{ t(item.label) }}</div>
+                <div class="h5 mb-0">{{ item.value }}{% if item.unit %}<span class="small text-body-secondary ms-1">{{ item.unit }}</span>{% endif %}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if stats.top|length > 0 %}
+<details class="mb-3">
+    <summary class="small text-body-secondary mb-2" style="cursor:pointer">{{ t('logs.stats.top_offenders') }}</summary>
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-3" style="width:80px">{{ t('logs.stats.count_col') }}</th>
+                        <th style="width:100px">{{ t('logs.stats.avg') }}</th>
+                        <th style="width:100px">{{ t('logs.stats.max') }}</th>
+                        <th class="pe-3">SQL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in stats.top %}
+                    <tr>
+                        <td class="ps-3">{{ row.count }}</td>
+                        <td>{{ row.avg_ms }}ms</td>
+                        <td>{{ row.max_ms }}ms</td>
+                        <td class="pe-3"><code class="small">{{ row.sql|slice(0, 200) }}{% if row.sql|length > 200 %}…{% endif %}</code></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</details>
+{% endif %}
+{% endif %}
+
+{# Header: filter summary + clear button #}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="small text-body-secondary">
+        {% if pagination.total != pagination.total_unfiltered %}
+            {{ t('logs.showing_filtered', {'shown': pagination.total, 'total': pagination.total_unfiltered}) }}
+        {% else %}
+            {{ t('logs.showing_total', {'total': pagination.total}) }}
+        {% endif %}
+    </div>
     <form method="POST" action="/admin/logs/{{ active_tab }}/clear" class="d-inline"
           onsubmit="return confirm('{{ t('logs.confirm_clear') }}')">
         <input type="hidden" name="_csrf" value="{{ csrf_token }}">
@@ -46,7 +156,7 @@
     </form>
 </div>
 
-{# Log entries table #}
+{# Log entries #}
 {% if entries is empty %}
 <div class="card border-0 shadow-sm">
     <div class="card-body text-center py-5">
@@ -60,46 +170,104 @@
         <table class="table table-hover align-middle mb-0">
             <thead>
                 <tr>
-                    <th class="ps-3" style="width: 200px;">{{ t('logs.timestamp') }}</th>
+                    <th class="ps-3" style="width: 180px;">{{ t('logs.timestamp') }}</th>
                     <th class="pe-3">{{ t('logs.details') }}</th>
                 </tr>
             </thead>
             <tbody>
-                {% for entry in entries %}
+            {% for entry in entries %}
                 <tr>
-                    <td class="ps-3 small text-nowrap">{{ entry.timestamp|default(entry.date|default('—')) }}</td>
+                    <td class="ps-3 small text-nowrap font-monospace">{{ entry.timestamp|default(entry.date|default('—')) }}</td>
                     <td class="pe-3">
-                        <div class="small">{{ entry.message|default('') }}</div>
-                        {% if entry.context is defined and entry.context %}
-                        <pre class="mb-0 mt-1 small bg-body-tertiary p-2 rounded" style="max-height: 120px; overflow: auto;">{{ entry.context is iterable ? entry.context|json_encode(constant('JSON_PRETTY_PRINT')) : entry.context }}</pre>
-                        {% endif %}
-                        {% if entry.query is defined and entry.query %}
-                        <code class="small d-block mt-1">{{ entry.query }}</code>
-                        {% if entry.duration is defined %}
-                        <span class="badge bg-warning text-dark small">{{ entry.duration }}ms</span>
-                        {% endif %}
-                        {% endif %}
-                        {% if entry.task is defined and entry.task %}
-                        <span class="badge bg-secondary small">{{ entry.task }}</span>
-                        {% if entry.status is defined %}
-                        <span class="badge bg-{{ entry.status == 'success' ? 'success' : 'danger' }} small">{{ entry.status }}</span>
-                        {% endif %}
+                        {# Errors / app log #}
+                        {% if active_tab in ['errors', 'app'] %}
+                            {% set lvl = entry.level|default('info') %}
+                            <span class="badge {{ level_badge[lvl]|default('bg-secondary') }} me-1">{{ lvl }}</span>
+                            {% if entry.message is defined %}<strong>{{ entry.message }}</strong>{% endif %}
+                            <div class="small text-body-secondary mt-1">
+                                {% if entry.request_uri %}<span class="me-3"><i class="bi bi-link-45deg"></i> <code>{{ entry.request_uri }}</code></span>{% endif %}
+                                {% if entry.user_id %}<span class="me-3"><i class="bi bi-person"></i> user #{{ entry.user_id }}</span>{% endif %}
+                            </div>
+                            {% if entry.context is defined and entry.context %}
+                            <pre class="mb-0 mt-1 small bg-body-tertiary p-2 rounded" style="max-height: 200px; overflow: auto;">{{ entry.context is iterable ? entry.context|json_encode(constant('JSON_PRETTY_PRINT')) : entry.context }}</pre>
+                            {% endif %}
+
+                        {# Slow queries #}
+                        {% elseif active_tab == 'slow-queries' %}
+                            {% set ms = entry.elapsed_ms|default(entry.duration|default(0)) %}
+                            {% set badge = ms >= 1000 ? 'bg-danger' : (ms >= 500 ? 'bg-warning text-dark' : 'bg-info text-dark') %}
+                            <span class="badge {{ badge }} me-1">{{ ms }}ms</span>
+                            <code class="small d-block mt-1">{{ entry.sql|default(entry.query|default('')) }}</code>
+                            {% if entry.params is defined and entry.params %}
+                            <pre class="mb-0 mt-1 small bg-body-tertiary p-2 rounded" style="max-height: 120px; overflow: auto;">{{ entry.params|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                            {% endif %}
+
+                        {# Requests (per-request profile) #}
+                        {% elseif active_tab == 'requests' %}
+                            {% set wall = entry.wall_ms|default(0) %}
+                            {% set qcount = entry.query_count|default(0) %}
+                            {% set wall_badge = wall >= 1000 ? 'bg-danger' : (wall >= 500 ? 'bg-warning text-dark' : 'bg-info text-dark') %}
+                            {% set q_badge = qcount >= 100 ? 'bg-danger' : (qcount >= 50 ? 'bg-warning text-dark' : 'bg-secondary') %}
+                            <div>
+                                <span class="badge {{ wall_badge }} me-1">{{ wall }}ms wall</span>
+                                <span class="badge {{ q_badge }} me-1">{{ qcount }} queries · {{ entry.query_ms|default(0) }}ms</span>
+                                <span class="badge bg-secondary me-1">{{ entry.method|default('GET') }} {{ entry.status|default('?') }}</span>
+                                <code class="small">{{ entry.uri|default('') }}</code>
+                                {% if entry.user_id %}<span class="small text-body-secondary ms-2">user #{{ entry.user_id }}</span>{% endif %}
+                            </div>
+                            {% if entry.top_queries is defined and entry.top_queries|length > 0 %}
+                            <table class="table table-sm mb-0 mt-2 small" style="background:transparent">
+                                <thead>
+                                    <tr class="text-body-secondary">
+                                        <th style="width:70px">Count</th>
+                                        <th style="width:100px">Total</th>
+                                        <th style="width:100px">Max</th>
+                                        <th>SQL</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for q in entry.top_queries %}
+                                    <tr>
+                                        <td><strong>{{ q.count }}</strong></td>
+                                        <td>{{ q.total_ms }}ms</td>
+                                        <td>{{ q.max_ms }}ms</td>
+                                        <td><code>{{ q.sql }}</code></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endif %}
+
+                        {# Cron #}
+                        {% elseif active_tab == 'cron' %}
+                            {% set status = entry.status|default('?') %}
+                            {% set badge = status in ['ok','success'] ? 'bg-success' : 'bg-danger' %}
+                            <span class="badge {{ badge }} me-1">{{ status }}</span>
+                            {% if entry.mode is defined %}<span class="badge bg-secondary me-1">{{ entry.mode }}</span>{% endif %}
+                            {% if entry.task is defined %}<span class="badge bg-info text-dark me-1">{{ entry.task }}</span>{% endif %}
+                            {% if entry.handlers is defined and entry.handlers %}
+                            <pre class="mb-0 mt-1 small bg-body-tertiary p-2 rounded" style="max-height: 160px; overflow: auto;">{{ entry.handlers|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                            {% endif %}
                         {% endif %}
                     </td>
                 </tr>
-                {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
 
-{# Pagination #}
 {% if pagination.pages > 1 %}
 <div class="mt-4">
+    {% set qs = 'tab=' ~ active_tab %}
+    {% if filters.search %}{% set qs = qs ~ '&q=' ~ filters.search|url_encode %}{% endif %}
+    {% if filters.level %}{% set qs = qs ~ '&level=' ~ filters.level %}{% endif %}
+    {% if filters.status %}{% set qs = qs ~ '&status=' ~ filters.status %}{% endif %}
+    {% if filters.min_ms > 0 %}{% set qs = qs ~ '&min_ms=' ~ filters.min_ms %}{% endif %}
     {% include "components/_pagination.html.twig" with {
         current_page: pagination.page,
         total_pages: pagination.pages,
-        base_url: '/admin/logs?tab=' ~ active_tab ~ '&'
+        base_url: '/admin/logs?' ~ qs ~ '&'
     } %}
 </div>
 {% endif %}

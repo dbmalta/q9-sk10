@@ -13,8 +13,8 @@ use App\Modules\Admin\Services\LogViewerService;
 /**
  * System log viewer controller.
  *
- * Provides tabbed access to error, slow-query, and cron logs
- * with the ability to clear individual log files.
+ * Tabbed access to errors, slow queries, cron runs, and app info/debug logs
+ * with per-tab filtering and the ability to clear individual log files.
  */
 class LogController extends Controller
 {
@@ -23,13 +23,11 @@ class LogController extends Controller
     public function __construct(Application $app)
     {
         parent::__construct($app);
-        $this->service = new LogViewerService(
-            $app->getConfigValue('data_path', ROOT_PATH . '/data')
-        );
+        $this->service = new LogViewerService(ROOT_PATH);
     }
 
     /**
-     * GET /admin/logs — tabs for errors/slow-queries/cron, shows selected tab's log.
+     * GET /admin/logs — tabs for errors/slow-queries/cron/app with filtering.
      */
     public function index(Request $request, array $vars): Response
     {
@@ -38,31 +36,36 @@ class LogController extends Controller
             return $guard;
         }
 
-        $tab     = $request->getParam('tab', 'errors');
-        $page    = max(1, (int) $request->getParam('page', 1));
-        $perPage = 50;
-
-        // Validate tab
-        $validTabs = ['errors', 'slow-queries', 'cron'];
+        $validTabs = LogViewerService::types();
+        $tab = (string) $request->getParam('tab', 'errors');
         if (!in_array($tab, $validTabs, true)) {
             $tab = 'errors';
         }
 
-        // Get counts for all tabs
-        $counts = $this->service->getLogCounts();
+        $page    = max(1, (int) $request->getParam('page', 1));
+        $perPage = 50;
 
-        // Get entries for the active tab
-        $result = match ($tab) {
-            'slow-queries' => $this->service->getSlowQueries($page, $perPage),
-            'cron'         => $this->service->getCronLog($page, $perPage),
-            default        => $this->service->getErrors($page, $perPage),
-        };
+        $filters = [
+            'level'  => (string) $request->getParam('level', ''),
+            'status' => (string) $request->getParam('status', ''),
+            'min_ms' => (float)  $request->getParam('min_ms', 0),
+            'search' => (string) $request->getParam('q', ''),
+        ];
+
+        $counts = $this->service->getLogCounts();
+        $result = $this->service->getEntries($tab, $page, $perPage, $filters);
+
+        $stats = $tab === 'slow-queries'
+            ? $this->service->getSlowQueryStats($filters)
+            : null;
 
         return $this->render('@admin/admin/logs/index.html.twig', [
             'active_tab'  => $tab,
             'counts'      => $counts,
             'entries'     => $result['items'],
             'pagination'  => $result,
+            'filters'     => $filters,
+            'stats'       => $stats,
             'breadcrumbs' => [
                 ['label' => $this->t('nav.admin'), 'url' => '/admin/dashboard'],
                 ['label' => $this->t('logs.title')],
@@ -87,8 +90,7 @@ class LogController extends Controller
 
         $type = (string) ($vars['type'] ?? '');
 
-        $validTypes = ['errors', 'slow-queries', 'cron'];
-        if (!in_array($type, $validTypes, true)) {
+        if (!in_array($type, LogViewerService::types(), true)) {
             $this->flash('error', $this->t('logs.invalid_type'));
             return $this->redirect('/admin/logs');
         }

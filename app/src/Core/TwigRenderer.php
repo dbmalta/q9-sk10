@@ -123,17 +123,23 @@ class TwigRenderer
         }));
 
         // Pending acknowledgements for the current user: {{ pending_acknowledgements() }}
-        // Returns { policies: [...], notices: [...], total: int }
+        // Returns { policies: [...], notices: [...], total: int }.
+        // Memoised for the request since it is called from both the layout
+        // badge and the modal component (would otherwise run ~8 queries twice).
         $this->twig->addFunction(new TwigFunction('pending_acknowledgements', function () use ($app): array {
+            static $cached = null;
+            if ($cached !== null) {
+                return $cached;
+            }
             $empty = ['policies' => [], 'notices' => [], 'total' => 0];
             $session = $app->getSession();
             if (!$session->isAuthenticated()) {
-                return $empty;
+                return $cached = $empty;
             }
             $user = $session->get('user') ?? [];
             $userId = (int) ($user['id'] ?? 0);
             if ($userId === 0) {
-                return $empty;
+                return $cached = $empty;
             }
 
             $policies = [];
@@ -168,7 +174,7 @@ class TwigRenderer
 
             $dismissed = (bool) $session->get('pending_ack_modal_dismissed', false);
 
-            return [
+            return $cached = [
                 'policies' => $policies,
                 'notices' => $notices,
                 'total' => count($policies) + count($notices),

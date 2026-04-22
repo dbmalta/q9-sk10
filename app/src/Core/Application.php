@@ -61,6 +61,7 @@ class Application
     public static function run(): void
     {
         $app = self::getInstance();
+        $requestStart = microtime(true);
 
         // Register error handler
         $app->errorHandler = new ErrorHandler($app->config);
@@ -73,8 +74,13 @@ class Application
         $app->session = new Session($app->config);
         $app->session->start();
 
-        // Initialise database
-        $app->db = new Database($app->config['db']);
+        // Initialise database. Merge monitoring.slow_query_threshold_ms into the
+        // db config so Database can honour the configured threshold.
+        $dbConfig = $app->config['db'];
+        if (isset($app->config['monitoring']['slow_query_threshold_ms'])) {
+            $dbConfig['slow_query_threshold_ms'] = $app->config['monitoring']['slow_query_threshold_ms'];
+        }
+        $app->db = new Database($dbConfig);
 
         // Initialise i18n. Resolution order:
         //   1. Session — explicit user choice via the topbar switcher
@@ -125,8 +131,78 @@ class Application
         $response = $app->router->dispatch($app->request);
         $app->sendResponse($response);
 
+        // Record per-request profile for the debugging tool
+        $app->logRequestProfile($requestStart, $response);
+
         // Pseudo-cron fallback: run pending cron tasks after response
         $app->runPseudoCron();
+    }
+
+    /**
+     * Append a compact request profile to var/logs/requests.json for any
+     * request that is slow or runs unusually many queries.
+     */
+    private function logRequestProfile(float $startedAt, Response $response): void
+    {
+        $wallMs = (microtime(true) - $startedAt) * 1000;
+        $profile = $this->db ? $this->db->getProfile() : ['count' => 0, 'total_ms' => 0.0, 'samples' => []];
+
+        $wallThreshold  = (float) ($this->config['monitoring']['slow_request_threshold_ms'] ?? 300);
+        $countThreshold = (int)   ($this->config['monitoring']['slow_request_query_count'] ?? 50);
+
+        if ($wallMs < $wallThreshold && $profile['count'] < $countThreshold) {
+            return;
+        }
+
+        // Aggregate samples by normalised SQL to surface N+1 patterns
+        $grouped = [];
+        foreach ($profile['samples'] as $s) {
+            $key = preg_replace('/\s+/', ' ', trim((string) $s['sql']));
+            $key = substr($key ?? '', 0, 200);
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = ['sql' => $key, 'count' => 0, 'total_ms' => 0.0, 'max_ms' => 0.0];
+            }
+            $grouped[$key]['count']++;
+            $grouped[$key]['total_ms'] += $s['ms'];
+            if ($s['ms'] > $grouped[$key]['max_ms']) {
+                $grouped[$key]['max_ms'] = $s['ms'];
+            }
+        }
+        usort($grouped, static fn($a, $b) => $b['count'] <=> $a['count'] ?: $b['total_ms'] <=> $a['total_ms']);
+        $top = array_slice(array_map(static fn($g) => [
+            'sql'      => $g['sql'],
+            'count'    => $g['count'],
+            'total_ms' => round($g['total_ms'], 2),
+            'max_ms'   => round($g['max_ms'], 2),
+        ], $grouped), 0, 10);
+
+        $entry = [
+            'timestamp'   => gmdate('c'),
+            'method'      => $this->request?->getMethod() ?? '',
+            'uri'         => $this->request ? ($_SERVER['REQUEST_URI'] ?? '') : '',
+            'status'      => $response->getStatusCode(),
+            'wall_ms'     => round($wallMs, 2),
+            'query_count' => $profile['count'],
+            'query_ms'    => $profile['total_ms'],
+            'user_id'     => $_SESSION['user']['id'] ?? null,
+            'top_queries' => $top,
+        ];
+
+        $file = ROOT_PATH . '/var/logs/requests.json';
+        $dir  = dirname($file);
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $existing = [];
+        if (file_exists($file)) {
+            $existing = json_decode((string) file_get_contents($file), true) ?: [];
+        }
+        $existing[] = $entry;
+        if (count($existing) > 500) {
+            $existing = array_slice($existing, -500);
+        }
+        @file_put_contents($file, json_encode($existing, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE), LOCK_EX);
     }
 
     /**

@@ -16,6 +16,15 @@ class Database
     private \PDO $pdo;
     private float $slowQueryThreshold;
 
+    /** @var int Number of queries executed via this instance */
+    private int $queryCount = 0;
+
+    /** @var float Cumulative query time in ms */
+    private float $queryTotalMs = 0.0;
+
+    /** @var array<int, array{sql:string, ms:float}> Per-query samples (capped) */
+    private array $querySamples = [];
+
     /**
      * @param array $config Database configuration array (host, port, name, user, password)
      */
@@ -52,11 +61,29 @@ class Database
         $stmt->execute($params);
         $elapsed = (microtime(true) - $start) * 1000;
 
+        $this->queryCount++;
+        $this->queryTotalMs += $elapsed;
+        if (count($this->querySamples) < 500) {
+            $this->querySamples[] = ['sql' => $sql, 'ms' => $elapsed];
+        }
+
         if ($elapsed > $this->slowQueryThreshold) {
             $this->logSlowQuery($sql, $params, $elapsed);
         }
 
         return $stmt;
+    }
+
+    /**
+     * @return array{count:int, total_ms:float, samples: array<int,array{sql:string,ms:float}>}
+     */
+    public function getProfile(): array
+    {
+        return [
+            'count'    => $this->queryCount,
+            'total_ms' => round($this->queryTotalMs, 2),
+            'samples'  => $this->querySamples,
+        ];
     }
 
     /**
