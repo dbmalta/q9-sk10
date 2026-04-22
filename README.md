@@ -34,7 +34,9 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 - **Explicit permissions** — roles with module-level access and explicit scope; members can hold multiple roles across the hierarchy and in functional teams
 - **Events calendar** — publish events with an in-system calendar and iCal subscription feed; event registration and attendance tracking are planned for post-v1
 - **Achievements & training** — admin-maintained list of achievements and training courses, manually assigned to adult/leader members with full history; youth programme and badge tracking are planned for post-v1
-- **Communications** — member portal with articles and notifications; email targeting by role, level, or criteria
+- **Communications** — member portal with articles and notifications; email targeting by role, level, or criteria; WYSIWYG editor for rich-text articles
+- **Policies & acknowledgements** — publish policies to targeted audiences and track who has acknowledged them, with automatic pending-ack notifications
+- **Global search** — topbar search across members, events, articles, and policies
 - **Directory & organogram** — visual org chart and contact list for key roles, visible to members
 - **Multi-language** — built-in i18n with community-shareable JSON language files
 - **GDPR-ready** — consent, data retention, and right-to-erasure features (toggleable for non-EU use)
@@ -68,11 +70,15 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 
 ## Installation
 
-1. Download the latest release from the [Releases](../../releases) page
+1. Download the latest release zip (`scoutkeeper-vX.Y.Z.zip`) from the [Releases](../../releases) page — this bundle already includes all PHP dependencies, so no Composer install is required on the server
 2. Upload and unzip to your web server
 3. Create a MySQL database and user for ScoutKeeper
 4. Navigate to your domain in a browser — the setup wizard will launch automatically
-5. The wizard will verify server requirements, connect to your database, run migrations, and guide you through configuring your organisation name, admin account, org structure, and SMTP settings
+5. The wizard walks you through:
+   - **Server checks** — PHP version, extensions, and writable directories
+   - **Database connection** — credentials for the database you just created
+   - **Install type** — install without changing the database, clean install (drops all tables), or demo install (seeds the *Scout Association of Filfla* demo organisation with ~30,000 members, handy for evaluating the system)
+   - **Organisation, admin account, SMTP, and encryption key**
 6. Once complete, log in with the admin account you created
 
 **Requirements:** PHP 8.2+, MySQL 8.0+ or MariaDB 10.6+, Linux shared hosting with Apache and `mod_rewrite` enabled
