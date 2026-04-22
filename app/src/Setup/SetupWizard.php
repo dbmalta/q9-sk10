@@ -86,7 +86,7 @@ class SetupWizard
             4 => $this->createAdmin($data),
             5 => $this->setupSmtp($data),
             6 => $this->generateEncryptionKey(),
-            7 => $this->finishSetup(),
+            7 => $this->finishSetup($data),
             default => ['success' => false, 'errors' => ['Invalid step.'], 'next_step' => 1],
         };
     }
@@ -547,17 +547,29 @@ class SetupWizard
     }
 
     /**
-     * Step 7 -- Write config/config.php and complete setup.
+     * Step 7 -- Write config/config.php and optionally seed demo data.
      */
-    private function finishSetup(): array
+    private function finishSetup(array $data = []): array
     {
         $sd = $_SESSION['setup_data'] ?? [];
         $db = $sd['db'] ?? null;
         $smtp = $sd['smtp'] ?? [];
         $orgName = $sd['org']['name'] ?? 'ScoutKeeper';
+        $seedDemo = !empty($data['seed_demo']);
 
         if ($db === null) {
             return ['success' => false, 'errors' => ['Missing database configuration.'], 'next_step' => 2];
+        }
+
+        // If seeding demo data, do it BEFORE writing config so that a failure
+        // does not leave us in a half-installed state.
+        if ($seedDemo) {
+            $seedResult = $this->seedDemoData($db, $sd['admin'] ?? []);
+            if (!$seedResult['success']) {
+                return $seedResult;
+            }
+            // After demo seed, org name changes to Filfla; update local var.
+            $orgName = \Tests\Seeders\FilflaDemoSeeder::ORG_NAME;
         }
 
         // Generate a random cron secret and API key
@@ -611,6 +623,57 @@ class SetupWizard
         unset($_SESSION['setup_step'], $_SESSION['setup_data']);
 
         return ['success' => true, 'errors' => [], 'next_step' => 7];
+    }
+
+    /**
+     * Run the Filfla demo seeder while preserving the installing admin's login.
+     *
+     * @param array $dbConfig  db connection config
+     * @param array $adminInfo the admin session data from step 4 (email, first_name, surname, user_id)
+     * @return array{success: bool, errors: string[], next_step: int}
+     */
+    private function seedDemoData(array $dbConfig, array $adminInfo): array
+    {
+        // Prevent timeouts during the ~2-5 minute seed
+        @set_time_limit(0);
+        @ignore_user_abort(true);
+
+        try {
+            // Fetch the admin's password hash BEFORE the seeder wipes it
+            $pdo = $this->createPdo($dbConfig);
+            $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE email = :e LIMIT 1');
+            $stmt->execute(['e' => $adminInfo['email'] ?? '']);
+            $adminPasswordHash = $stmt->fetchColumn();
+            if (!$adminPasswordHash) {
+                return ['success' => false, 'errors' => ['Could not find the admin account to preserve during demo seeding.'], 'next_step' => 7];
+            }
+
+            require_once $this->rootPath . '/app/src/Core/Database.php';
+            require_once $this->rootPath . '/app/src/Core/Encryption.php';
+            require_once $this->rootPath . '/tests/Seeders/FilflaDemoSeeder.php';
+
+            $database = new \App\Core\Database($dbConfig);
+            $seeder = new \Tests\Seeders\FilflaDemoSeeder($database);
+            $seeder->setAdminOverride(
+                $adminInfo['email'] ?? 'admin@filfla.test',
+                (string)$adminPasswordHash,
+                $adminInfo['first_name'] ?? 'Admin',
+                $adminInfo['surname'] ?? 'User',
+            );
+            // Swallow echoed progress — the user just sees a success page.
+            $seeder->setProgressCallback(static function (string $msg) {
+                // no-op; could be logged to var/logs later
+            });
+            $seeder->run();
+
+            return ['success' => true, 'errors' => [], 'next_step' => 7];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'errors' => ['Demo seeding failed: ' . $e->getMessage()],
+                'next_step' => 7,
+            ];
+        }
     }
 
     // ── Helpers ──────────────────────────────────────────────────────

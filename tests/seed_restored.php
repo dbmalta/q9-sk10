@@ -1,11 +1,13 @@
 <?php
 
 /**
- * CLI runner for the Northland Seeder.
+ * CLI runner for the seeders.
  *
  * Usage:
- *   php tests/seed.php              — seed the test database with standard dataset (~155 members)
- *   php tests/seed.php --large      — seed with large dataset (~5000 members, for performance testing)
+ *   php tests/seed.php              — Northland test dataset (~155 members)
+ *   php tests/seed.php --large      — Northland + bulk members (~5000 members, for perf tests)
+ *   php tests/seed.php --huge       — Filfla demo dataset (~30,000 members, for stress tests / demos)
+ *   php tests/seed.php --huge --yes — skip the wipe confirmation prompt
  *
  * Requires: config/config.php with valid database credentials,
  *           or falls back to test config in tests/fixtures/bootstrap.php.
@@ -36,11 +38,87 @@ require_once $rootPath . '/app/src/Core/Database.php';
 require_once $rootPath . '/app/src/Core/Encryption.php';
 require_once $rootPath . '/tests/Seeders/NorthlandSeeder.php';
 require_once $rootPath . '/tests/Seeders/PlaywrightFixtures.php';
+require_once $rootPath . '/tests/Seeders/FilflaDemoSeeder.php';
 
 use App\Core\Database;
+use Tests\Seeders\FilflaDemoSeeder;
 use Tests\Seeders\NorthlandSeeder;
 
 $isLarge = in_array('--large', $argv ?? [], true);
+$isHuge  = in_array('--huge',  $argv ?? [], true);
+$autoYes = in_array('--yes',   $argv ?? [], true) || in_array('-y', $argv ?? [], true);
+
+if ($isHuge) {
+    echo "ScoutKeeper — Filfla Demo Seeder (HUGE)\n";
+    echo "=======================================\n\n";
+    echo "This will WIPE all data in the configured database and replace it with\n";
+    echo "a ~30,000-member demo organisation. This cannot be undone.\n\n";
+    echo "Target database: " . ($config['db']['name'] ?? '?') . " @ " . ($config['db']['host'] ?? '?') . "\n\n";
+
+    if (!$autoYes) {
+        echo "Type 'WIPE' (uppercase) to confirm, or anything else to abort: ";
+        $handle = fopen('php://stdin', 'r');
+        $line = trim((string)fgets($handle));
+        fclose($handle);
+        if ($line !== 'WIPE') {
+            echo "Aborted.\n";
+            exit(1);
+        }
+    }
+
+    try {
+        $db = new Database($config['db']);
+
+        $tableCheck = $db->fetchOne("SHOW TABLES LIKE 'org_nodes'");
+        if (!$tableCheck) {
+            echo "Running migrations...\n";
+            $migrationDir = $rootPath . '/app/migrations';
+            $files = glob($migrationDir . '/*.sql');
+            sort($files);
+            foreach ($files as $file) {
+                $sql = file_get_contents($file);
+                $statements = array_filter(
+                    array_map('trim', preg_split('/;\s*$/m', $sql)),
+                    fn($s) => $s !== ''
+                );
+                foreach ($statements as $stmt) {
+                    $db->query($stmt);
+                }
+                echo "  Applied: " . basename($file) . "\n";
+            }
+            echo "\n";
+        }
+
+        echo "Seeding Filfla demo dataset…\n";
+        $start = microtime(true);
+        $seeder = new FilflaDemoSeeder($db);
+        $seeder->run();
+        $elapsed = round(microtime(true) - $start, 2);
+        echo "\nDone in {$elapsed}s\n\n";
+
+        $counts = [
+            'members'      => $db->fetchColumn('SELECT COUNT(*) FROM members'),
+            'users'        => $db->fetchColumn('SELECT COUNT(*) FROM users'),
+            'org_nodes'    => $db->fetchColumn('SELECT COUNT(*) FROM org_nodes'),
+            'roles'        => $db->fetchColumn('SELECT COUNT(*) FROM roles'),
+            'role_assigns' => $db->fetchColumn('SELECT COUNT(*) FROM role_assignments'),
+            'events'       => $db->fetchColumn('SELECT COUNT(*) FROM events'),
+            'articles'     => $db->fetchColumn('SELECT COUNT(*) FROM articles'),
+            'achievements' => $db->fetchColumn('SELECT COUNT(*) FROM achievement_definitions'),
+        ];
+        echo "Summary:\n";
+        foreach ($counts as $k => $v) {
+            printf("  %-16s %s\n", $k, $v);
+        }
+        echo "\nAdmin login: admin@filfla.test / " . FilflaDemoSeeder::SHARED_PASSWORD . "\n";
+        echo "All leader accounts share the same password: " . FilflaDemoSeeder::SHARED_PASSWORD . "\n";
+        exit(0);
+    } catch (\Throwable $e) {
+        echo "\nERROR: " . $e->getMessage() . "\n";
+        echo $e->getTraceAsString() . "\n";
+        exit(1);
+    }
+}
 
 echo "ScoutKeeper — Northland Seeder\n";
 echo "==============================\n\n";

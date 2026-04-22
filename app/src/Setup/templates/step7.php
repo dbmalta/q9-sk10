@@ -82,6 +82,28 @@ $finished = !$wizard->isSetupNeeded() && empty($errors ?? []) && ($_SESSION['set
     <form method="post" action="/setup">
         <input type="hidden" name="step" value="7">
 
+        <div class="card border-warning mt-4 mb-3">
+            <div class="card-body">
+                <h6 class="card-title text-warning">
+                    <i class="bi bi-database-fill-add me-1"></i> Demo data (optional)
+                </h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="seed_demo" value="1" id="seedDemo"
+                           onchange="document.getElementById('seedWarning').style.display = this.checked ? 'block' : 'none';">
+                    <label class="form-check-label" for="seedDemo">
+                        Populate the database with a large demonstration organisation
+                        (<strong>Scout Association of Filfla</strong> — ~30,000 members across 7 regions,
+                        28 districts, ~200 groups).
+                    </label>
+                </div>
+                <div id="seedWarning" class="alert alert-warning mt-2 mb-0" style="display:none;">
+                    <strong>Warning:</strong> This will <u>replace</u> the organisation, admin account and
+                    any data currently in the database. Your admin email and password will be preserved so
+                    you can still log in. Seeding takes 2–5 minutes.
+                </div>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-between">
             <a href="/setup?step=6" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Back
