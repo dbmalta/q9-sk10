@@ -122,6 +122,61 @@ class TwigRenderer
             return $app->getSession()->getFlash();
         }));
 
+        // Pending acknowledgements for the current user: {{ pending_acknowledgements() }}
+        // Returns { policies: [...], notices: [...], total: int }
+        $this->twig->addFunction(new TwigFunction('pending_acknowledgements', function () use ($app): array {
+            $empty = ['policies' => [], 'notices' => [], 'total' => 0];
+            $session = $app->getSession();
+            if (!$session->isAuthenticated()) {
+                return $empty;
+            }
+            $user = $session->get('user') ?? [];
+            $userId = (int) ($user['id'] ?? 0);
+            if ($userId === 0) {
+                return $empty;
+            }
+
+            $policies = [];
+            $memberId = (int) ($user['member_id'] ?? 0);
+            if ($memberId === 0) {
+                $row = $app->getDb()->fetchOne(
+                    "SELECT id FROM members WHERE user_id = :uid LIMIT 1",
+                    ['uid' => $userId]
+                );
+                $memberId = $row ? (int) $row['id'] : 0;
+            }
+            if ($memberId > 0) {
+                $policiesSvc = new \App\Modules\Admin\Services\PoliciesService($app->getDb());
+                $policies = $policiesSvc->getOutstandingForMember($memberId);
+            }
+
+            $notices = [];
+            try {
+                $noticesSvc = new \App\Modules\Admin\Services\NoticeService($app->getDb());
+                $notices = $noticesSvc->getUnacknowledgedForUser($userId);
+            } catch (\Throwable $e) {
+                $notices = [];
+            }
+
+            $hasOverdue = false;
+            foreach ($policies as $p) {
+                if (!empty($p['is_overdue'])) { $hasOverdue = true; break; }
+            }
+
+            $dismissed = (bool) $session->get('pending_ack_modal_dismissed', false);
+
+            return [
+                'policies' => $policies,
+                'notices' => $notices,
+                'total' => count($policies) + count($notices),
+                'has_overdue' => $hasOverdue,
+                // Modal should auto-open if user hasn't dismissed it yet this
+                // login, OR if any item is past its grace period (persistent).
+                'auto_open' => $hasOverdue || !$dismissed,
+                'blocking' => $hasOverdue,
+            ];
+        }));
+
         // Active languages for the topbar switcher: {% for lang in available_languages() %}
         $this->twig->addFunction(new TwigFunction('available_languages', function () use ($app): array {
             return array_values(array_filter(

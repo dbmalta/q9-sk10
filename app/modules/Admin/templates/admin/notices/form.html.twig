@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-12">
                     <label for="content" class="form-label">{{ t('terms.content') }}</label>
-                    <textarea name="content" id="content" class="form-control" rows="8" required>{{ notice.content|default('') }}</textarea>
+                    <textarea name="content" id="content" class="form-control" rows="8" data-wysiwyg required>{{ notice.content|default('') }}</textarea>
                 </div>
                 <div class="col-md-6">
                     <label for="type" class="form-label">{{ t('notices.type') }}</label>

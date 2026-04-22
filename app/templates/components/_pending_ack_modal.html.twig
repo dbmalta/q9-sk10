@@ -1,0 +1,101 @@
+{# Auto-popup modal for pending acknowledgements.
+
+   Must be rendered OUTSIDE the fixed-topbar DOM (near the end of <body>)
+   so Bootstrap's modal stacking and backdrop work correctly.
+#}
+{% set pending = pending_acknowledgements() %}
+{% if pending.total > 0 and pending.auto_open %}
+<div class="modal fade" id="pendingAckModal" tabindex="-1" aria-labelledby="pendingAckModalLabel"
+     aria-hidden="true"
+     data-bs-backdrop="{{ pending.blocking ? 'static' : 'true' }}"
+     data-bs-keyboard="{{ pending.blocking ? 'false' : 'true' }}">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pendingAckModalLabel">
+                    <i class="bi bi-exclamation-triangle {{ pending.blocking ? 'text-danger' : 'text-warning' }} me-2"></i>
+                    {{ pending.blocking ? t('ack.modal_title_blocking') : t('ack.modal_title') }}
+                </h5>
+                {% if not pending.blocking %}
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ t('common.close') }}"></button>
+                {% endif %}
+            </div>
+            <div class="modal-body">
+                <p class="{{ pending.blocking ? 'text-danger' : 'text-body-secondary' }}">
+                    {{ pending.blocking ? t('ack.modal_intro_blocking', {count: pending.total}) : t('ack.modal_intro', {count: pending.total}) }}
+                </p>
+                <ul class="list-group list-group-flush">
+                    {% for p in pending.policies %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <i class="bi bi-shield-exclamation {{ p.is_overdue ? 'text-danger' : 'text-warning' }} me-2"></i>
+                            <strong>{{ p.policy_name }}</strong>
+                            {% if p.is_overdue %}<span class="badge bg-danger ms-1">{{ t('ack.overdue') }}</span>{% endif %}
+                            <div class="small text-body-secondary">{{ t('policies.my_title') }}</div>
+                        </div>
+                        <a href="/my/policies/versions/{{ p.version_id }}" class="btn btn-sm btn-primary">
+                            {{ t('policies.review_and_accept') }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    {% for n in pending.notices %}
+                    <li class="list-group-item px-0">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-megaphone text-primary me-2 mt-1"></i>
+                            <div class="flex-grow-1">
+                                <strong>{{ n.title }}</strong>
+                                <div class="small text-body-secondary mb-2">{{ n.content|striptags|slice(0, 200) }}{% if n.content|length > 200 %}…{% endif %}</div>
+                                <form method="POST" action="/my/notices/{{ n.id }}/acknowledge" class="m-0">
+                                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-check-lg me-1"></i>{{ t('ack.acknowledge') }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% if not pending.blocking %}
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ t('ack.remind_me_later') }}</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    var el = document.getElementById('pendingAckModal');
+    if (!el || !window.bootstrap) return;
+    var blocking = {{ pending.blocking ? 'true' : 'false' }};
+
+    function show() {
+        try { bootstrap.Modal.getOrCreateInstance(el).show(); } catch (e) { /* noop */ }
+    }
+
+    // Open after DOM ready.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', show);
+    } else {
+        show();
+    }
+
+    // Record dismissal server-side (only for non-blocking). Cheap POST
+    // with the CSRF header — the server flips the session flag so we
+    // won't re-open until the next login.
+    if (!blocking) {
+        el.addEventListener('shown.bs.modal', function () {
+            try {
+                fetch('/my/ack/dismiss-modal', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': '{{ csrf_token() }}' }
+                });
+            } catch (e) { /* noop */ }
+        }, { once: true });
+    }
+})();
+</script>
+{% endif %}

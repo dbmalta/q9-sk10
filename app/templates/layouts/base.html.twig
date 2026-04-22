@@ -64,6 +64,7 @@
     <script src="{{ asset('vendor/htmx/htmx.min.js') }}"></script>
     <!-- ScoutKeeper JS -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/wysiwyg.js') }}"></script>
 
     {# HTMX CSRF token header for all requests #}
     <script>
@@ -73,5 +74,9 @@
     </script>
 
     {% block scripts %}{% endblock %}
+
+    {# Pending-acknowledgements auto-popup modal — rendered outside the fixed
+       topbar to avoid z-index/stacking issues. #}
+    {% include "components/_pending_ack_modal.html.twig" ignore missing %}
 </body>
 </html>

@@ -338,6 +338,10 @@ class AuthController extends Controller
     {
         $this->app->getSession()->setUser($user);
 
+        // Reset the pending-acknowledgements auto-popup flag so the modal
+        // fires once on the first page after login.
+        $this->app->getSession()->set('pending_ack_modal_dismissed', false);
+
         // Record session in user_sessions table
         $sessionId = session_id();
         if ($sessionId !== false && $sessionId !== '') {

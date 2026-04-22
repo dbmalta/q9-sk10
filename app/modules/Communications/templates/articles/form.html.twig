@@ -23,7 +23,7 @@
 
             <div class="mb-3">
                 <label for="body" class="form-label">{{ t('articles.body') }} <span class="text-danger">*</span></label>
-                <textarea name="body" id="body" class="form-control" rows="12" required>{{ article.body|default('') }}</textarea>
+                <textarea name="body" id="body" class="form-control" rows="12" data-wysiwyg required>{{ article.body|default('') }}</textarea>
             </div>
 
             <div class="row g-3">

@@ -354,3 +354,26 @@ body {
     max-width: var(--sk-content-max-width);
     margin: 0 auto;
 }
+
+/* ===========================
+   WYSIWYG editor
+   =========================== */
+
+.wysiwyg-wrap .wysiwyg-toolbar {
+    border-bottom: 0 !important;
+}
+.wysiwyg-editor {
+    overflow: auto;
+}
+.wysiwyg-editor:focus {
+    outline: 0;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.15rem rgba(var(--bs-primary-rgb), 0.2);
+}
+.wysiwyg-editor p:last-child,
+.wysiwyg-editor ul:last-child,
+.wysiwyg-editor ol:last-child,
+.wysiwyg-editor h2:last-child,
+.wysiwyg-editor h3:last-child {
+    margin-bottom: 0;
+}

@@ -69,10 +69,8 @@
                 </ul>
             </div>
 
-            {# Notifications bell #}
-            <button class="btn btn-link text-body p-1 position-relative" title="Notifications">
-                <i class="bi bi-bell"></i>
-            </button>
+            {# Pending acknowledgements (policies + must-ack notices) #}
+            {% include "components/_pending_ack.html.twig" %}
 
             {# Theme toggle (desktop only) #}
             <button class="btn btn-link text-body p-1 d-none d-lg-inline-block" title="{{ t('theme.toggle') }}"

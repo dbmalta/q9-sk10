@@ -1,0 +1,69 @@
+{# Pending acknowledgements bell.
+
+   NOTE: Renders only the topbar dropdown. The auto-popup modal lives
+   in `_pending_ack_modal.html.twig` and must be rendered outside the
+   fixed topbar (near </body>) to avoid stacking-context/click issues.
+#}
+{% set pending = pending_acknowledgements() %}
+{% if pending.total > 0 %}
+<div class="dropdown">
+    <button class="btn btn-link text-body p-1 position-relative" data-bs-toggle="dropdown"
+            aria-expanded="false" title="{{ t('ack.pending_title') }}">
+        <i class="bi bi-bell{{ pending.has_overdue ? '-fill text-danger' : '' }}"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+            {{ pending.total }}
+            <span class="visually-hidden">{{ t('ack.pending_title') }}</span>
+        </span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 320px; max-width: 380px;">
+        <li class="dropdown-header d-flex justify-content-between align-items-center">
+            <span>{{ t('ack.pending_title') }}</span>
+            <span class="badge bg-danger">{{ pending.total }}</span>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+
+        {% for p in pending.policies %}
+        <li>
+            <a class="dropdown-item d-flex align-items-start gap-2 py-2"
+               href="/my/policies/versions/{{ p.version_id }}">
+                <i class="bi bi-shield-exclamation {{ p.is_overdue ? 'text-danger' : 'text-warning' }} mt-1"></i>
+                <div class="flex-grow-1" style="white-space: normal;">
+                    <div class="small fw-semibold text-truncate">
+                        {{ p.policy_name }}
+                        {% if p.is_overdue %}<span class="badge bg-danger ms-1">{{ t('ack.overdue') }}</span>{% endif %}
+                    </div>
+                    <div class="small text-body-secondary">{{ t('ack.policy_review') }}</div>
+                </div>
+            </a>
+        </li>
+        {% endfor %}
+
+        {% for n in pending.notices %}
+        <li>
+            <div class="dropdown-item-text py-2" style="white-space: normal;">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-megaphone text-primary mt-1"></i>
+                    <div class="flex-grow-1">
+                        <div class="small fw-semibold">{{ n.title }}</div>
+                        <div class="small text-body-secondary mb-2">{{ n.content|striptags|slice(0, 120) }}{% if n.content|length > 120 %}…{% endif %}</div>
+                        <form method="POST" action="/my/notices/{{ n.id }}/acknowledge" class="m-0">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>{{ t('ack.acknowledge') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <a class="dropdown-item text-center small" href="/my/policies">
+                {{ t('ack.view_all') }}
+            </a>
+        </li>
+    </ul>
+</div>
+{% endif %}

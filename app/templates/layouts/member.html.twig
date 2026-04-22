@@ -11,6 +11,9 @@
         </a>
 
         <div class="d-flex align-items-center gap-1">
+            {# Pending acknowledgements #}
+            {% include "components/_pending_ack.html.twig" %}
+
             {# Theme toggle #}
             <button class="btn btn-link text-body p-1" title="{{ t('theme.toggle') }}"
                     x-data x-on:click="$store.theme.toggle()">
