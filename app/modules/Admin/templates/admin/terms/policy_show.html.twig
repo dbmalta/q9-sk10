@@ -1,0 +1,178 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ policy.name }} — {{ t('nav.terms') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ policy.name }}
+            {% if policy.is_active %}
+                <span class="badge text-bg-success ms-1">{{ t('common.active') }}</span>
+            {% else %}
+                <span class="badge text-bg-secondary ms-1">{{ t('common.inactive') }}</span>
+            {% endif %}
+        </h1>
+        {% if policy.description %}
+        <div class="text-body-secondary">{{ policy.description }}</div>
+        {% endif %}
+    </div>
+    <div class="d-flex gap-2">
+        <form method="POST" action="/admin/terms/policies/{{ policy.id }}/toggle-active" class="d-inline">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <button type="submit" class="btn btn-sm btn-outline-{{ policy.is_active ? 'warning' : 'success' }}">
+                {{ policy.is_active ? t('common.deactivate') : t('common.activate') }}
+            </button>
+        </form>
+        <a href="/admin/terms/policies/{{ policy.id }}/edit" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i>{{ t('common.edit') }}
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="small text-body-secondary">{{ t('policies.required') }}</div>
+                <div class="h3 mb-0">{{ stats.required }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="small text-body-secondary">{{ t('policies.acknowledged') }}</div>
+                <div class="h3 mb-0">{{ stats.acknowledged }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="small text-body-secondary">{{ t('policies.rate') }}</div>
+                <div class="h3 mb-0">{{ stats.rate }}%</div>
+                <div class="progress mt-2" style="height: 4px;">
+                    <div class="progress-bar bg-success" style="width: {{ stats.rate }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h6">{{ t('policies.audience') }}</h2>
+        {% if scope_nodes is empty %}
+            <div class="text-body-secondary small">{{ t('policies.audience_all_members') }}</div>
+        {% else %}
+            <div class="d-flex flex-wrap gap-1">
+                {% for n in scope_nodes %}
+                    <span class="badge text-bg-secondary">{{ n.name }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h6 mb-0">{{ t('policies.versions') }}</h2>
+            <a href="/admin/terms/policies/{{ policy.id }}/versions/create" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>{{ t('terms.create') }}
+            </a>
+        </div>
+        {% if versions is empty %}
+            <p class="text-body-secondary small mb-0">{{ t('terms.no_versions') }}</p>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ t('terms.title') }}</th>
+                        <th>{{ t('terms.version_number') }}</th>
+                        <th>{{ t('common.status') }}</th>
+                        <th>{{ t('terms.published_at') }}</th>
+                        <th class="text-end">{{ t('common.actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in versions %}
+                    <tr>
+                        <td><a href="/admin/terms/versions/{{ v.id }}">{{ v.title }}</a></td>
+                        <td><code>{{ v.version_number }}</code></td>
+                        <td>
+                            {% if v.is_published %}
+                                <span class="badge text-bg-success">{{ t('terms.is_published') }}</span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">{{ t('terms.draft') }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="small">{{ v.published_at ? v.published_at|date('d M Y H:i') : '—' }}</td>
+                        <td class="text-end">
+                            <a href="/admin/terms/versions/{{ v.id }}/edit" class="btn btn-sm btn-outline-primary" title="{{ t('common.edit') }}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% if not v.is_published %}
+                            <form method="POST" action="/admin/terms/versions/{{ v.id }}/publish" class="d-inline">
+                                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('terms.publish') }}">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h6 mb-0">{{ t('policies.acknowledgement_report') }}</h2>
+            <a href="/admin/terms/policies/{{ policy.id }}/export.csv" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-download me-1"></i>{{ t('common.export_csv') }}
+            </a>
+        </div>
+        {% if report is empty %}
+            <p class="text-body-secondary small mb-0">{{ t('policies.no_required_members') }}</p>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>{{ t('members.membership_number') }}</th>
+                        <th>{{ t('common.name') }}</th>
+                        <th>{{ t('common.email') }}</th>
+                        <th>{{ t('policies.acknowledged') }}</th>
+                        <th>{{ t('policies.accepted_at') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in report %}
+                    <tr>
+                        <td><code>{{ r.membership_number }}</code></td>
+                        <td>{{ r.first_name }} {{ r.surname }}</td>
+                        <td class="small">{{ r.email ?: '—' }}</td>
+                        <td>
+                            {% if r.acknowledged %}
+                                <span class="badge text-bg-success"><i class="bi bi-check"></i></span>
+                            {% else %}
+                                <span class="badge text-bg-secondary"><i class="bi bi-x"></i></span>
+                            {% endif %}
+                        </td>
+                        <td class="small">{{ r.accepted_at ? r.accepted_at|date('d M Y H:i') : '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

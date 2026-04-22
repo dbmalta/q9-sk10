@@ -11,6 +11,7 @@ use App\Core\Response;
 use App\Modules\Members\Services\MemberService;
 use App\Modules\Members\Services\CustomFieldService;
 use App\Modules\OrgStructure\Services\OrgService;
+use App\Modules\Admin\Services\PoliciesService;
 
 /**
  * Members management controller.
@@ -105,8 +106,25 @@ class MembersController extends Controller
             return $this->render('errors/403.html.twig', [], 403);
         }
 
+        // Count outstanding policies only when viewing one's own profile
+        $outstandingPolicies = 0;
+        $user = $this->app->getSession()->get('user');
+        $sessionMemberId = (int) ($user['member_id'] ?? 0);
+        if ($sessionMemberId === 0 && !empty($user['id'])) {
+            $row = $this->app->getDb()->fetchOne(
+                "SELECT id FROM members WHERE user_id = :uid LIMIT 1",
+                ['uid' => (int) $user['id']]
+            );
+            $sessionMemberId = $row ? (int) $row['id'] : 0;
+        }
+        if ($sessionMemberId === $memberId && $sessionMemberId > 0) {
+            $policiesService = new PoliciesService($this->app->getDb());
+            $outstandingPolicies = count($policiesService->getOutstandingForMember($memberId));
+        }
+
         return $this->render('@members/members/view.html.twig', [
             'member' => $member,
+            'outstanding_policies' => $outstandingPolicies,
             'breadcrumbs' => [
                 ['label' => $this->t('nav.members'), 'url' => '/members'],
                 ['label' => $member['first_name'] . ' ' . $member['surname']],

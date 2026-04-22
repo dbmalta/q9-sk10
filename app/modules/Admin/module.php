@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Admin\Controllers\DashboardController;
 use App\Modules\Admin\Controllers\ReportController;
 use App\Modules\Admin\Controllers\TermsController;
+use App\Modules\Admin\Controllers\MyPoliciesController;
 use App\Modules\Admin\Controllers\NoticeController;
 use App\Modules\Admin\Controllers\SettingsController;
 use App\Modules\Admin\Controllers\AuditController;
@@ -132,14 +133,29 @@ return [
         $router->get('/admin/reports/status-changes', [ReportController::class, 'statusChanges'], 'admin.reports.status_changes');
         $router->get('/admin/reports/export/members', [ReportController::class, 'exportMembers'], 'admin.reports.export_members');
 
-        // Terms & Conditions
+        // Policies (list + CRUD)
         $router->get('/admin/terms', [TermsController::class, 'index'], 'admin.terms');
-        $router->get('/admin/terms/create', [TermsController::class, 'create'], 'admin.terms.create');
-        $router->post('/admin/terms', [TermsController::class, 'store'], 'admin.terms.store');
-        $router->get('/admin/terms/{id:\d+}', [TermsController::class, 'show'], 'admin.terms.show');
-        $router->get('/admin/terms/{id:\d+}/edit', [TermsController::class, 'edit'], 'admin.terms.edit');
-        $router->post('/admin/terms/{id:\d+}', [TermsController::class, 'update'], 'admin.terms.update');
-        $router->post('/admin/terms/{id:\d+}/publish', [TermsController::class, 'publish'], 'admin.terms.publish');
+        $router->get('/admin/terms/policies/create', [TermsController::class, 'createPolicyForm'], 'admin.policies.create');
+        $router->post('/admin/terms/policies', [TermsController::class, 'storePolicy'], 'admin.policies.store');
+        $router->get('/admin/terms/policies/{id:\d+}', [TermsController::class, 'showPolicy'], 'admin.policies.show');
+        $router->get('/admin/terms/policies/{id:\d+}/edit', [TermsController::class, 'editPolicyForm'], 'admin.policies.edit');
+        $router->post('/admin/terms/policies/{id:\d+}', [TermsController::class, 'updatePolicy'], 'admin.policies.update');
+        $router->post('/admin/terms/policies/{id:\d+}/toggle-active', [TermsController::class, 'togglePolicyActive'], 'admin.policies.toggle');
+        $router->get('/admin/terms/policies/{id:\d+}/export.csv', [TermsController::class, 'exportCsv'], 'admin.policies.export');
+        // Versions (nested under a policy for creation)
+        $router->get('/admin/terms/policies/{id:\d+}/versions/create', [TermsController::class, 'createVersionForm'], 'admin.terms.create');
+        $router->post('/admin/terms/policies/{id:\d+}/versions', [TermsController::class, 'storeVersion'], 'admin.terms.store');
+        $router->get('/admin/terms/versions/{id:\d+}', [TermsController::class, 'showVersion'], 'admin.terms.show');
+        $router->get('/admin/terms/versions/{id:\d+}/edit', [TermsController::class, 'editVersionForm'], 'admin.terms.edit');
+        $router->post('/admin/terms/versions/{id:\d+}', [TermsController::class, 'updateVersion'], 'admin.terms.update');
+        $router->post('/admin/terms/versions/{id:\d+}/publish', [TermsController::class, 'publishVersion'], 'admin.terms.publish');
+
+        // Member-facing policy acknowledgement
+        $router->get('/my/policies', [MyPoliciesController::class, 'index'], 'my.policies');
+        $router->get('/my/policies/versions/{versionId:\d+}', [MyPoliciesController::class, 'show'], 'my.policies.show');
+        $router->post('/my/policies/versions/{versionId:\d+}/accept', [MyPoliciesController::class, 'accept'], 'my.policies.accept');
+        $router->post('/my/notices/{id:\d+}/acknowledge', [MyPoliciesController::class, 'acknowledgeNotice'], 'my.notices.acknowledge');
+        $router->post('/my/ack/dismiss-modal', [MyPoliciesController::class, 'dismissModal'], 'my.ack.dismiss_modal');
 
         // Notices
         $router->get('/admin/notices', [NoticeController::class, 'index'], 'admin.notices');

@@ -3,6 +3,16 @@
 {% block title %}{{ member.first_name }} {{ member.surname }}{% endblock %}
 
 {% block body %}
+{% if outstanding_policies is defined and outstanding_policies > 0 %}
+<div class="alert alert-warning border-0 shadow-sm d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        {{ t('policies.my_outstanding', {count: outstanding_policies}) }}
+    </div>
+    <a href="/my/policies" class="btn btn-warning btn-sm">{{ t('policies.review_now') }}</a>
+</div>
+{% endif %}
+
 {# Member header #}
 <div class="d-flex justify-content-between align-items-start mb-4">
     <div class="d-flex align-items-center gap-3">

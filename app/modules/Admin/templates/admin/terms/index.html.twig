@@ -5,17 +5,17 @@
 {% block body %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">{{ t('nav.terms') }}</h1>
-    <a href="/admin/terms/create" class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg me-1"></i>{{ t('terms.create') }}
+    <a href="/admin/terms/policies/create" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>{{ t('policies.create') }}
     </a>
 </div>
 
-{% if versions is empty %}
+{% if policies is empty %}
 <div class="card border-0 shadow-sm">
     <div class="card-body text-center py-5">
         <i class="bi bi-file-earmark-text text-body-secondary" style="font-size: 2.5rem;"></i>
-        <p class="mt-3 text-body-secondary">{{ t('terms.no_versions') }}</p>
-        <a href="/admin/terms/create" class="btn btn-primary btn-sm">{{ t('terms.create') }}</a>
+        <p class="mt-3 text-body-secondary">{{ t('policies.none') }}</p>
+        <a href="/admin/terms/policies/create" class="btn btn-primary btn-sm">{{ t('policies.create') }}</a>
     </div>
 </div>
 {% else %}
@@ -24,40 +24,49 @@
         <table class="table table-hover align-middle mb-0">
             <thead>
                 <tr>
-                    <th class="ps-3">{{ t('terms.title') }}</th>
-                    <th>{{ t('terms.version_number') }}</th>
-                    <th>{{ t('terms.is_published') }}</th>
-                    <th>{{ t('terms.published_at') }}</th>
+                    <th class="ps-3">{{ t('policies.name') }}</th>
+                    <th>{{ t('common.status') }}</th>
+                    <th class="text-end">{{ t('policies.required') }}</th>
+                    <th class="text-end">{{ t('policies.acknowledged') }}</th>
+                    <th>{{ t('policies.rate') }}</th>
                     <th class="text-end pe-3">{{ t('common.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
-                {% for version in versions %}
-                <tr>
+                {% for p in policies %}
+                <tr class="{{ not p.is_active ? 'text-body-secondary' : '' }}">
                     <td class="ps-3">
-                        <a href="/admin/terms/{{ version.id }}">{{ version.title }}</a>
-                    </td>
-                    <td><code>{{ version.version_number }}</code></td>
-                    <td>
-                        {% if version.is_published %}
-                            <span class="badge bg-success">{{ t('terms.is_published') }}</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ t('terms.draft') }}</span>
+                        <a href="/admin/terms/policies/{{ p.id }}" class="{{ not p.is_active ? 'text-body-secondary' : '' }}">{{ p.name }}</a>
+                        {% if p.description %}
+                        <div class="small text-body-secondary">{{ p.description }}</div>
                         {% endif %}
                     </td>
-                    <td class="small">{{ version.published_at ? version.published_at|date('d M Y H:i') : '—' }}</td>
+                    <td>
+                        {% if p.is_active %}
+                            <span class="badge text-bg-success">{{ t('common.active') }}</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary">{{ t('common.inactive') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">{{ p.stats.required }}</td>
+                    <td class="text-end">{{ p.stats.acknowledged }}</td>
+                    <td style="width: 180px;">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height: 6px;">
+                                <div class="progress-bar bg-success" role="progressbar"
+                                     style="width: {{ p.stats.rate }}%" aria-valuenow="{{ p.stats.rate }}"
+                                     aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="small text-body-secondary" style="min-width: 3rem;">{{ p.stats.rate }}%</span>
+                        </div>
+                    </td>
                     <td class="text-end pe-3">
-                        <a href="/admin/terms/{{ version.id }}/edit" class="btn btn-sm btn-outline-primary" title="{{ t('common.edit') }}">
+                        <a href="/admin/terms/policies/{{ p.id }}" class="btn btn-sm btn-outline-secondary" title="{{ t('common.view') }}">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="/admin/terms/policies/{{ p.id }}/edit" class="btn btn-sm btn-outline-primary" title="{{ t('common.edit') }}">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        {% if not version.is_published %}
-                        <form method="POST" action="/admin/terms/{{ version.id }}/publish" class="d-inline">
-                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-                            <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('terms.publish') }}">
-                                <i class="bi bi-check-circle"></i>
-                            </button>
-                        </form>
-                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

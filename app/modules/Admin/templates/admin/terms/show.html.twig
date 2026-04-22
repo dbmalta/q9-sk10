@@ -6,10 +6,10 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">{{ version.title }}</h1>
     <div>
-        <a href="/admin/terms/{{ version.id }}/edit" class="btn btn-outline-primary btn-sm">
+        <a href="/admin/terms/versions/{{ version.id }}/edit" class="btn btn-outline-primary btn-sm">
             <i class="bi bi-pencil me-1"></i>{{ t('common.edit') }}
         </a>
-        <a href="/admin/terms" class="btn btn-outline-secondary btn-sm">
+        <a href="/admin/terms/policies/{{ version.policy_id }}" class="btn btn-outline-secondary btn-sm">
             <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
         </a>
     </div>

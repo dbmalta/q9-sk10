@@ -9,8 +9,9 @@
 
 <div class="card border-0 shadow-sm">
     <div class="card-body">
-        <form method="POST" action="{{ version ? '/admin/terms/' ~ version.id : '/admin/terms' }}">
+        <form method="POST" action="{{ version ? '/admin/terms/versions/' ~ version.id : '/admin/terms/policies/' ~ policy.id ~ '/versions' }}">
             <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            {% if policy %}<div class="mb-3 small text-body-secondary">{{ t('policies.name') }}: <strong>{{ policy.name }}</strong></div>{% endif %}
 
             <div class="row g-3">
                 <div class="col-md-8">
@@ -25,7 +26,7 @@
                 </div>
                 <div class="col-12">
                     <label for="content" class="form-label">{{ t('terms.content') }}</label>
-                    <textarea name="content" id="content" class="form-control" rows="12" required>{{ version.content|default('') }}</textarea>
+                    <textarea name="content" id="content" class="form-control" rows="12" data-wysiwyg required>{{ version.content|default('') }}</textarea>
                 </div>
                 <div class="col-md-4">
                     <label for="grace_period_days" class="form-label">{{ t('terms.grace_period_days') }}</label>
@@ -38,7 +39,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
                 </button>
-                <a href="/admin/terms" class="btn btn-link">{{ t('common.cancel') }}</a>
+                <a href="{{ policy ? '/admin/terms/policies/' ~ policy.id : '/admin/terms' }}" class="btn btn-link">{{ t('common.cancel') }}</a>
             </div>
         </form>
     </div>

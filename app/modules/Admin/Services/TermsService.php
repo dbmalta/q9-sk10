@@ -44,8 +44,12 @@ class TermsService
         if (empty(trim($data['version_number'] ?? ''))) {
             throw new \InvalidArgumentException('Version number is required');
         }
+        if (empty($data['policy_id'])) {
+            throw new \InvalidArgumentException('Policy is required');
+        }
 
         return $this->db->insert('terms_versions', [
+            'policy_id' => (int) $data['policy_id'],
             'title' => trim($data['title']),
             'content' => $data['content'],
             'version_number' => trim($data['version_number']),
@@ -105,16 +109,40 @@ class TermsService
      */
     public function publishVersion(int $id): void
     {
-        // Unpublish any currently published version
+        $version = $this->db->fetchOne(
+            "SELECT policy_id FROM `terms_versions` WHERE id = :id",
+            ['id' => $id]
+        );
+        if ($version === null) {
+            return;
+        }
+
+        // Unpublish any currently published version of the SAME policy only
         $this->db->query(
-            "UPDATE `terms_versions` SET `is_published` = 0 WHERE `is_published` = 1"
+            "UPDATE `terms_versions` SET `is_published` = 0
+             WHERE `is_published` = 1 AND `policy_id` = :pid",
+            ['pid' => (int) $version['policy_id']]
         );
 
-        // Publish the requested version
         $this->db->update('terms_versions', [
             'is_published' => 1,
             'published_at' => gmdate('Y-m-d H:i:s'),
         ], ['id' => $id]);
+    }
+
+    /**
+     * Get all versions for a given policy, newest first.
+     */
+    public function getVersionsByPolicy(int $policyId): array
+    {
+        return $this->db->fetchAll(
+            "SELECT tv.*, u.email AS created_by_email
+             FROM `terms_versions` tv
+             LEFT JOIN `users` u ON u.id = tv.created_by
+             WHERE tv.policy_id = :pid
+             ORDER BY tv.created_at DESC",
+            ['pid' => $policyId]
+        );
     }
 
     /**
