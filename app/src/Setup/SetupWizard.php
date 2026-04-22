@@ -8,8 +8,9 @@ namespace App\Setup;
  * Self-contained setup wizard for ScoutKeeper.
  *
  * Handles the multi-step first-run installation: prerequisite checks,
- * database setup, organisation creation, admin account, SMTP, encryption
- * key generation, and config file writing.
+ * database credentials, install-type selection (blank/clean/demo),
+ * organisation creation, admin account, SMTP, encryption key, and
+ * config file writing.
  *
  * This class is intentionally standalone -- it does NOT depend on the
  * Application singleton, Twig, or the module registry because those are
@@ -18,7 +19,7 @@ namespace App\Setup;
 class SetupWizard
 {
     private string $rootPath;
-    private const TOTAL_STEPS = 7;
+    private const TOTAL_STEPS = 8;
 
     /** Minimum PHP version required. */
     private const MIN_PHP_VERSION = '8.2.0';
@@ -55,17 +56,11 @@ class SetupWizard
 
     // ── Public API ───────────────────────────────────────────────────
 
-    /**
-     * Is setup needed?  True when config/config.php does not exist.
-     */
     public function isSetupNeeded(): bool
     {
         return !file_exists($this->rootPath . '/config/config.php');
     }
 
-    /**
-     * Read the current step from the session (defaults to 1).
-     */
     public function getCurrentStep(): int
     {
         $step = (int) ($_SESSION['setup_step'] ?? 1);
@@ -73,8 +68,23 @@ class SetupWizard
     }
 
     /**
-     * Process a setup step.
+     * Resolve the step the user should actually see for a requested step.
      *
+     * If an install type that skips certain steps has been chosen, this
+     * advances past the skipped step. Currently: demo installs skip
+     * the organisation step (step 4) because the demo seeder creates
+     * its own organisation tree.
+     */
+    public function resolveVisibleStep(int $requested): int
+    {
+        $installType = $_SESSION['setup_data']['install_type'] ?? '';
+        if ($requested === 4 && $installType === 'demo') {
+            return 5;
+        }
+        return $requested;
+    }
+
+    /**
      * @return array{success: bool, errors: string[], next_step: int}
      */
     public function processStep(int $step, array $data): array
@@ -82,18 +92,16 @@ class SetupWizard
         return match ($step) {
             1 => $this->checkPrerequisites(),
             2 => $this->setupDatabase($data),
-            3 => $this->setupOrganisation($data),
-            4 => $this->createAdmin($data),
-            5 => $this->setupSmtp($data),
-            6 => $this->generateEncryptionKey(),
-            7 => $this->finishSetup($data),
+            3 => $this->processInstallType($data),
+            4 => $this->setupOrganisation($data),
+            5 => $this->createAdmin($data),
+            6 => $this->setupSmtp($data),
+            7 => $this->generateEncryptionKey(),
+            8 => $this->finishSetup(),
             default => ['success' => false, 'errors' => ['Invalid step.'], 'next_step' => 1],
         };
     }
 
-    /**
-     * Render a setup step as HTML.
-     */
     public function renderStep(int $step, array $data = []): string
     {
         $templateDir = __DIR__ . '/templates';
@@ -103,13 +111,11 @@ class SetupWizard
             return '<h1>Setup error</h1><p>Template not found for step ' . $step . '.</p>';
         }
 
-        // Variables available in every template
         $totalSteps = self::TOTAL_STEPS;
         $currentStep = $step;
         $wizard = $this;
         $sessionData = $_SESSION['setup_data'] ?? [];
 
-        // Merge any passed-in data
         extract($data, EXTR_SKIP);
 
         ob_start();
@@ -120,9 +126,6 @@ class SetupWizard
     /**
      * Run all SQL migration files against the given database connection.
      *
-     * Creates the _migrations tracking table if it does not exist, then
-     * applies each migration file that has not been recorded yet.
-     *
      * @return string[] List of filenames that were applied
      */
     public function runMigrations(\PDO $pdo): array
@@ -132,7 +135,6 @@ class SetupWizard
             return [];
         }
 
-        // Ensure the migrations tracking table exists (from 0001)
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS `_migrations` (
                 `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -141,14 +143,12 @@ class SetupWizard
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
 
-        // Find and sort migration files
         $files = glob($migrationsDir . '/*.sql');
         if ($files === false) {
             return [];
         }
         sort($files, SORT_STRING);
 
-        // Which have already been applied?
         $stmt = $pdo->query("SELECT `filename` FROM `_migrations`");
         $applied = $stmt->fetchAll(\PDO::FETCH_COLUMN) ?: [];
 
@@ -165,10 +165,8 @@ class SetupWizard
                 continue;
             }
 
-            // Execute the migration (may contain multiple statements)
             $pdo->exec($sql);
 
-            // Record it
             $ins = $pdo->prepare("INSERT INTO `_migrations` (`filename`) VALUES (:f)");
             $ins->execute(['f' => $basename]);
 
@@ -176,6 +174,33 @@ class SetupWizard
         }
 
         return $newlyApplied;
+    }
+
+    /**
+     * Return a snapshot of the configured database: whether we can connect,
+     * whether it currently has any tables, and how many.
+     *
+     * Used by step 3 so the user can see if they are about to install into
+     * an already-populated schema.
+     *
+     * @return array{connected: bool, is_empty: bool, table_count: int, error: ?string}
+     */
+    public function getDatabaseStatus(): array
+    {
+        $db = $_SESSION['setup_data']['db'] ?? null;
+        if ($db === null) {
+            return ['connected' => false, 'is_empty' => true, 'table_count' => 0, 'error' => 'Database not configured.'];
+        }
+
+        try {
+            $pdo = $this->createPdo($db);
+            $stmt = $pdo->query('SHOW TABLES');
+            $tables = $stmt->fetchAll(\PDO::FETCH_COLUMN) ?: [];
+            $count = count($tables);
+            return ['connected' => true, 'is_empty' => $count === 0, 'table_count' => $count, 'error' => null];
+        } catch (\Throwable $e) {
+            return ['connected' => false, 'is_empty' => true, 'table_count' => 0, 'error' => $e->getMessage()];
+        }
     }
 
     // ── Step Handlers ────────────────────────────────────────────────
@@ -209,7 +234,10 @@ class SetupWizard
     }
 
     /**
-     * Step 2 -- Database connection and migrations.
+     * Step 2 -- Database credentials + connection test only.
+     *
+     * Migrations and schema operations are deferred to step 3, so that the
+     * user first gets to choose whether to wipe the DB or keep it.
      */
     private function setupDatabase(array $data): array
     {
@@ -232,7 +260,6 @@ class SetupWizard
             return ['success' => false, 'errors' => $errors, 'next_step' => 2];
         }
 
-        // Try connecting
         try {
             $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $name);
             $pdo = new \PDO($dsn, $user, $pass, [
@@ -248,7 +275,6 @@ class SetupWizard
             ];
         }
 
-        // Check MySQL version >= 8.0
         $mysqlVersion = $pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
         if (version_compare($mysqlVersion, '8.0.0', '<')) {
             return [
@@ -258,18 +284,6 @@ class SetupWizard
             ];
         }
 
-        // Run migrations
-        try {
-            $applied = $this->runMigrations($pdo);
-        } catch (\Throwable $e) {
-            return [
-                'success' => false,
-                'errors' => ['Migration failed: ' . $e->getMessage()],
-                'next_step' => 2,
-            ];
-        }
-
-        // Store DB config in session for later steps
         $_SESSION['setup_data']['db'] = [
             'host' => $host,
             'port' => $port,
@@ -277,17 +291,91 @@ class SetupWizard
             'user' => $user,
             'password' => $pass,
         ];
-        $_SESSION['setup_data']['migrations_applied'] = $applied;
+        // A re-submission of step 2 invalidates any previous install-type
+        // choice, since the target DB may have changed.
+        unset($_SESSION['setup_data']['install_type'], $_SESSION['setup_data']['migrations_applied']);
         $_SESSION['setup_step'] = 3;
 
-        return ['success' => true, 'errors' => [], 'next_step' => 3, 'migrations' => $applied];
+        return ['success' => true, 'errors' => [], 'next_step' => 3];
     }
 
     /**
-     * Step 3 -- Organisation setup.
+     * Step 3 -- Install type: keep / clean / demo.
+     *
+     * Runs schema wipe (for clean and demo) and migrations. Demo seeding
+     * is deferred until step 8 so the admin account created in step 5 can
+     * be preserved.
+     */
+    private function processInstallType(array $data): array
+    {
+        $installType = $data['install_type'] ?? '';
+        if (!in_array($installType, ['keep', 'clean', 'demo'], true)) {
+            return ['success' => false, 'errors' => ['Please choose an install type.'], 'next_step' => 3];
+        }
+
+        $dbConfig = $_SESSION['setup_data']['db'] ?? null;
+        if ($dbConfig === null) {
+            return ['success' => false, 'errors' => ['Database not configured. Go back to step 2.'], 'next_step' => 2];
+        }
+
+        try {
+            $pdo = $this->createPdo($dbConfig);
+
+            if ($installType === 'clean' || $installType === 'demo') {
+                $this->wipeSchema($pdo);
+            }
+
+            $applied = $this->runMigrations($pdo);
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'errors' => ['Schema setup failed: ' . $e->getMessage()],
+                'next_step' => 3,
+            ];
+        }
+
+        $_SESSION['setup_data']['install_type'] = $installType;
+        $_SESSION['setup_data']['migrations_applied'] = $applied;
+
+        // Demo installs skip the organisation step — the seeder will create
+        // the org tree at step 8.
+        $next = ($installType === 'demo') ? 5 : 4;
+        $_SESSION['setup_step'] = $next;
+
+        return ['success' => true, 'errors' => [], 'next_step' => $next];
+    }
+
+    /**
+     * Drop every table in the configured database. Temporarily disables
+     * foreign-key checks so drop order doesn't matter.
+     */
+    private function wipeSchema(\PDO $pdo): void
+    {
+        $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+        try {
+            $stmt = $pdo->query('SHOW TABLES');
+            $tables = $stmt->fetchAll(\PDO::FETCH_COLUMN) ?: [];
+            foreach ($tables as $table) {
+                $safe = str_replace('`', '', (string) $table);
+                $pdo->exec('DROP TABLE IF EXISTS `' . $safe . '`');
+            }
+        } finally {
+            $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
+        }
+    }
+
+    /**
+     * Step 4 -- Organisation setup.
      */
     private function setupOrganisation(array $data): array
     {
+        // Demo installs bypass this step entirely — if we somehow land
+        // here, just advance.
+        if (($_SESSION['setup_data']['install_type'] ?? '') === 'demo') {
+            $_SESSION['setup_step'] = 5;
+            return ['success' => true, 'errors' => [], 'next_step' => 5];
+        }
+
         $errors = [];
         $orgName = trim($data['org_name'] ?? '');
         $rootNodeName = trim($data['root_node_name'] ?? '');
@@ -304,7 +392,7 @@ class SetupWizard
         }
 
         if (!empty($errors)) {
-            return ['success' => false, 'errors' => $errors, 'next_step' => 3];
+            return ['success' => false, 'errors' => $errors, 'next_step' => 4];
         }
 
         $dbConfig = $_SESSION['setup_data']['db'] ?? null;
@@ -315,27 +403,23 @@ class SetupWizard
         try {
             $pdo = $this->createPdo($dbConfig);
 
-            // Create the level type
             $stmt = $pdo->prepare(
                 "INSERT INTO `org_level_types` (`name`, `depth`, `is_leaf`, `sort_order`) VALUES (:name, 0, 0, 0)"
             );
             $stmt->execute(['name' => $levelTypeName]);
             $levelTypeId = (int) $pdo->lastInsertId();
 
-            // Create the root org node
             $stmt = $pdo->prepare(
                 "INSERT INTO `org_nodes` (`parent_id`, `level_type_id`, `name`, `sort_order`, `is_active`) VALUES (NULL, :lt, :name, 0, 1)"
             );
             $stmt->execute(['lt' => $levelTypeId, 'name' => $rootNodeName]);
             $rootNodeId = (int) $pdo->lastInsertId();
 
-            // Insert closure row for root (self-reference at depth 0)
             $stmt = $pdo->prepare(
                 "INSERT INTO `org_closure` (`ancestor_id`, `descendant_id`, `depth`) VALUES (:id, :id2, 0)"
             );
             $stmt->execute(['id' => $rootNodeId, 'id2' => $rootNodeId]);
 
-            // Update org_name in settings table
             $stmt = $pdo->prepare(
                 "UPDATE `settings` SET `value` = :val WHERE `key` = 'org_name'"
             );
@@ -344,7 +428,7 @@ class SetupWizard
             return [
                 'success' => false,
                 'errors' => ['Organisation setup failed: ' . $e->getMessage()],
-                'next_step' => 3,
+                'next_step' => 4,
             ];
         }
 
@@ -354,13 +438,13 @@ class SetupWizard
             'root_node_id' => $rootNodeId,
             'level_type_name' => $levelTypeName,
         ];
-        $_SESSION['setup_step'] = 4;
+        $_SESSION['setup_step'] = 5;
 
-        return ['success' => true, 'errors' => [], 'next_step' => 4];
+        return ['success' => true, 'errors' => [], 'next_step' => 5];
     }
 
     /**
-     * Step 4 -- Create the super-admin user and linked member record.
+     * Step 5 -- Create the super-admin user and linked member record.
      */
     private function createAdmin(array $data): array
     {
@@ -388,7 +472,7 @@ class SetupWizard
         }
 
         if (!empty($errors)) {
-            return ['success' => false, 'errors' => $errors, 'next_step' => 4];
+            return ['success' => false, 'errors' => $errors, 'next_step' => 5];
         }
 
         $dbConfig = $_SESSION['setup_data']['db'] ?? null;
@@ -401,7 +485,6 @@ class SetupWizard
 
             $passwordHash = password_hash($password, PASSWORD_ARGON2ID);
 
-            // Create the user
             $stmt = $pdo->prepare(
                 "INSERT INTO `users` (`email`, `password_hash`, `is_active`, `is_super_admin`, `password_changed_at`)
                  VALUES (:email, :hash, 1, 1, NOW())"
@@ -409,7 +492,6 @@ class SetupWizard
             $stmt->execute(['email' => $email, 'hash' => $passwordHash]);
             $userId = (int) $pdo->lastInsertId();
 
-            // Create a linked member record
             $memberNumber = 'ADM-' . str_pad((string) $userId, 5, '0', STR_PAD_LEFT);
             $stmt = $pdo->prepare(
                 "INSERT INTO `members` (`user_id`, `membership_number`, `first_name`, `surname`, `email`, `status`, `joined_date`)
@@ -424,7 +506,9 @@ class SetupWizard
             ]);
             $memberId = (int) $pdo->lastInsertId();
 
-            // Assign member to root node
+            // Demo installs will have their org tree rebuilt by the seeder at
+            // step 8; skip the member_nodes insert in that case (no root node
+            // exists yet).
             $rootNodeId = $_SESSION['setup_data']['org']['root_node_id'] ?? null;
             if ($rootNodeId !== null) {
                 $stmt = $pdo->prepare(
@@ -436,7 +520,7 @@ class SetupWizard
             return [
                 'success' => false,
                 'errors' => ['Admin creation failed: ' . $e->getMessage()],
-                'next_step' => 4,
+                'next_step' => 5,
             ];
         }
 
@@ -446,13 +530,13 @@ class SetupWizard
             'surname' => $surname,
             'user_id' => $userId,
         ];
-        $_SESSION['setup_step'] = 5;
+        $_SESSION['setup_step'] = 6;
 
-        return ['success' => true, 'errors' => [], 'next_step' => 5];
+        return ['success' => true, 'errors' => [], 'next_step' => 6];
     }
 
     /**
-     * Step 5 -- SMTP configuration (optional).
+     * Step 6 -- SMTP configuration (optional).
      */
     private function setupSmtp(array $data): array
     {
@@ -468,8 +552,8 @@ class SetupWizard
                 'from_email' => '',
                 'from_name' => '',
             ];
-            $_SESSION['setup_step'] = 6;
-            return ['success' => true, 'errors' => [], 'next_step' => 6];
+            $_SESSION['setup_step'] = 7;
+            return ['success' => true, 'errors' => [], 'next_step' => 7];
         }
 
         $errors = [];
@@ -489,7 +573,7 @@ class SetupWizard
         }
 
         if (!empty($errors)) {
-            return ['success' => false, 'errors' => $errors, 'next_step' => 5];
+            return ['success' => false, 'errors' => $errors, 'next_step' => 6];
         }
 
         $_SESSION['setup_data']['smtp'] = [
@@ -501,82 +585,75 @@ class SetupWizard
             'from_email' => $fromEmail,
             'from_name' => $fromName,
         ];
-        $_SESSION['setup_step'] = 6;
+        $_SESSION['setup_step'] = 7;
 
-        return ['success' => true, 'errors' => [], 'next_step' => 6];
+        return ['success' => true, 'errors' => [], 'next_step' => 7];
     }
 
     /**
-     * Step 6 -- Generate encryption key.
+     * Step 7 -- Generate encryption key.
      */
     private function generateEncryptionKey(): array
     {
         $keyFile = $this->rootPath . '/config/encryption.key';
 
-        // Don't overwrite an existing key
         if (file_exists($keyFile) && filesize($keyFile) >= 32) {
-            $_SESSION['setup_step'] = 7;
-            return ['success' => true, 'errors' => [], 'next_step' => 7, 'key_existed' => true];
+            $_SESSION['setup_step'] = 8;
+            return ['success' => true, 'errors' => [], 'next_step' => 8, 'key_existed' => true];
         }
 
         try {
-            $key = bin2hex(random_bytes(32)); // 64 hex chars = 256 bits
+            $key = bin2hex(random_bytes(32));
             $written = file_put_contents($keyFile, $key);
 
             if ($written === false) {
                 return [
                     'success' => false,
                     'errors' => ['Failed to write encryption key file. Check that config/ is writable.'],
-                    'next_step' => 6,
+                    'next_step' => 7,
                 ];
             }
 
-            // Restrict file permissions where possible
             @chmod($keyFile, 0600);
         } catch (\Throwable $e) {
             return [
                 'success' => false,
                 'errors' => ['Encryption key generation failed: ' . $e->getMessage()],
-                'next_step' => 6,
+                'next_step' => 7,
             ];
         }
 
-        $_SESSION['setup_step'] = 7;
+        $_SESSION['setup_step'] = 8;
 
-        return ['success' => true, 'errors' => [], 'next_step' => 7, 'key_existed' => false];
+        return ['success' => true, 'errors' => [], 'next_step' => 8, 'key_existed' => false];
     }
 
     /**
-     * Step 7 -- Write config/config.php and optionally seed demo data.
+     * Step 8 -- Write config/config.php and optionally seed demo data.
      */
-    private function finishSetup(array $data = []): array
+    private function finishSetup(): array
     {
         $sd = $_SESSION['setup_data'] ?? [];
         $db = $sd['db'] ?? null;
         $smtp = $sd['smtp'] ?? [];
         $orgName = $sd['org']['name'] ?? 'ScoutKeeper';
-        $seedDemo = !empty($data['seed_demo']);
+        $seedDemo = ($sd['install_type'] ?? '') === 'demo';
 
         if ($db === null) {
             return ['success' => false, 'errors' => ['Missing database configuration.'], 'next_step' => 2];
         }
 
-        // If seeding demo data, do it BEFORE writing config so that a failure
-        // does not leave us in a half-installed state.
         if ($seedDemo) {
             $seedResult = $this->seedDemoData($db, $sd['admin'] ?? []);
             if (!$seedResult['success']) {
                 return $seedResult;
             }
-            // After demo seed, org name changes to Filfla; update local var.
             $orgName = \Tests\Seeders\FilflaDemoSeeder::ORG_NAME;
         }
 
-        // Generate a random cron secret and API key
         $cronSecret = bin2hex(random_bytes(16));
         $apiKey = bin2hex(random_bytes(20));
 
-        // Store API key in settings table
         try {
             $pdo = $this->createPdo($db);
             $stmt = $pdo->prepare(
@@ -586,7 +663,6 @@ class SetupWizard
             );
             $stmt->execute(['val' => $apiKey, 'val2' => $apiKey]);
 
-            // Store app version (read from VERSION file)
             $appVersion = trim(@file_get_contents($this->rootPath . '/VERSION') ?: '0.0.0');
             $stmt = $pdo->prepare(
                 "INSERT INTO `settings` (`key`, `value`, `group`)
@@ -598,11 +674,10 @@ class SetupWizard
             return [
                 'success' => false,
                 'errors' => ['Failed to save settings: ' . $e->getMessage()],
-                'next_step' => 7,
+                'next_step' => 8,
             ];
         }
 
-        // Detect the base URL
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
         $baseUrl = $protocol . '://' . $host;
@@ -615,37 +690,32 @@ class SetupWizard
             return [
                 'success' => false,
                 'errors' => ['Failed to write config/config.php. Check permissions.'],
-                'next_step' => 7,
+                'next_step' => 8,
             ];
         }
 
-        // Clean up setup session data
         unset($_SESSION['setup_step'], $_SESSION['setup_data']);
 
-        return ['success' => true, 'errors' => [], 'next_step' => 7];
+        return ['success' => true, 'errors' => [], 'next_step' => 8];
     }
 
     /**
      * Run the Filfla demo seeder while preserving the installing admin's login.
      *
-     * @param array $dbConfig  db connection config
-     * @param array $adminInfo the admin session data from step 4 (email, first_name, surname, user_id)
      * @return array{success: bool, errors: string[], next_step: int}
      */
     private function seedDemoData(array $dbConfig, array $adminInfo): array
     {
-        // Prevent timeouts during the ~2-5 minute seed
         @set_time_limit(0);
         @ignore_user_abort(true);
 
         try {
-            // Fetch the admin's password hash BEFORE the seeder wipes it
             $pdo = $this->createPdo($dbConfig);
             $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE email = :e LIMIT 1');
             $stmt->execute(['e' => $adminInfo['email'] ?? '']);
             $adminPasswordHash = $stmt->fetchColumn();
             if (!$adminPasswordHash) {
-                return ['success' => false, 'errors' => ['Could not find the admin account to preserve during demo seeding.'], 'next_step' => 7];
+                return ['success' => false, 'errors' => ['Could not find the admin account to preserve during demo seeding.'], 'next_step' => 8];
             }
 
             require_once $this->rootPath . '/app/src/Core/Database.php';
@@ -660,18 +730,17 @@ class SetupWizard
                 $adminInfo['first_name'] ?? 'Admin',
                 $adminInfo['surname'] ?? 'User',
             );
-            // Swallow echoed progress — the user just sees a success page.
             $seeder->setProgressCallback(static function (string $msg) {
-                // no-op; could be logged to var/logs later
+                // no-op
             });
             $seeder->run();
 
-            return ['success' => true, 'errors' => [], 'next_step' => 7];
+            return ['success' => true, 'errors' => [], 'next_step' => 8];
         } catch (\Throwable $e) {
             return [
                 'success' => false,
                 'errors' => ['Demo seeding failed: ' . $e->getMessage()],
-                'next_step' => 7,
+                'next_step' => 8,
             ];
         }
     }
@@ -679,22 +748,18 @@ class SetupWizard
     // ── Helpers ──────────────────────────────────────────────────────
 
     /**
-     * Return the full prerequisite check results for step 1 / template.
-     *
      * @return array<array{label: string, passed: bool, detail: string}>
      */
     public function getPrerequisiteChecks(): array
     {
         $checks = [];
 
-        // PHP version
         $checks[] = [
             'label' => 'PHP version',
             'passed' => version_compare(PHP_VERSION, self::MIN_PHP_VERSION, '>='),
             'detail' => 'Found ' . PHP_VERSION . ' (requires ' . self::MIN_PHP_VERSION . '+)',
         ];
 
-        // Required extensions
         foreach (self::REQUIRED_EXTENSIONS as $ext) {
             $checks[] = [
                 'label' => "Extension: $ext",
@@ -703,7 +768,6 @@ class SetupWizard
             ];
         }
 
-        // Writable directories
         foreach (self::WRITABLE_DIRS as $dir) {
             $fullPath = $this->rootPath . '/' . $dir;
             $isWritable = is_dir($fullPath) && is_writable($fullPath);
@@ -717,9 +781,6 @@ class SetupWizard
         return $checks;
     }
 
-    /**
-     * Create a PDO instance from a database config array.
-     */
     private function createPdo(array $dbConfig): \PDO
     {
         $dsn = sprintf(
@@ -736,9 +797,6 @@ class SetupWizard
         ]);
     }
 
-    /**
-     * Build the config.php file content as a PHP string.
-     */
     private function buildConfigFile(
         array $db,
         array $smtp,
@@ -823,9 +881,6 @@ return [
 PHP;
     }
 
-    /**
-     * Current UTC timestamp string.
-     */
     private function now(): string
     {
         return gmdate('Y-m-d H:i:s') . ' UTC';

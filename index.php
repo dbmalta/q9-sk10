@@ -81,9 +81,9 @@ if (!$configExists || $requestUri === '/setup') {
         $result = $wizard->processStep($step, $_POST);
 
         if ($result['success']) {
-            // Special case: step 7 success means config was just written
-            if ($step === 7) {
-                echo $wizard->renderStep(7, ['justFinished' => true]);
+            // Special case: final step success means config was just written
+            if ($step === 8) {
+                echo $wizard->renderStep(8, ['justFinished' => true]);
                 exit;
             }
             // Redirect to next step (PRG pattern)
@@ -101,6 +101,13 @@ if (!$configExists || $requestUri === '/setup') {
     $step = isset($_GET['step']) ? (int) $_GET['step'] : $maxReached;
     // Allow going back to any previous step, but not forward past the highest reached
     $step = max(1, min($step, $maxReached));
+    // Skip steps that the current install-type choice has made irrelevant
+    // (e.g. demo installs skip the organisation step).
+    $resolved = $wizard->resolveVisibleStep($step);
+    if ($resolved !== $step) {
+        header('Location: /setup?step=' . $resolved);
+        exit;
+    }
     echo $wizard->renderStep($step);
     exit;
 }

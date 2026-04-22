@@ -81,7 +81,7 @@ class WizardTest extends TestCase
         $this->assertSame(1, $this->wizard->getCurrentStep());
 
         $_SESSION['setup_step'] = 99;
-        $this->assertSame(7, $this->wizard->getCurrentStep());
+        $this->assertSame(8, $this->wizard->getCurrentStep());
     }
 
     public function testCheckPrerequisitesReturnsChecksArray(): void
@@ -185,22 +185,33 @@ class WizardTest extends TestCase
         $this->assertNotEmpty($result['errors']);
     }
 
-    public function testProcessStep3FailsWithMissingFields(): void
+    public function testProcessStep3FailsWithoutInstallTypeSelected(): void
     {
         $result = $this->wizard->processStep(3, []);
         $this->assertFalse($result['success']);
         $this->assertNotEmpty($result['errors']);
+        $this->assertSame(3, $result['next_step']);
     }
 
     public function testProcessStep3FailsWithoutDbConfig(): void
     {
-        $result = $this->wizard->processStep(3, [
-            'org_name' => 'Test Scouts',
-            'root_node_name' => 'National',
-            'level_type_name' => 'Country',
-        ]);
+        $result = $this->wizard->processStep(3, ['install_type' => 'keep']);
         $this->assertFalse($result['success']);
         $this->assertSame(2, $result['next_step']);
+    }
+
+    public function testProcessStep3DemoSkipsOrgStep(): void
+    {
+        // Without a DB configured the step fails on DB lookup, but the
+        // routing decision (demo → 5) is made after a successful install.
+        // So instead we exercise resolveVisibleStep directly.
+        $_SESSION['setup_data']['install_type'] = 'demo';
+        $this->assertSame(5, $this->wizard->resolveVisibleStep(4));
+        $this->assertSame(3, $this->wizard->resolveVisibleStep(3));
+        $this->assertSame(5, $this->wizard->resolveVisibleStep(5));
+
+        $_SESSION['setup_data']['install_type'] = 'keep';
+        $this->assertSame(4, $this->wizard->resolveVisibleStep(4));
     }
 
     public function testProcessStep4FailsWithMissingFields(): void
@@ -210,9 +221,27 @@ class WizardTest extends TestCase
         $this->assertNotEmpty($result['errors']);
     }
 
-    public function testProcessStep4FailsWithShortPassword(): void
+    public function testProcessStep4FailsWithoutDbConfig(): void
     {
         $result = $this->wizard->processStep(4, [
+            'org_name' => 'Test Scouts',
+            'root_node_name' => 'National',
+            'level_type_name' => 'Country',
+        ]);
+        $this->assertFalse($result['success']);
+        $this->assertSame(2, $result['next_step']);
+    }
+
+    public function testProcessStep5FailsWithMissingFields(): void
+    {
+        $result = $this->wizard->processStep(5, []);
+        $this->assertFalse($result['success']);
+        $this->assertNotEmpty($result['errors']);
+    }
+
+    public function testProcessStep5FailsWithShortPassword(): void
+    {
+        $result = $this->wizard->processStep(5, [
             'admin_email' => 'admin@test.com',
             'admin_password' => 'short',
             'admin_password_confirm' => 'short',
@@ -223,9 +252,9 @@ class WizardTest extends TestCase
         $this->assertNotEmpty(array_filter($result['errors'], fn($e) => str_contains($e, 'at least 10')));
     }
 
-    public function testProcessStep4FailsWithPasswordMismatch(): void
+    public function testProcessStep5FailsWithPasswordMismatch(): void
     {
-        $result = $this->wizard->processStep(4, [
+        $result = $this->wizard->processStep(5, [
             'admin_email' => 'admin@test.com',
             'admin_password' => 'LongEnoughPassword1',
             'admin_password_confirm' => 'DifferentPassword1',
@@ -236,9 +265,9 @@ class WizardTest extends TestCase
         $this->assertNotEmpty(array_filter($result['errors'], fn($e) => str_contains($e, 'do not match')));
     }
 
-    public function testProcessStep4FailsWithInvalidEmail(): void
+    public function testProcessStep5FailsWithInvalidEmail(): void
     {
-        $result = $this->wizard->processStep(4, [
+        $result = $this->wizard->processStep(5, [
             'admin_email' => 'not-an-email',
             'admin_password' => 'LongEnoughPassword1',
             'admin_password_confirm' => 'LongEnoughPassword1',
@@ -249,17 +278,17 @@ class WizardTest extends TestCase
         $this->assertNotEmpty(array_filter($result['errors'], fn($e) => str_contains($e, 'email')));
     }
 
-    public function testProcessStep5CanBeSkipped(): void
+    public function testProcessStep6CanBeSkipped(): void
     {
-        $result = $this->wizard->processStep(5, ['skip_smtp' => '1']);
+        $result = $this->wizard->processStep(6, ['skip_smtp' => '1']);
         $this->assertTrue($result['success']);
-        $this->assertSame(6, $result['next_step']);
+        $this->assertSame(7, $result['next_step']);
         $this->assertArrayHasKey('smtp', $_SESSION['setup_data']);
     }
 
-    public function testProcessStep5FailsWithMissingHost(): void
+    public function testProcessStep6FailsWithMissingHost(): void
     {
-        $result = $this->wizard->processStep(5, [
+        $result = $this->wizard->processStep(6, [
             'smtp_host' => '',
             'smtp_from_email' => 'noreply@test.com',
         ]);
@@ -267,9 +296,9 @@ class WizardTest extends TestCase
         $this->assertNotEmpty($result['errors']);
     }
 
-    public function testProcessStep5SucceedsWithValidData(): void
+    public function testProcessStep6SucceedsWithValidData(): void
     {
-        $result = $this->wizard->processStep(5, [
+        $result = $this->wizard->processStep(6, [
             'smtp_host' => 'smtp.example.com',
             'smtp_port' => '587',
             'smtp_username' => 'user',
@@ -279,15 +308,15 @@ class WizardTest extends TestCase
             'smtp_from_name' => 'ScoutKeeper',
         ]);
         $this->assertTrue($result['success']);
-        $this->assertSame(6, $result['next_step']);
+        $this->assertSame(7, $result['next_step']);
         $this->assertSame('smtp.example.com', $_SESSION['setup_data']['smtp']['host']);
     }
 
-    public function testProcessStep6GeneratesEncryptionKey(): void
+    public function testProcessStep7GeneratesEncryptionKey(): void
     {
-        $result = $this->wizard->processStep(6, []);
+        $result = $this->wizard->processStep(7, []);
         $this->assertTrue($result['success']);
-        $this->assertSame(7, $result['next_step']);
+        $this->assertSame(8, $result['next_step']);
         $this->assertFalse($result['key_existed']);
 
         $keyFile = $this->tempDir . '/config/encryption.key';
@@ -295,13 +324,13 @@ class WizardTest extends TestCase
         $this->assertSame(64, strlen(file_get_contents($keyFile)));
     }
 
-    public function testProcessStep6PreservesExistingKey(): void
+    public function testProcessStep7PreservesExistingKey(): void
     {
         $keyFile = $this->tempDir . '/config/encryption.key';
         $existingKey = str_repeat('ab', 32);
         file_put_contents($keyFile, $existingKey);
 
-        $result = $this->wizard->processStep(6, []);
+        $result = $this->wizard->processStep(7, []);
         $this->assertTrue($result['success']);
         $this->assertTrue($result['key_existed']);
         $this->assertSame($existingKey, file_get_contents($keyFile));

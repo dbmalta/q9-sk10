@@ -1,5 +1,8 @@
-<h4 class="mb-3"><i class="bi bi-person-lock me-2"></i>Create Admin Account</h4>
-<p class="text-muted">This will be the super-admin with full access to the system.</p>
+<h4 class="mb-3"><i class="bi bi-building me-2"></i>Organisation Setup</h4>
+<p class="text-muted">
+    Set your Scout organisation's name, the top-level node, and the name
+    for the first level in your hierarchy (e.g. "National", "Country", "Region").
+</p>
 
 <?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
@@ -12,43 +15,34 @@
 <?php endif; ?>
 
 <?php
-$prev = $sessionData['admin'] ?? [];
+$prev = $sessionData['org'] ?? [];
 ?>
 
 <form method="post" action="/setup">
     <input type="hidden" name="step" value="4">
 
-    <div class="row mb-3">
-        <div class="col-6">
-            <label for="admin_first_name" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="admin_first_name" name="admin_first_name"
-                   value="<?= htmlspecialchars($prev['first_name'] ?? '') ?>" required>
-        </div>
-        <div class="col-6">
-            <label for="admin_surname" class="form-label">Surname</label>
-            <input type="text" class="form-control" id="admin_surname" name="admin_surname"
-                   value="<?= htmlspecialchars($prev['surname'] ?? '') ?>" required>
-        </div>
+    <div class="mb-3">
+        <label for="org_name" class="form-label">Organisation Name</label>
+        <input type="text" class="form-control" id="org_name" name="org_name"
+               value="<?= htmlspecialchars($prev['name'] ?? '') ?>"
+               placeholder="e.g. The Scout Association of Malta" required>
+        <div class="form-text">This appears in the header and emails.</div>
     </div>
 
     <div class="mb-3">
-        <label for="admin_email" class="form-label">Email Address</label>
-        <input type="email" class="form-control" id="admin_email" name="admin_email"
-               value="<?= htmlspecialchars($prev['email'] ?? '') ?>" required>
+        <label for="root_node_name" class="form-label">Root Node Name</label>
+        <input type="text" class="form-control" id="root_node_name" name="root_node_name"
+               value="<?= htmlspecialchars($prev['root_node_name'] ?? '') ?>"
+               placeholder="e.g. Scout Association of Malta" required>
+        <div class="form-text">The top node in your organisational tree.</div>
     </div>
 
-    <div class="row mb-3">
-        <div class="col-6">
-            <label for="admin_password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="admin_password" name="admin_password"
-                   minlength="10" required>
-            <div class="form-text">Minimum 10 characters.</div>
-        </div>
-        <div class="col-6">
-            <label for="admin_password_confirm" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="admin_password_confirm"
-                   name="admin_password_confirm" minlength="10" required>
-        </div>
+    <div class="mb-3">
+        <label for="level_type_name" class="form-label">First Level Type</label>
+        <input type="text" class="form-control" id="level_type_name" name="level_type_name"
+               value="<?= htmlspecialchars($prev['level_type_name'] ?? '') ?>"
+               placeholder="e.g. National" required>
+        <div class="form-text">The label for the root level of the hierarchy. You can add more levels later.</div>
     </div>
 
     <div class="d-flex justify-content-between">
@@ -56,7 +50,7 @@ $prev = $sessionData['admin'] ?? [];
             <i class="bi bi-arrow-left me-1"></i> Back
         </a>
         <button type="submit" class="btn btn-primary">
-            Create Admin <i class="bi bi-arrow-right ms-1"></i>
+            Continue <i class="bi bi-arrow-right ms-1"></i>
         </button>
     </div>
 </form>

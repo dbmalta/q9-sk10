@@ -1,5 +1,9 @@
 <h4 class="mb-3"><i class="bi bi-database me-2"></i>Database Configuration</h4>
-<p class="text-muted">Enter the MySQL database credentials. The database must already exist.</p>
+<p class="text-muted">
+    Enter the MySQL database credentials. The database must already exist.
+    We will just test the connection here — you will choose how to set up the
+    schema on the next step.
+</p>
 
 <?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
@@ -54,7 +58,7 @@ $prev = $sessionData['db'] ?? [];
             <i class="bi bi-arrow-left me-1"></i> Back
         </a>
         <button type="submit" class="btn btn-primary">
-            Connect &amp; Run Migrations <i class="bi bi-arrow-right ms-1"></i>
+            Test Connection <i class="bi bi-arrow-right ms-1"></i>
         </button>
     </div>
 </form>

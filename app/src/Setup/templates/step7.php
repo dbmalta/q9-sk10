@@ -1,4 +1,9 @@
-<h4 class="mb-3"><i class="bi bi-check2-all me-2"></i>Finish Setup</h4>
+<h4 class="mb-3"><i class="bi bi-key me-2"></i>Encryption Key</h4>
+<p class="text-muted">
+    An encryption key is needed to protect sensitive data such as medical
+    notes. It will be generated automatically and stored in
+    <code>config/encryption.key</code>.
+</p>
 
 <?php if (!empty($errors ?? [])) : ?>
 <div class="alert alert-danger">
@@ -11,106 +16,31 @@
 <?php endif; ?>
 
 <?php
-$sd = $_SESSION['setup_data'] ?? [];
-$finished = !$wizard->isSetupNeeded() && empty($errors ?? []) && ($_SESSION['setup_step'] ?? 0) >= 7;
-// If we just arrived at step 7 (GET), show summary and a Finish button.
-// If we already wrote config (POST success), show the success message.
+$keyExists = file_exists(dirname(__DIR__, 4) . '/config/encryption.key');
 ?>
 
-<?php if (isset($justFinished) && $justFinished) : ?>
-    <!-- Post-finish success state -->
-    <div class="alert alert-success">
-        <i class="bi bi-check-circle me-1"></i>
-        <strong>Setup complete!</strong> Your configuration has been saved.
-    </div>
-
-    <p>You can now log in with the admin account you created.</p>
-
-    <div class="text-center mt-4">
-        <a href="/login" class="btn btn-primary btn-lg">
-            <i class="bi bi-box-arrow-in-right me-1"></i> Go to Login
-        </a>
-    </div>
-
+<?php if ($keyExists) : ?>
+<div class="alert alert-success">
+    <i class="bi bi-check-circle me-1"></i>
+    Encryption key already exists. It will not be overwritten.
+</div>
 <?php else : ?>
-    <!-- Pre-finish summary -->
-    <p class="text-muted">Review your settings before finalising the installation.</p>
-
-    <table class="table table-sm">
-        <tbody>
-            <tr>
-                <th class="text-muted" style="width:40%">Database</th>
-                <td>
-                    <?= htmlspecialchars(($sd['db']['user'] ?? '?') . '@' . ($sd['db']['host'] ?? '?') . '/' . ($sd['db']['name'] ?? '?')) ?>
-                </td>
-            </tr>
-            <tr>
-                <th class="text-muted">Organisation</th>
-                <td><?= htmlspecialchars($sd['org']['name'] ?? '(not set)') ?></td>
-            </tr>
-            <tr>
-                <th class="text-muted">Root Node</th>
-                <td><?= htmlspecialchars($sd['org']['root_node_name'] ?? '(not set)') ?></td>
-            </tr>
-            <tr>
-                <th class="text-muted">Admin Email</th>
-                <td><?= htmlspecialchars($sd['admin']['email'] ?? '(not set)') ?></td>
-            </tr>
-            <tr>
-                <th class="text-muted">SMTP</th>
-                <td>
-                    <?php if (!empty($sd['smtp']['host'])) : ?>
-                        <?= htmlspecialchars($sd['smtp']['host'] . ':' . $sd['smtp']['port']) ?>
-                    <?php else : ?>
-                        <span class="text-muted">Skipped (can configure later)</span>
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <tr>
-                <th class="text-muted">Encryption Key</th>
-                <td>
-                    <?php if (file_exists(dirname(__DIR__, 4) . '/config/encryption.key')) : ?>
-                        <span class="text-success"><i class="bi bi-check-circle"></i> Generated</span>
-                    <?php else : ?>
-                        <span class="text-danger"><i class="bi bi-x-circle"></i> Missing</span>
-                    <?php endif; ?>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <form method="post" action="/setup">
-        <input type="hidden" name="step" value="7">
-
-        <div class="card border-warning mt-4 mb-3">
-            <div class="card-body">
-                <h6 class="card-title text-warning">
-                    <i class="bi bi-database-fill-add me-1"></i> Demo data (optional)
-                </h6>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="seed_demo" value="1" id="seedDemo"
-                           onchange="document.getElementById('seedWarning').style.display = this.checked ? 'block' : 'none';">
-                    <label class="form-check-label" for="seedDemo">
-                        Populate the database with a large demonstration organisation
-                        (<strong>Scout Association of Filfla</strong> — ~30,000 members across 7 regions,
-                        28 districts, ~200 groups).
-                    </label>
-                </div>
-                <div id="seedWarning" class="alert alert-warning mt-2 mb-0" style="display:none;">
-                    <strong>Warning:</strong> This will <u>replace</u> the organisation, admin account and
-                    any data currently in the database. Your admin email and password will be preserved so
-                    you can still log in. Seeding takes 2–5 minutes.
-                </div>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-between">
-            <a href="/setup?step=6" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Back
-            </a>
-            <button type="submit" class="btn btn-success">
-                <i class="bi bi-check-lg me-1"></i> Finish &amp; Write Config
-            </button>
-        </div>
-    </form>
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-1"></i>
+    Clicking <strong>Generate</strong> will create a new 256-bit key.
+    <strong>Back it up</strong> &mdash; if lost, encrypted data cannot be recovered.
+</div>
 <?php endif; ?>
+
+<form method="post" action="/setup">
+    <input type="hidden" name="step" value="7">
+
+    <div class="d-flex justify-content-between">
+        <a href="/setup?step=6" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <?= $keyExists ? 'Continue' : 'Generate Key' ?> <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+    </div>
+</form>
