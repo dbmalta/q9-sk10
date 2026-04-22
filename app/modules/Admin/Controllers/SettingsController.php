@@ -141,13 +141,25 @@ class SettingsController extends Controller
         $smtpConfig = $this->resolveSmtpConfig();
         $emailService = new EmailService($this->app->getDb(), $smtpConfig);
 
+        $settingsService = new \App\Modules\Admin\Services\SettingsService($this->app->getDb());
+        $orgName = (string) ($settingsService->get('org_name') ?: 'ScoutKeeper');
+        $recipientName = (string) ($user['name'] ?? explode('@', $to)[0]);
+        $sentAt = date('Y-m-d H:i:s T');
+        $appVersion = trim(@file_get_contents(ROOT_PATH . '/VERSION') ?: '');
+        $host = (string) ($smtpConfig['host'] ?? '');
+        $port = (int) ($smtpConfig['port'] ?? 0);
+        $encryption = strtoupper((string) ($smtpConfig['encryption'] ?? 'none'));
+
+        $html = $this->buildTestEmailHtml($orgName, $recipientName, $sentAt, $appVersion, $host, $port, $encryption);
+        $text = $this->buildTestEmailText($orgName, $recipientName, $sentAt, $appVersion, $host, $port, $encryption);
+
         try {
             $ok = $emailService->sendEmail(
                 $to,
                 $this->t('settings.smtp_test_subject'),
-                '<p>' . htmlspecialchars($this->t('settings.smtp_test_body'), ENT_QUOTES, 'UTF-8') . '</p>',
-                $this->t('settings.smtp_test_body'),
-                $user['name'] ?? null,
+                $html,
+                $text,
+                $recipientName,
             );
 
             if ($ok) {
@@ -186,5 +198,89 @@ class SettingsController extends Controller
     private function t(string $key, array $params = []): string
     {
         return $this->app->getI18n()->t($key, $params);
+    }
+
+    private function buildTestEmailHtml(
+        string $orgName,
+        string $recipientName,
+        string $sentAt,
+        string $appVersion,
+        string $host,
+        int $port,
+        string $encryption
+    ): string {
+        $e = static fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+        $org = $e($orgName);
+        $name = $e($recipientName);
+        $when = $e($sentAt);
+        $ver = $e($appVersion !== '' ? 'v' . $appVersion : '');
+        $hostStr = $e($host !== '' ? $host . ':' . $port : '(not configured)');
+        $enc = $e($encryption);
+
+        return <<<HTML
+<!doctype html>
+<html>
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#212529;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6f8;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+          <tr>
+            <td style="background:#0d6efd;padding:24px 32px;color:#ffffff;">
+              <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.85;">{$org}</div>
+              <div style="font-size:22px;font-weight:600;margin-top:4px;">SMTP test email</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">Hi {$name},</p>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.5;">
+                This is a test message sent from the ScoutKeeper admin panel to confirm that your SMTP configuration is delivering mail successfully.
+              </p>
+              <p style="margin:0 0 24px;font-size:15px;line-height:1.5;">
+                If this landed in your inbox, outgoing email is good to go — password resets, registration confirmations, and bulk comms will all use these settings.
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:6px;font-size:13px;">
+                <tr><td style="padding:10px 16px;color:#6c757d;width:35%;">Sent at</td><td style="padding:10px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">{$when}</td></tr>
+                <tr><td style="padding:10px 16px;color:#6c757d;border-top:1px solid #e9ecef;">SMTP host</td><td style="padding:10px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;border-top:1px solid #e9ecef;">{$hostStr}</td></tr>
+                <tr><td style="padding:10px 16px;color:#6c757d;border-top:1px solid #e9ecef;">Encryption</td><td style="padding:10px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;border-top:1px solid #e9ecef;">{$enc}</td></tr>
+                <tr><td style="padding:10px 16px;color:#6c757d;border-top:1px solid #e9ecef;">Version</td><td style="padding:10px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;border-top:1px solid #e9ecef;">{$ver}</td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 32px;background:#f8f9fa;color:#6c757d;font-size:12px;text-align:center;border-top:1px solid #e9ecef;">
+              Automated message from {$org} · ScoutKeeper. Reply not monitored.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+HTML;
+    }
+
+    private function buildTestEmailText(
+        string $orgName,
+        string $recipientName,
+        string $sentAt,
+        string $appVersion,
+        string $host,
+        int $port,
+        string $encryption
+    ): string {
+        $hostStr = $host !== '' ? $host . ':' . $port : '(not configured)';
+        $ver = $appVersion !== '' ? 'v' . $appVersion : '';
+        return "Hi {$recipientName},\n\n"
+            . "This is a test message from the ScoutKeeper admin panel, confirming your SMTP configuration is delivering mail successfully.\n\n"
+            . "If you received this, outgoing email is good to go.\n\n"
+            . "Details\n-------\n"
+            . "Sent at:    {$sentAt}\n"
+            . "SMTP host:  {$hostStr}\n"
+            . "Encryption: {$encryption}\n"
+            . "Version:    {$ver}\n\n"
+            . "— {$orgName} · ScoutKeeper";
     }
 }

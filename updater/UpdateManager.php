@@ -235,6 +235,14 @@ class UpdateManager
             // Remove the temp old app directory
             $this->removeDirectory($tempOldApp);
 
+            // Step 3b: Sync other top-level payload directories/files. These
+            // live outside /app/ (lang, assets, cron, updater, root scripts)
+            // and must also track the release, otherwise new translation keys,
+            // JS/CSS assets, or updater fixes never reach the user.
+            $extractRoot = dirname($newAppDir); // parent of the new app/
+            $this->syncPayload($extractRoot);
+            $steps[] = 'payload_synced';
+
             // Step 4: Run migrations
             try {
                 $pdo = $this->createPdo($config['db']);
@@ -524,6 +532,48 @@ class UpdateManager
             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
             \PDO::ATTR_EMULATE_PREPARES => false,
         ]);
+    }
+
+    /**
+     * Sync non-/app/ payload from the extracted release into the install root.
+     *
+     * Shipped directories (lang, assets, cron, updater) are swapped via rename
+     * for a clean replace. Shipped root files (VERSION, index.php, .htaccess,
+     * composer.json, composer.lock) are copied over in place. User/runtime
+     * directories — config/, data/, var/, backups/, vendor/, tests/ — are
+     * never touched. Anything absent from the extract is left alone.
+     */
+    private function syncPayload(string $extractRoot): void
+    {
+        $dirs = ['lang', 'assets', 'cron', 'updater'];
+        foreach ($dirs as $d) {
+            $src = $extractRoot . '/' . $d;
+            if (!is_dir($src)) {
+                continue;
+            }
+            $dst = $this->rootPath . '/' . $d;
+            $tempOld = $dst . '_old_' . date('Ymd_His');
+            if (is_dir($dst) && !@rename($dst, $tempOld)) {
+                continue;
+            }
+            if (!@rename($src, $dst)) {
+                if (is_dir($tempOld)) {
+                    @rename($tempOld, $dst);
+                }
+                continue;
+            }
+            if (is_dir($tempOld)) {
+                $this->removeDirectory($tempOld);
+            }
+        }
+
+        $files = ['VERSION', 'index.php', '.htaccess', 'composer.json', 'composer.lock'];
+        foreach ($files as $f) {
+            $src = $extractRoot . '/' . $f;
+            if (is_file($src)) {
+                @copy($src, $this->rootPath . '/' . $f);
+            }
+        }
     }
 
     /**
