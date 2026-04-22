@@ -316,9 +316,9 @@ class FilflaDemoSeeder
 
                 // Each group has four sections
                 $bId = $this->createNode($groupId, 'Section', 'Beaver Colony', 'B', 6, 8);
-                $cId = $this->createNode($groupId, 'Section', 'Cub Pack',      'C', 8, 11);
-                $sId = $this->createNode($groupId, 'Section', 'Scout Troop',   'S', 11, 14);
-                $vId = $this->createNode($groupId, 'Section', 'Venture Unit',  'V', 14, 18);
+                $cId = $this->createNode($groupId, 'Section', 'Cub Pack', 'C', 8, 11);
+                $sId = $this->createNode($groupId, 'Section', 'Scout Troop', 'S', 11, 14);
+                $vId = $this->createNode($groupId, 'Section', 'Venture Unit', 'V', 14, 18);
                 $this->groupSections[$groupId] = [
                     'beaver'  => $bId,
                     'cub'     => $cId,
@@ -386,7 +386,7 @@ class FilflaDemoSeeder
             'status'      => 'active',
             'joined_date' => '2015-01-01',
             'country'     => 'Filfla',
-            'gdpr_consent'=> 1,
+            'gdpr_consent' => 1,
             'created_at'  => $now,
         ]);
         $this->db->insert('member_nodes', ['member_id' => $memberId, 'node_id' => $this->natId, 'is_primary' => 1]);
@@ -429,8 +429,12 @@ class FilflaDemoSeeder
         foreach ($this->groupIds as $gIdx => $groupId) {
             // Group size: 50-200, weighted toward mean ~125
             $groupSize = 80 + mt_rand(0, 90); // 80-170 roughly; averages near 125
-            if (mt_rand(0, 99) < 10) $groupSize = mt_rand(50, 79);   // 10% small
-            if (mt_rand(0, 99) < 10) $groupSize = mt_rand(170, 200); // 10% large
+            if (mt_rand(0, 99) < 10) {
+                $groupSize = mt_rand(50, 79);   // 10% small
+            }
+            if (mt_rand(0, 99) < 10) {
+                $groupSize = mt_rand(170, 200); // 10% large
+            }
 
             foreach ($ageBands as $section => $ageRange) {
                 $count = (int)round($groupSize * $split[$section]);
@@ -500,7 +504,9 @@ class FilflaDemoSeeder
      */
     private function flushMembers(array $members, array $memberNodes): void
     {
-        if (empty($members)) return;
+        if (empty($members)) {
+            return;
+        }
 
         $cols = ['membership_number', 'user_id', 'first_name', 'surname', 'dob', 'gender',
                  'email', 'phone', 'address_line1', 'city', 'postcode', 'country', 'status',
@@ -646,7 +652,9 @@ class FilflaDemoSeeder
 
     private function flushAdults(array $members, array $users, array $nodes, array $assigns): void
     {
-        if (empty($users)) return;
+        if (empty($users)) {
+            return;
+        }
 
         // 1. Insert users — get first user id
         $firstUserId = $this->bulkInsert('users', ['email', 'password_hash', 'is_super_admin', 'is_active', 'password_changed_at'], $users);
@@ -682,9 +690,11 @@ class FilflaDemoSeeder
                 $this->adminUserId,
             ];
         }
-        $firstAssignId = $this->bulkInsert('role_assignments',
+        $firstAssignId = $this->bulkInsert(
+            'role_assignments',
             ['user_id', 'role_id', 'context_type', 'context_id', 'start_date', 'end_date', 'assigned_by'],
-            $assignRows);
+            $assignRows
+        );
 
         $scopeRows = [];
         foreach ($assigns as $i => [$roleName, $contextId, $startDate]) {
@@ -879,7 +889,9 @@ class FilflaDemoSeeder
      */
     private function bulkInsert(string $table, array $columns, array $rows, int $batchSize = 500): int
     {
-        if (empty($rows)) return 0;
+        if (empty($rows)) {
+            return 0;
+        }
         $colList = '`' . implode('`,`', $columns) . '`';
         $rowPlaceholder = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
         $firstId = 0;
@@ -936,7 +948,9 @@ class FilflaDemoSeeder
 
     private function ordinalSuffix(int $n): string
     {
-        if ($n % 100 >= 11 && $n % 100 <= 13) return 'th';
+        if ($n % 100 >= 11 && $n % 100 <= 13) {
+            return 'th';
+        }
         return match ($n % 10) {
             1 => 'st',
             2 => 'nd',
