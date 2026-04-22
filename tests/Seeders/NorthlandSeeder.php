@@ -844,7 +844,15 @@ class NorthlandSeeder
         $adminUserId = $this->users['admin@northland.test'];
         $now = gmdate('Y-m-d H:i:s');
 
+        $policyId = $this->db->insert('policies', [
+            'name'        => 'Membership Terms and Conditions',
+            'description' => 'Core membership agreement that every active member must accept.',
+            'is_active'   => 1,
+            'created_by'  => $adminUserId,
+        ]);
+
         $termsId = $this->db->insert('terms_versions', [
+            'policy_id'        => $policyId,
             'title'            => 'Membership Terms and Conditions',
             'content'          => '<h2>Membership Terms and Conditions</h2><p>By becoming a member of Scouts of Northland, you agree to abide by the Scout Promise and Law, the policies of this organisation, and the regulations of the World Organization of the Scout Movement.</p><p>Members are expected to attend regular meetings and activities, wear the correct uniform, and behave in a manner consistent with Scout values.</p><p>Personal data will be processed in accordance with our privacy policy and applicable data protection legislation.</p>',
             'version_number'   => '1.0',

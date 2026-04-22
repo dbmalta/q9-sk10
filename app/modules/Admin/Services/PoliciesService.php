@@ -91,7 +91,9 @@ class PoliciesService
     {
         $this->db->delete('policy_scopes', ['policy_id' => $policyId]);
         foreach (array_unique(array_map('intval', $nodeIds)) as $nodeId) {
-            if ($nodeId <= 0) continue;
+            if ($nodeId <= 0) {
+                continue;
+            }
             $this->db->insert('policy_scopes', [
                 'policy_id' => $policyId,
                 'node_id' => $nodeId,

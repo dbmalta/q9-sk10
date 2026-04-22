@@ -160,7 +160,10 @@ class TwigRenderer
 
             $hasOverdue = false;
             foreach ($policies as $p) {
-                if (!empty($p['is_overdue'])) { $hasOverdue = true; break; }
+                if (!empty($p['is_overdue'])) {
+                    $hasOverdue = true;
+                    break;
+                }
             }
 
             $dismissed = (bool) $session->get('pending_ack_modal_dismissed', false);
