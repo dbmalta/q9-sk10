@@ -339,7 +339,6 @@
     "common.try_again": "Try Again",
     "common.confirm_delete": "Are you sure you want to delete this?",
 
-    "members.gender_prefer_not": "Prefer not to say",
 
     "registration.pending": "Pending Registrations",
     "registration.no_pending": "No pending registrations.",
@@ -706,6 +705,25 @@
     "settings.security": "Security",
     "settings.gdpr": "GDPR",
     "settings.cron": "Cron",
+    "settings.smtp": "Email / SMTP",
+    "settings.smtp_host": "SMTP Host",
+    "settings.smtp_port": "Port",
+    "settings.smtp_username": "Username",
+    "settings.smtp_password": "Password",
+    "settings.smtp_password_placeholder": "(leave blank to keep existing)",
+    "settings.smtp_password_hint": "Leave blank to keep the existing password.",
+    "settings.smtp_encryption": "Encryption",
+    "settings.smtp_encryption_none": "None (not recommended)",
+    "settings.smtp_from_email": "From Email",
+    "settings.smtp_from_name": "From Name",
+    "settings.smtp_test_help": "Send a test email to your own address to verify these settings work.",
+    "settings.smtp_test_button": "Send test email",
+    "settings.smtp_test_subject": "ScoutKeeper SMTP test",
+    "settings.smtp_test_body": "This is a test email from ScoutKeeper. If you received this, your SMTP settings are working correctly.",
+    "settings.smtp_test_sent": "Test email sent to {email}.",
+    "settings.smtp_test_failed": "Failed to send test email.",
+    "settings.smtp_test_no_email": "Your user account has no email address set; cannot send a test.",
+    "settings.smtp_demo_blocked": "Demo mode: emails are restricted to your own address ({email}) and {blocked} recipient(s) were skipped.",
     "settings.org_name": "Organisation Name",
     "settings.timezone": "Timezone",
     "settings.date_format": "Date Format",
@@ -752,6 +770,7 @@
     "logs.details": "Details",
     "logs.no_entries": "No log entries.",
     "logs.app": "App (info/debug)",
+    "logs.smtp": "SMTP",
     "logs.requests": "Requests",
     "logs.confirm_clear": "Are you sure you want to clear this log?",
     "logs.invalid_type": "Unknown log type.",
@@ -885,5 +904,56 @@
     "monitoring.database": "Database",
     "monitoring.filesystem": "Filesystem",
     "monitoring.cron": "Cron",
-    "monitoring.version": "Version"
+    "monitoring.version": "Version",
+
+    "achievements.award_new": "Award Achievement",
+    "achievements.award_fields_required": "Please select an achievement and award date.",
+    "achievements.awarded": "Achievement awarded.",
+    "achievements.awarded_on": "Awarded on",
+    "achievements.confirm_revoke": "Revoke this achievement?",
+    "achievements.revoked": "Achievement revoked.",
+    "achievements.no_achievements": "No achievements recorded yet.",
+    "achievements.no_training": "No training recorded yet.",
+    "achievements.notes": "Notes",
+    "achievements.notes_placeholder": "Optional notes about this award",
+    "achievements.select_achievement": "Select an achievement",
+
+    "audit.view_trail": "View Trail",
+    "audit.no_trail_entries": "No audit trail entries for this record.",
+
+    "backup.create_failed": "Failed to create backup.",
+    "backup.delete_failed": "Failed to delete backup.",
+    "backup.invalid_filename": "Invalid backup filename.",
+    "backup.not_found": "Backup not found.",
+
+    "dashboard.no_pending_registrations": "No pending registrations.",
+
+    "directory.no_contacts": "No contacts to display.",
+    "directory.no_nodes": "No organisation nodes to display.",
+
+    "events.global": "Global",
+    "events.scoped": "Scoped",
+    "events.no_description": "No description provided.",
+    "events.location_placeholder": "e.g. Scout Hall",
+    "events.start_date_required": "Start date is required.",
+
+    "export.my_data_failed": "Failed to export your data. Please try again.",
+    "export.no_member_linked": "No member record is linked to your account.",
+
+    "languages.activated": "Language activated.",
+    "languages.deactivated": "Language deactivated.",
+    "languages.default_set": "Default language updated.",
+    "languages.fields_required": "All required fields must be filled.",
+    "languages.file_required": "A language file is required.",
+    "languages.invalid_json": "The uploaded file is not valid JSON.",
+    "languages.key_required": "Translation key is required.",
+    "languages.override_required": "Override value is required.",
+
+    "reports.new_members": "New Members",
+    "reports.changed_by": "Changed By",
+    "reports.no_status_changes": "No status changes in this period.",
+
+    "terms.published": "Policy published.",
+
+    "user.account.no_member_linked": "Your user account is not linked to a member record."
 }

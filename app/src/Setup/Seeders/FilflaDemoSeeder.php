@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Seeders;
+namespace App\Setup\Seeders;
 
 use App\Core\Database;
 
@@ -832,6 +832,7 @@ class FilflaDemoSeeder
             ['gdpr_enabled',        '1',              'privacy'],
             ['gdpr_retention_days', '2555',           'privacy'],
             ['cron_mode',           'pseudo',         'system'],
+            ['install_mode',        'demo',           'general'],
         ];
         foreach ($settings as [$k, $v, $g]) {
             $this->db->query(

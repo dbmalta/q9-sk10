@@ -24,6 +24,9 @@
     <li class="nav-item">
         <a class="nav-link {{ active_tab == 'cron' ? 'active' : '' }}" href="?tab=cron">{{ t('settings.cron') }}</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link {{ active_tab == 'smtp' ? 'active' : '' }}" href="?tab=smtp">{{ t('settings.smtp') }}</a>
+    </li>
 </ul>
 
 <div class="card border-0 shadow-sm">
@@ -128,14 +131,72 @@
                     </select>
                 </div>
             </div>
+
+            {# ── SMTP ─────────────────────────────────────────────── #}
+            {% elseif active_tab == 'smtp' %}
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label">{{ t('settings.smtp_host') }}</label>
+                    <input type="text" name="settings[smtp_host]" class="form-control"
+                           value="{{ settings.smtp.smtp_host|default('') }}"
+                           placeholder="smtp.example.com">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.smtp_port') }}</label>
+                    <input type="number" name="settings[smtp_port]" class="form-control"
+                           value="{{ settings.smtp.smtp_port|default('587') }}" min="1" max="65535">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ t('settings.smtp_username') }}</label>
+                    <input type="text" name="settings[smtp_username]" class="form-control"
+                           value="{{ settings.smtp.smtp_username|default('') }}" autocomplete="off">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ t('settings.smtp_password') }}</label>
+                    <input type="password" name="settings[smtp_password]" class="form-control"
+                           value="" autocomplete="new-password"
+                           placeholder="{{ settings.smtp.smtp_password|default('') ? t('settings.smtp_password_placeholder') : '' }}">
+                    <div class="form-text">{{ t('settings.smtp_password_hint') }}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.smtp_encryption') }}</label>
+                    <select name="settings[smtp_encryption]" class="form-select">
+                        <option value="tls" {{ settings.smtp.smtp_encryption|default('tls') == 'tls' ? 'selected' : '' }}>TLS (STARTTLS)</option>
+                        <option value="ssl" {{ settings.smtp.smtp_encryption|default('tls') == 'ssl' ? 'selected' : '' }}>SSL</option>
+                        <option value="none" {{ settings.smtp.smtp_encryption|default('tls') == 'none' ? 'selected' : '' }}>{{ t('settings.smtp_encryption_none') }}</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.smtp_from_email') }}</label>
+                    <input type="email" name="settings[smtp_from_email]" class="form-control"
+                           value="{{ settings.smtp.smtp_from_email|default('') }}"
+                           placeholder="noreply@example.com">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ t('settings.smtp_from_name') }}</label>
+                    <input type="text" name="settings[smtp_from_name]" class="form-control"
+                           value="{{ settings.smtp.smtp_from_name|default('ScoutKeeper') }}">
+                </div>
+            </div>
             {% endif %}
 
-            <div class="mt-4">
+            <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-check-lg me-1"></i>{{ t('common.save') }}
                 </button>
             </div>
         </form>
+
+        {% if active_tab == 'smtp' %}
+        <hr class="my-4">
+        <form method="POST" action="/admin/settings/smtp/test">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <p class="text-muted mb-2">{{ t('settings.smtp_test_help') }}</p>
+            <button type="submit" class="btn btn-outline-secondary">
+                <i class="bi bi-send me-1"></i>{{ t('settings.smtp_test_button') }}
+            </button>
+        </form>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -24,6 +24,7 @@ class LogViewerService
         'slow-queries' => 'slow-queries.json',
         'cron'         => 'cron.json',
         'app'          => 'app.json',
+        'smtp'         => 'smtp.json',
     ];
 
     /**

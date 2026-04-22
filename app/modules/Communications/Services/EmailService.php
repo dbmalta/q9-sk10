@@ -19,6 +19,9 @@ class EmailService
     private Database $db;
     private array $config;
 
+    /** Counter for redacting the next N SMTP writes (for AUTH LOGIN credentials). */
+    private int $redactNextWrites = 0;
+
     /**
      * @param Database $db Database instance
      * @param array $config SMTP configuration (host, port, username, password, encryption, from_email, from_name)
@@ -295,8 +298,17 @@ class EmailService
         $context = stream_context_create($contextOptions);
 
         $prefix = ($encryption === 'ssl') ? 'ssl://' : '';
+        $target = $prefix . $host . ':' . $port;
+
+        Logger::smtp('connect', "Connecting to $target", [
+            'host' => $host,
+            'port' => $port,
+            'encryption' => $encryption,
+            'to' => $to,
+        ]);
+
         $socket = @stream_socket_client(
-            $prefix . $host . ':' . $port,
+            $target,
             $errno,
             $errstr,
             30,
@@ -305,6 +317,12 @@ class EmailService
         );
 
         if ($socket === false) {
+            Logger::smtp('error', "Connection failed: $errstr ($errno)", [
+                'host' => $host,
+                'port' => $port,
+                'errno' => $errno,
+                'errstr' => $errstr,
+            ]);
             throw new \RuntimeException("SMTP connection failed: $errstr ($errno)");
         }
 
@@ -374,7 +392,15 @@ class EmailService
             $this->smtpWrite($socket, 'QUIT');
             // Don't require a specific response for QUIT
 
+            Logger::smtp('info', 'Message delivered', ['to' => $to, 'subject' => $subject]);
             return true;
+        } catch (\Throwable $e) {
+            Logger::smtp('error', $e->getMessage(), [
+                'host' => $host,
+                'port' => $port,
+                'to' => $to,
+            ]);
+            throw $e;
         } finally {
             @fclose($socket);
         }
@@ -465,8 +491,23 @@ class EmailService
      */
     private function smtpWrite($socket, string $data): void
     {
+        $logged = $data;
+        if ($this->redactNextWrites > 0) {
+            $logged = '[redacted ' . strlen($data) . ' bytes]';
+            $this->redactNextWrites--;
+        } elseif (strlen($data) > 500) {
+            $logged = substr($data, 0, 200) . '… [' . strlen($data) . ' bytes total]';
+        }
+        Logger::smtp('send', $logged);
+
+        // After AUTH LOGIN, the next two writes carry base64-encoded username + password.
+        if (strcasecmp(trim($data), 'AUTH LOGIN') === 0) {
+            $this->redactNextWrites = 2;
+        }
+
         $result = fwrite($socket, $data . "\r\n");
         if ($result === false) {
+            Logger::smtp('error', 'Failed to write to SMTP socket');
             throw new \RuntimeException('Failed to write to SMTP socket');
         }
     }
@@ -484,6 +525,7 @@ class EmailService
         while (true) {
             $line = fgets($socket, 4096);
             if ($line === false) {
+                Logger::smtp('error', 'SMTP connection lost while reading response');
                 throw new \RuntimeException('SMTP connection lost while reading response');
             }
             $response .= $line;
@@ -499,6 +541,8 @@ class EmailService
         }
 
         $code = (int) substr($response, 0, 3);
+        Logger::smtp('recv', trim($response), ['expected' => $expectedCode, 'got' => $code]);
+
         if ($code !== $expectedCode) {
             throw new \RuntimeException(
                 "SMTP error: expected $expectedCode, got $code. Response: " . trim($response)

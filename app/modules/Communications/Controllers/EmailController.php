@@ -8,6 +8,7 @@ use App\Core\Controller;
 use App\Core\Application;
 use App\Core\Request;
 use App\Core\Response;
+use App\Modules\Admin\Services\SettingsService;
 use App\Modules\Communications\Services\EmailService;
 use App\Modules\Communications\Services\EmailPreferenceService;
 use App\Modules\OrgStructure\Services\OrgService;
@@ -26,9 +27,28 @@ class EmailController extends Controller
     public function __construct(Application $app)
     {
         parent::__construct($app);
-        $this->emailService = new EmailService($app->getDb(), $app->getConfig()['smtp'] ?? []);
+        $this->emailService = new EmailService($app->getDb(), $this->buildSmtpConfig());
         $this->prefService = new EmailPreferenceService($app->getDb());
         $this->orgService = new OrgService($app->getDb());
+    }
+
+    /**
+     * Build SMTP config by overlaying DB `smtp` settings onto config.php values.
+     */
+    private function buildSmtpConfig(): array
+    {
+        $fileConfig = $this->app->getConfig()['smtp'] ?? [];
+        $dbConfig = (new SettingsService($this->app->getDb()))->getGroup('smtp');
+
+        return [
+            'host' => (string) ($dbConfig['smtp_host'] ?? $fileConfig['host'] ?? ''),
+            'port' => (int) ($dbConfig['smtp_port'] ?? $fileConfig['port'] ?? 587),
+            'username' => (string) ($dbConfig['smtp_username'] ?? $fileConfig['username'] ?? ''),
+            'password' => (string) ($dbConfig['smtp_password'] ?? $fileConfig['password'] ?? ''),
+            'encryption' => (string) ($dbConfig['smtp_encryption'] ?? $fileConfig['encryption'] ?? 'tls'),
+            'from_email' => (string) ($dbConfig['smtp_from_email'] ?? $fileConfig['from_email'] ?? 'noreply@localhost'),
+            'from_name' => (string) ($dbConfig['smtp_from_name'] ?? $fileConfig['from_name'] ?? 'ScoutKeeper'),
+        ];
     }
 
     /**
@@ -112,6 +132,29 @@ class EmailController extends Controller
         if (empty($recipients)) {
             $this->flash('error', $this->t('email.no_recipients'));
             return $this->redirect('/admin/email');
+        }
+
+        // Demo mode: restrict outbound email to the current admin's own address
+        $settingsService = new SettingsService($this->app->getDb());
+        if ($settingsService->get('install_mode') === 'demo') {
+            $user = $this->app->getSession()->getUser();
+            $selfEmail = strtolower((string) ($user['email'] ?? ''));
+            $before = count($recipients);
+            $recipients = array_values(array_filter(
+                $recipients,
+                fn($r) => strtolower((string) ($r['email'] ?? '')) === $selfEmail
+            ));
+            $blocked = $before - count($recipients);
+            if ($blocked > 0) {
+                $this->flash('warning', $this->t('settings.smtp_demo_blocked', [
+                    'email' => $selfEmail,
+                    'blocked' => $blocked,
+                ]));
+            }
+            if (empty($recipients)) {
+                $this->flash('error', $this->t('email.no_recipients'));
+                return $this->redirect('/admin/email');
+            }
         }
 
         $recipientList = array_map(fn($r) => [

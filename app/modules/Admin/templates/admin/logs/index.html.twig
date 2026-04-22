@@ -22,10 +22,11 @@
         'requests': 'logs.requests',
         'slow-queries': 'logs.slow_queries',
         'cron': 'logs.cron',
-        'app': 'logs.app'
+        'app': 'logs.app',
+        'smtp': 'logs.smtp'
     } %}
     {% set c = counts[key] is defined ? counts[key] : 0 %}
-    {% set badge_class = key == 'errors' ? 'bg-danger' : (key == 'slow-queries' ? 'bg-warning text-dark' : (key == 'requests' ? 'bg-primary' : (key == 'cron' ? 'bg-info text-dark' : 'bg-secondary'))) %}
+    {% set badge_class = key == 'errors' ? 'bg-danger' : (key == 'slow-queries' ? 'bg-warning text-dark' : (key == 'requests' ? 'bg-primary' : (key == 'cron' ? 'bg-info text-dark' : (key == 'smtp' ? 'bg-primary' : 'bg-secondary')))) %}
     <li class="nav-item">
         <a class="nav-link {{ active_tab == key ? 'active' : '' }}" href="/admin/logs?tab={{ key }}">
             {{ t(label_key) }}
@@ -236,6 +237,16 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
+                            {% endif %}
+
+                        {# SMTP #}
+                        {% elseif active_tab == 'smtp' %}
+                            {% set dir = entry.direction|default('info') %}
+                            {% set dir_badge = dir == 'error' ? 'bg-danger' : (dir == 'send' ? 'bg-primary' : (dir == 'recv' ? 'bg-info text-dark' : (dir == 'connect' ? 'bg-success' : 'bg-secondary'))) %}
+                            <span class="badge {{ dir_badge }} me-1">{{ dir }}</span>
+                            {% if entry.message is defined %}<code class="small">{{ entry.message }}</code>{% endif %}
+                            {% if entry.context is defined and entry.context %}
+                            <pre class="mb-0 mt-1 small bg-body-tertiary p-2 rounded" style="max-height: 200px; overflow: auto;">{{ entry.context|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
                             {% endif %}
 
                         {# Cron #}

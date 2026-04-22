@@ -169,6 +169,7 @@ return [
         // Settings
         $router->get('/admin/settings', [SettingsController::class, 'index'], 'admin.settings');
         $router->post('/admin/settings', [SettingsController::class, 'update'], 'admin.settings.update');
+        $router->post('/admin/settings/smtp/test', [SettingsController::class, 'sendTestEmail'], 'admin.settings.smtp.test');
 
         // Audit log
         $router->get('/admin/audit', [AuditController::class, 'index'], 'admin.audit');

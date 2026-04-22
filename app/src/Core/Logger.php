@@ -118,6 +118,56 @@ class Logger
     }
 
     /**
+     * Append a structured SMTP event to var/logs/smtp.json.
+     *
+     * Writes regardless of debug mode so operators can troubleshoot
+     * delivery issues. Rotation uses the same size threshold as log().
+     *
+     * @param string $direction One of: connect, send, recv, info, error
+     * @param string $message   Short human-readable summary
+     * @param array  $context   Additional structured data (host, port, response, etc.)
+     */
+    public static function smtp(string $direction, string $message, array $context = []): void
+    {
+        $logDir = (defined('ROOT_PATH') ? ROOT_PATH : __DIR__ . '/../../..') . '/var/logs';
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0755, true);
+            if (!is_dir($logDir)) {
+                return;
+            }
+        }
+
+        $file = $logDir . '/smtp.json';
+
+        $entry = [
+            'timestamp' => gmdate('c'),
+            'direction' => $direction,
+            'message'   => $message,
+            'user_id'   => $_SESSION['user']['id'] ?? null,
+        ];
+        if (!empty($context)) {
+            $entry['context'] = $context;
+        }
+
+        $entries = [];
+        if (file_exists($file)) {
+            $entries = json_decode(file_get_contents($file), true) ?? [];
+        }
+        $entries[] = $entry;
+
+        $content = json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+        if ($content === false) {
+            $content = json_encode([$entry], JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE) ?: '[]';
+        }
+        if (strlen($content) > self::MAX_FILE_SIZE) {
+            self::rotate($file);
+            $content = json_encode([$entry], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '[]';
+        }
+
+        file_put_contents($file, $content, LOCK_EX);
+    }
+
+    /**
      * Rotate a log file: current → .1.json, .1 → .2, etc.
      */
     private static function rotate(string $file): void

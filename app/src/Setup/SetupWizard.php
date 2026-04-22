@@ -648,7 +648,7 @@ class SetupWizard
             if (!$seedResult['success']) {
                 return $seedResult;
             }
-            $orgName = \Tests\Seeders\FilflaDemoSeeder::ORG_NAME;
+            $orgName = \App\Setup\Seeders\FilflaDemoSeeder::ORG_NAME;
         }
 
         $cronSecret = bin2hex(random_bytes(16));
@@ -670,6 +670,14 @@ class SetupWizard
                  ON DUPLICATE KEY UPDATE `value` = :ver2"
             );
             $stmt->execute(['ver' => $appVersion, 'ver2' => $appVersion]);
+
+            $installMode = $seedDemo ? 'demo' : 'production';
+            $stmt = $pdo->prepare(
+                "INSERT INTO `settings` (`key`, `value`, `group`)
+                 VALUES ('install_mode', :mode, 'general')
+                 ON DUPLICATE KEY UPDATE `value` = :mode2"
+            );
+            $stmt->execute(['mode' => $installMode, 'mode2' => $installMode]);
         } catch (\Throwable $e) {
             return [
                 'success' => false,
@@ -720,10 +728,10 @@ class SetupWizard
 
             require_once $this->rootPath . '/app/src/Core/Database.php';
             require_once $this->rootPath . '/app/src/Core/Encryption.php';
-            require_once $this->rootPath . '/tests/Seeders/FilflaDemoSeeder.php';
+            require_once $this->rootPath . '/app/src/Setup/Seeders/FilflaDemoSeeder.php';
 
             $database = new \App\Core\Database($dbConfig);
-            $seeder = new \Tests\Seeders\FilflaDemoSeeder($database);
+            $seeder = new \App\Setup\Seeders\FilflaDemoSeeder($database);
             $seeder->setAdminOverride(
                 $adminInfo['email'] ?? 'admin@filfla.test',
                 (string)$adminPasswordHash,
