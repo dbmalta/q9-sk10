@@ -269,6 +269,10 @@ class UpdateManager
                 }
             }
 
+            // Step 6: Clear caches so new templates/translations take effect
+            $this->clearCaches();
+            $steps[] = 'caches_cleared';
+
             // Clean up extract directory
             $this->removeDirectory($extractDir);
             $steps[] = 'cleanup_done';
@@ -520,6 +524,35 @@ class UpdateManager
             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
             \PDO::ATTR_EMULATE_PREPARES => false,
         ]);
+    }
+
+    /**
+     * Clear compiled Twig templates and i18n caches so newly-shipped templates
+     * and translations take effect on the next request. Safe to call any time;
+     * caches are rebuilt on demand.
+     *
+     * @return array{twig_cleared:bool, i18n_cleared:int}
+     */
+    public function clearCaches(): array
+    {
+        $twigDir = $this->rootPath . '/var/cache/twig';
+        $twigCleared = false;
+        if (is_dir($twigDir)) {
+            $twigCleared = $this->removeDirectory($twigDir);
+            @mkdir($twigDir, 0755, true);
+        }
+
+        $i18nCleared = 0;
+        $cacheDir = $this->rootPath . '/var/cache';
+        if (is_dir($cacheDir)) {
+            foreach ((array) glob($cacheDir . '/i18n_*.json') as $file) {
+                if (@unlink($file)) {
+                    $i18nCleared++;
+                }
+            }
+        }
+
+        return ['twig_cleared' => $twigCleared, 'i18n_cleared' => $i18nCleared];
     }
 
     /**

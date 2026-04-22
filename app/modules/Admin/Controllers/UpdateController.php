@@ -122,6 +122,31 @@ class UpdateController extends Controller
         return $this->redirect($baseUrl . '/updater/run.php?token=' . urlencode($token));
     }
 
+    /**
+     * POST /admin/updates/clear-cache — flush Twig + i18n caches so the
+     * latest shipped templates and translations take effect without a redeploy.
+     */
+    public function clearCache(Request $request, array $vars): Response
+    {
+        $guard = $this->requirePermission('admin.updates');
+        if ($guard !== null) {
+            return $guard;
+        }
+
+        $csrfCheck = $this->validateCsrf($request);
+        if ($csrfCheck !== null) {
+            return $csrfCheck;
+        }
+
+        $result = $this->updater->clearCaches();
+        $this->flash('success', $this->t('update.cache_cleared', [
+            'twig' => $result['twig_cleared'] ? '✓' : '—',
+            'i18n' => (string) $result['i18n_cleared'],
+        ]));
+
+        return $this->redirect('/admin/updates');
+    }
+
     private function t(string $key, array $params = []): string
     {
         return $this->app->getI18n()->t($key, $params);

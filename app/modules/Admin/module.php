@@ -196,6 +196,7 @@ return [
         $router->get('/admin/updates', [UpdateController::class, 'index'], 'admin.updates');
         $router->get('/admin/updates/check', [UpdateController::class, 'check'], 'admin.updates.check');
         $router->post('/admin/updates/download', [UpdateController::class, 'download'], 'admin.updates.download');
+        $router->post('/admin/updates/clear-cache', [UpdateController::class, 'clearCache'], 'admin.updates.clear_cache');
 
         // User-facing language switch (no admin permission required)
         $router->post('/language/switch', [LanguageController::class, 'switchLanguage'], 'language.switch');
