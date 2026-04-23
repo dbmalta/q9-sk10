@@ -68,8 +68,11 @@ class MembersController extends Controller
         if ($result['total'] === 0 && !$ctx->isAllNodes() && count($ctx->availableScopes) > 1) {
             $broader = $this->memberService->listScoped(
                 new \App\Core\ViewContext(
-                    $ctx->mode, null, $ctx->availableScopes,
-                    $ctx->canSwitchToAdmin, $ctx->canSwitchToMember,
+                    $ctx->mode,
+                    null,
+                    $ctx->availableScopes,
+                    $ctx->canSwitchToAdmin,
+                    $ctx->canSwitchToMember,
                     $ctx->scopeAppliesToCurrentPage,
                 ),
                 $filters,

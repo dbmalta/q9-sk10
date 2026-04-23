@@ -23,7 +23,7 @@ class ArticleScopingTest extends TestCase
         }
 
         $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
-        foreach (['articles', 'org_nodes'] as $t) {
+        foreach (['articles', 'org_nodes', 'users'] as $t) {
             $this->db->query("DROP TABLE IF EXISTS `{$t}`");
         }
         $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
@@ -31,6 +31,11 @@ class ArticleScopingTest extends TestCase
         $this->db->query("CREATE TABLE `org_nodes` (
             `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             `name` VARCHAR(200) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        $this->db->query("CREATE TABLE `users` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `email` VARCHAR(200) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
         $this->db->query("CREATE TABLE `articles` (

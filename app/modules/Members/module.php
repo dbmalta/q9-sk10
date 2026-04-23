@@ -98,11 +98,11 @@ return [
 
     'routes' => function (\App\Core\Router $router): void {
         // Member landing page
-        $router->get('/me',          [MemberDashboardController::class, 'show'],           'me.dashboard');
-        $router->get('/me/profile',  [MemberDashboardController::class, 'viewOwnProfile'], 'me.profile.view');
+        $router->get('/me', [MemberDashboardController::class, 'show'], 'me.dashboard');
+        $router->get('/me/profile', [MemberDashboardController::class, 'viewOwnProfile'], 'me.profile.view');
 
         // Self-service profile edit (suggestions go to pending-changes queue)
-        $router->get('/me/profile/edit',  [MemberSelfEditController::class, 'edit'], 'me.profile.edit');
+        $router->get('/me/profile/edit', [MemberSelfEditController::class, 'edit'], 'me.profile.edit');
         $router->post('/me/profile/edit', [MemberSelfEditController::class, 'save'], 'me.profile.save');
 
         // Member list

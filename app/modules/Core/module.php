@@ -11,7 +11,7 @@ return [
     'system' => true,
 
     'routes' => function (\App\Core\Router $router): void {
-        $router->post('/context/mode',  [ViewContextController::class, 'setMode'],  'core.context.mode');
+        $router->post('/context/mode', [ViewContextController::class, 'setMode'], 'core.context.mode');
         $router->post('/context/scope', [ViewContextController::class, 'setScope'], 'core.context.scope');
     },
 
