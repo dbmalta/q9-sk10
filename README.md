@@ -38,10 +38,12 @@ Any Scout organisation that needs a proper membership system but lacks the budge
 - **Policies & acknowledgements** — publish policies to targeted audiences and track who has acknowledged them, with automatic pending-ack notifications
 - **Global search** — topbar search across members, events, articles, and policies
 - **Directory & organogram** — visual org chart and contact list for key roles, visible to members
+- **Admin / member view switcher** — admins can switch into a member-scoped view to see exactly what their members see, with node scoping applied across all module lists
+- **Scoped reports** — reports and email compose default recipients respect the active view scope, so admins report only on what they can see
 - **Multi-language** — built-in i18n with community-shareable JSON language files
 - **GDPR-ready** — consent, data retention, and right-to-erasure features (toggleable for non-EU use)
 - **Audit trail** — every record change is logged
-- **Dark mode** — fully responsive with light and dark mode built in
+- **Refreshed UI** — Heritage Violet accent palette with Inter + Fraunces typography, global footer, and fully responsive light/dark mode
 
 ---
 
