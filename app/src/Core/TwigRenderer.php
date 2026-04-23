@@ -122,6 +122,13 @@ class TwigRenderer
             return $app->getSession()->getFlash();
         }));
 
+        // Take a single flash bucket without consuming the rest — used by the
+        // aria-live announcement region to pop 'view_announce' messages
+        // without touching the main flash stream.
+        $this->twig->addFunction(new TwigFunction('take_flash', function (string $type) use ($app): array {
+            return $app->getSession()->takeFlashOfType($type);
+        }));
+
         // Pending acknowledgements for the current user: {{ pending_acknowledgements() }}
         // Returns { policies: [...], notices: [...], total: int }.
         // Memoised for the request since it is called from both the layout

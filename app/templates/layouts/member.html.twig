@@ -38,6 +38,12 @@
 </nav>
 
 <div class="member-content" style="padding-top: 60px;">
+    {# aria-live announcements (mode/scope change). Consumes view_announce
+       flashes before the main flash loop sees them. #}
+    <div id="view-announce" class="visually-hidden" aria-live="polite" role="status">
+        {% for msg in take_flash('view_announce') %}{{ msg }} {% endfor %}
+    </div>
+
     {# Breadcrumbs #}
     {% if breadcrumbs is not empty %}
     <nav aria-label="breadcrumb" class="container pt-3">

@@ -122,6 +122,22 @@ class Session
     }
 
     /**
+     * Pop a single flash bucket without consuming the rest of the stream.
+     * Returns the stored messages and clears that key only.
+     *
+     * @return array<int, string>
+     */
+    public function takeFlashOfType(string $type): array
+    {
+        $messages = $_SESSION['_flash'][$type] ?? [];
+        unset($_SESSION['_flash'][$type]);
+        if (isset($_SESSION['_flash']) && $_SESSION['_flash'] === []) {
+            unset($_SESSION['_flash']);
+        }
+        return $messages;
+    }
+
+    /**
      * Check if the user is authenticated.
      */
     public function isAuthenticated(): bool

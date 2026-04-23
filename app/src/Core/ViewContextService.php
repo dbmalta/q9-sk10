@@ -23,7 +23,17 @@ class ViewContextService
     public function __construct(
         private readonly Database $db,
         private readonly Session $session,
+        private readonly ?I18n $i18n = null,
     ) {
+    }
+
+    /**
+     * Translate a flash key if an I18n is available, otherwise return
+     * the key verbatim (callers without i18n can translate downstream).
+     */
+    private function tr(string $key): string
+    {
+        return $this->i18n !== null ? $this->i18n->t($key) : $key;
     }
 
     /**
@@ -216,7 +226,7 @@ class ViewContextService
                 return $resolved;
             }
             // Invalid URL scope: fall through, but warn via flash.
-            $this->session->flash('warning', 'view.scope_fallback.revoked');
+            $this->session->flash('warning', $this->tr('view.scope_fallback.revoked'));
         }
 
         // Session
@@ -231,7 +241,7 @@ class ViewContextService
             }
             // Stored scope no longer valid — flash once, fall through.
             $this->session->remove('active_scope_node_id');
-            $this->session->flash('warning', 'view.scope_fallback.revoked');
+            $this->session->flash('warning', $this->tr('view.scope_fallback.revoked'));
         }
 
         // User default

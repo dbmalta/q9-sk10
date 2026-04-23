@@ -164,7 +164,21 @@
 {# --- Sidebar (mobile offcanvas) --- #}
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas">
     <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title fw-semibold">{{ app_name|default('ScoutKeeper') }}</h5>
+        <div class="flex-grow-1">
+            <h5 class="offcanvas-title fw-semibold mb-0">{{ app_name|default('ScoutKeeper') }}</h5>
+            {% if view is defined and (view.shows_mode_pills or view.active_scope) %}
+            <div class="small text-body-secondary mt-1">
+                <span class="badge bg-{{ view.mode == 'admin' ? 'primary' : 'success' }}-subtle text-{{ view.mode == 'admin' ? 'primary' : 'success' }}-emphasis">
+                    <i class="bi {{ view.mode == 'admin' ? 'bi-shield-check' : 'bi-person' }} me-1"></i>{{ t('view.mode.' ~ view.mode) }}
+                </span>
+                {% if view.active_scope %}
+                <span class="ms-1"><i class="bi bi-diagram-3 me-1"></i>{{ view.active_scope.leaf }}</span>
+                {% elseif view.mode == 'admin' %}
+                <span class="ms-1"><i class="bi bi-globe me-1"></i>{{ t('view.scope.all') }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ t('common.close') }}"></button>
     </div>
     <div class="offcanvas-body p-0">
@@ -224,6 +238,13 @@
             {% endfor %}
         </nav>
     </div>
+</div>
+
+{# --- aria-live announcements (mode/scope change). Consume the
+     view_announce flash bucket BEFORE the main flash render so the
+     main flash loop doesn't try to style them as an alert. #}
+<div id="view-announce" class="visually-hidden" aria-live="polite" role="status">
+    {% for msg in take_flash('view_announce') %}{{ msg }} {% endfor %}
 </div>
 
 {# --- Main content area --- #}

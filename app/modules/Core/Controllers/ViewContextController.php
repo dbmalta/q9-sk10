@@ -28,14 +28,16 @@ class ViewContextController extends Controller
 
         $user = $this->app->getSession()->getUser();
         $mode = (string) $this->getParam('mode', '');
-        $service = new ViewContextService($this->app->getDb(), $this->app->getSession());
+        $service = new ViewContextService($this->app->getDb(), $this->app->getSession(), $this->app->getI18n());
 
         try {
             $service->setMode((int) $user['id'], $mode);
         } catch (\InvalidArgumentException $e) {
-            $this->flash('error', 'view.mismatch.title');
+            $this->flash('error', $this->app->getI18n()->t('view.mismatch.body'));
             return $this->redirect($this->safeRedirectTarget());
         }
+
+        $this->flash('view_announce', $this->app->getI18n()->t('view.mode_changed_announcement'));
 
         // Always land on / after a mode switch. The HomeController resolves
         // the correct dashboard for the new mode (admin dashboard vs. member
@@ -53,15 +55,16 @@ class ViewContextController extends Controller
         $raw  = $this->getParam('node_id', null);
         $nodeId = ($raw === 'all' || $raw === null || $raw === '') ? null : (int) $raw;
 
-        $service = new ViewContextService($this->app->getDb(), $this->app->getSession());
+        $service = new ViewContextService($this->app->getDb(), $this->app->getSession(), $this->app->getI18n());
         try {
             $service->setScope((int) $user['id'], $nodeId);
         } catch (\InvalidArgumentException $e) {
             $this->auditInvalidScope((int) $user['id'], $raw);
-            $this->flash('error', 'view.mismatch.title');
+            $this->flash('error', $this->app->getI18n()->t('view.mismatch.body'));
             return $this->redirect($this->safeRedirectTarget());
         }
 
+        $this->flash('view_announce', $this->app->getI18n()->t('view.scope_changed_announcement'));
         return $this->redirect($this->safeRedirectTarget());
     }
 
