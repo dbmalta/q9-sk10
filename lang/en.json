@@ -993,6 +993,8 @@
 
     "registration.target_node_hint_scoped": "Pre-selected from your active scope: {node}.",
 
+    "footer.built_by": "Built by",
+
     "self_edit.title": "Update My Details",
     "self_edit.explainer": "Submit changes to your contact and personal details. A leader will review and approve each change before it takes effect.",
     "self_edit.pending_heading": "Awaiting review",

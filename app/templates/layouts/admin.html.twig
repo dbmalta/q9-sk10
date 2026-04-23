@@ -282,6 +282,8 @@
     <main id="main-content" class="p-4">
         {% block body %}{% endblock %}
     </main>
+
+    {% include "components/_footer.html.twig" ignore missing %}
 </div>
 
 {# Session timeout modal #}

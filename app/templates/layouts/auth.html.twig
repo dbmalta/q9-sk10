@@ -59,7 +59,12 @@
 
     {# Footer #}
     <div class="mt-4 text-center text-body-secondary small">
-        &copy; {{ "now"|date("Y") }} {{ app_name|default('ScoutKeeper') }}
+        <span class="fw-semibold">{{ app_name|default('ScoutKeeper') }}</span> v{{ app_version|default('0.0.0') }}
+        &nbsp;·&nbsp;
+        {{ t('footer.built_by') }}
+        <a href="https://quadnine.com" class="text-body text-decoration-none fw-medium"
+           target="_blank" rel="noopener noreferrer">QuadNine</a>
+        &nbsp;·&nbsp; &copy; {{ "now"|date("Y") }}
     </div>
 </div>
 {% endblock %}
