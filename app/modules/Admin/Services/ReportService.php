@@ -105,12 +105,35 @@ class ReportService
      *
      * @return array{by_gender: array, by_age_group: array}
      */
-    public function getDemographics(): array
+    public function getDemographics(array $scopeNodeIds = []): array
     {
         return [
-            'by_gender' => $this->getGenderBreakdown(),
-            'by_age_group' => $this->getAgeGroupBreakdown(),
+            'by_gender' => $this->getGenderBreakdown($scopeNodeIds),
+            'by_age_group' => $this->getAgeGroupBreakdown($scopeNodeIds),
         ];
+    }
+
+    /**
+     * Build an "EXISTS (SELECT ... member_nodes WHERE node_id IN (...))"
+     * clause + params for scope filtering. Returns [clause, params].
+     *
+     * @param array<int, int> $scopeNodeIds
+     * @return array{0: string, 1: array<string, int>}
+     */
+    private function scopeClause(array $scopeNodeIds, string $memberAlias = 'm'): array
+    {
+        if (empty($scopeNodeIds)) {
+            return ['', []];
+        }
+        $params = [];
+        $placeholders = [];
+        foreach ($scopeNodeIds as $i => $id) {
+            $key = "s_$i";
+            $placeholders[] = ":$key";
+            $params[$key] = (int) $id;
+        }
+        $clause = "EXISTS (SELECT 1 FROM member_nodes mn WHERE mn.member_id = {$memberAlias}.id AND mn.node_id IN (" . implode(',', $placeholders) . "))";
+        return [$clause, $params];
     }
 
     /**
@@ -118,14 +141,28 @@ class ReportService
      *
      * @return array List of [{role, count}]
      */
-    public function getRolesSummary(): array
+    public function getRolesSummary(array $scopeNodeIds = []): array
     {
+        $where = '';
+        $params = [];
+        if (!empty($scopeNodeIds)) {
+            $placeholders = [];
+            foreach ($scopeNodeIds as $i => $id) {
+                $key = "s_$i";
+                $placeholders[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            // Only count assignments anchored at a node inside the scope.
+            $where = "WHERE ra.context_type = 'node' AND ra.context_id IN (" . implode(',', $placeholders) . ")";
+        }
         $rows = $this->db->fetchAll(
             "SELECT r.name AS role, COUNT(*) AS count
              FROM `role_assignments` ra
              JOIN `roles` r ON r.id = ra.role_id
+             {$where}
              GROUP BY r.id, r.name
-             ORDER BY count DESC, r.name ASC"
+             ORDER BY count DESC, r.name ASC",
+            $params
         );
 
         return array_map(fn(array $row) => [
@@ -144,7 +181,7 @@ class ReportService
      * @param string|null $endDate End of date range (Y-m-d), or null for no upper bound
      * @return array List of status change records
      */
-    public function getStatusChanges(?string $startDate = null, ?string $endDate = null): array
+    public function getStatusChanges(?string $startDate = null, ?string $endDate = null, array $scopeNodeIds = []): array
     {
         $conditions = [
             "al.entity_type = 'member'",
@@ -160,6 +197,12 @@ class ReportService
         if ($endDate !== null) {
             $conditions[] = "al.created_at <= :end_date";
             $params['end_date'] = $endDate . ' 23:59:59';
+        }
+
+        if (!empty($scopeNodeIds)) {
+            [$clause, $scopeParams] = $this->scopeClause($scopeNodeIds);
+            $conditions[] = $clause;
+            $params += $scopeParams;
         }
 
         $where = implode(' AND ', $conditions);
@@ -268,13 +311,17 @@ class ReportService
      *
      * @return array List of [{gender, count}]
      */
-    private function getGenderBreakdown(): array
+    private function getGenderBreakdown(array $scopeNodeIds = []): array
     {
+        [$clause, $params] = $this->scopeClause($scopeNodeIds);
+        $where = $clause !== '' ? "WHERE {$clause}" : '';
         $rows = $this->db->fetchAll(
-            "SELECT COALESCE(`gender`, 'Unknown') AS gender, COUNT(*) AS count
-             FROM `members`
+            "SELECT COALESCE(m.`gender`, 'Unknown') AS gender, COUNT(*) AS count
+             FROM `members` m
+             {$where}
              GROUP BY gender
-             ORDER BY count DESC"
+             ORDER BY count DESC",
+            $params
         );
 
         return array_map(fn(array $row) => [
@@ -291,26 +338,29 @@ class ReportService
      *
      * @return array List of [{group, count}]
      */
-    private function getAgeGroupBreakdown(): array
+    private function getAgeGroupBreakdown(array $scopeNodeIds = []): array
     {
+        [$clause, $params] = $this->scopeClause($scopeNodeIds);
+        $where = $clause !== '' ? "WHERE {$clause}" : '';
         $sql = "
             SELECT
                 CASE
-                    WHEN dob IS NULL THEN 'Unknown'
-                    WHEN TIMESTAMPDIFF(YEAR, dob, CURDATE()) < 8 THEN 'Under 8'
-                    WHEN TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN 8 AND 11 THEN '8-11'
-                    WHEN TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN 12 AND 15 THEN '12-15'
-                    WHEN TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN 16 AND 18 THEN '16-18'
-                    WHEN TIMESTAMPDIFF(YEAR, dob, CURDATE()) BETWEEN 19 AND 25 THEN '19-25'
+                    WHEN m.dob IS NULL THEN 'Unknown'
+                    WHEN TIMESTAMPDIFF(YEAR, m.dob, CURDATE()) < 8 THEN 'Under 8'
+                    WHEN TIMESTAMPDIFF(YEAR, m.dob, CURDATE()) BETWEEN 8 AND 11 THEN '8-11'
+                    WHEN TIMESTAMPDIFF(YEAR, m.dob, CURDATE()) BETWEEN 12 AND 15 THEN '12-15'
+                    WHEN TIMESTAMPDIFF(YEAR, m.dob, CURDATE()) BETWEEN 16 AND 18 THEN '16-18'
+                    WHEN TIMESTAMPDIFF(YEAR, m.dob, CURDATE()) BETWEEN 19 AND 25 THEN '19-25'
                     ELSE 'Over 25'
                 END AS age_group,
                 COUNT(*) AS count
-            FROM `members`
+            FROM `members` m
+            {$where}
             GROUP BY age_group
             ORDER BY FIELD(age_group, 'Under 8', '8-11', '12-15', '16-18', '19-25', 'Over 25', 'Unknown')
         ";
 
-        $rows = $this->db->fetchAll($sql);
+        $rows = $this->db->fetchAll($sql, $params);
 
         return array_map(fn(array $row) => [
             'group' => $row['age_group'],

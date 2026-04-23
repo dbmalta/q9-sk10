@@ -64,9 +64,15 @@ class EmailController extends Controller
         $nodes = $this->orgService->getTree();
         $stats = $this->emailService->getQueueStats();
 
+        // Pre-select the active scope node so admins default to emailing
+        // their own patch instead of the entire org (plan Q32).
+        $ctx = $this->resolveViewContext();
+        $preselectedNodeId = $ctx->activeScopeNodeId;
+
         return $this->render('@communications/email/compose.html.twig', [
             'nodes' => $nodes,
             'queue_stats' => $stats,
+            'preselected_node_id' => $preselectedNodeId,
             'breadcrumbs' => [
                 ['label' => $this->t('nav.communications'), 'url' => '/articles'],
                 ['label' => $this->t('email.compose')],

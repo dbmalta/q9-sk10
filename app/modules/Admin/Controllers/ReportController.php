@@ -36,8 +36,12 @@ class ReportController extends Controller
             return $guard;
         }
 
-        $demographics = $this->reportService->getDemographics();
-        $roles = $this->reportService->getRolesSummary();
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+
+        $demographics = $this->reportService->getDemographics($scopeNodeIds);
+        $roles = $this->reportService->getRolesSummary($scopeNodeIds);
 
         return $this->render('@admin/admin/reports/index.html.twig', [
             'demographics' => $demographics,
@@ -96,7 +100,10 @@ class ReportController extends Controller
         $startDate = $request->getParam('start_date') ?: null;
         $endDate = $request->getParam('end_date') ?: null;
 
-        $changes = $this->reportService->getStatusChanges($startDate, $endDate);
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        $changes = $this->reportService->getStatusChanges($startDate, $endDate, $scopeNodeIds);
 
         return $this->render('@admin/admin/reports/status_changes.html.twig', [
             'changes' => $changes,
