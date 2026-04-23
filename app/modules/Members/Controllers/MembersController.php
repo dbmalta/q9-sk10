@@ -49,9 +49,9 @@ class MembersController extends Controller
         $nodeId = $request->getParam('node_id', '');
         $query = trim((string) $request->getParam('q', ''));
 
-        $scopeNodeIds = $this->getScopeNodeIds();
+        $ctx = $this->resolveViewContext();
 
-        $filters = [];
+        $filters = ['query' => $query];
         if ($status !== '') {
             $filters['status'] = $status;
         }
@@ -59,8 +59,29 @@ class MembersController extends Controller
             $filters['node_id'] = (int) $nodeId;
         }
 
-        $result = $this->memberService->search($query, $filters, $page, 25, $scopeNodeIds);
-        $statusCounts = $this->memberService->getStatusCounts($scopeNodeIds);
+        $result = $this->memberService->listScoped($ctx, $filters, $page, 25);
+
+        // If the scoped list is empty, check whether a broader scope would
+        // produce results — this drives the "switch to All nodes" empty-state
+        // action (Q28 in the plan's decision log).
+        $hasResultsInBroaderScope = false;
+        if ($result['total'] === 0 && !$ctx->isAllNodes() && count($ctx->availableScopes) > 1) {
+            $broader = $this->memberService->listScoped(
+                new \App\Core\ViewContext(
+                    $ctx->mode, null, $ctx->availableScopes,
+                    $ctx->canSwitchToAdmin, $ctx->canSwitchToMember,
+                    $ctx->scopeAppliesToCurrentPage,
+                ),
+                $filters,
+                1,
+                1,
+            );
+            $hasResultsInBroaderScope = $broader['total'] > 0;
+        }
+
+        $statusCounts = $this->memberService->getStatusCounts(
+            $this->memberService->expandNodeSubtree($ctx->scopeNodeIds())
+        );
         $nodes = $this->orgService->getTree();
 
         return $this->render('@members/members/index.html.twig', [
@@ -78,6 +99,7 @@ class MembersController extends Controller
             ],
             'status_counts' => $statusCounts,
             'nodes' => $nodes,
+            'has_results_in_broader_scope' => $hasResultsInBroaderScope,
             'breadcrumbs' => [
                 ['label' => $this->t('nav.members')],
             ],
@@ -101,7 +123,21 @@ class MembersController extends Controller
             return $this->render('errors/404.html.twig', [], 404);
         }
 
-        // Check scope access
+        // Scope access: plan Q15 / Q30. If the viewer is in admin mode and
+        // the record falls outside their active scope, check whether it's
+        // their own (or a family-linked) record — silently redirect into
+        // member mode so they can still see their profile — otherwise
+        // render a friendly scope-error page.
+        $ctx = $this->resolveViewContext();
+        if ($ctx->isAdmin() && !$this->memberService->isMemberInScope($memberId, $ctx)) {
+            $user = $this->app->getSession()->get('user') ?? [];
+            $isOwnRecord = ((int) ($member['user_id'] ?? 0) === (int) ($user['id'] ?? 0));
+            if ($isOwnRecord) {
+                return $this->redirect('/me?mode=member');
+            }
+            return $this->render('errors/403.html.twig', [], 403);
+        }
+
         if (!$this->canAccessMember($member)) {
             return $this->render('errors/403.html.twig', [], 403);
         }
@@ -294,7 +330,8 @@ class MembersController extends Controller
             return $guard;
         }
 
-        $scopeNodeIds = $this->getScopeNodeIds();
+        $ctx = $this->resolveViewContext();
+        $scopeNodeIds = $this->memberService->expandNodeSubtree($ctx->scopeNodeIds());
         $changes = $this->memberService->getPendingChanges(null, $scopeNodeIds);
 
         return $this->render('@members/members/pending_changes.html.twig', [

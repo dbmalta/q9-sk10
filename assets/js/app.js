@@ -61,3 +61,33 @@ document.addEventListener('htmx:beforeRequest', () => {
 document.addEventListener('htmx:afterRequest', () => {
     document.body.classList.remove('htmx-requesting');
 });
+
+// --- View switcher: dirty-form confirm + mobile scope submission ---
+window.viewSwitcher = function () {
+    return {
+        maybeConfirm(event) {
+            const dirty = document.querySelector('form[data-dirty="true"]');
+            if (dirty && !confirm('You have unsaved changes. Switch anyway?')) {
+                event.preventDefault();
+            }
+        },
+        submitScope(event) {
+            const form = document.getElementById('view-scope-mobile-form');
+            if (!form) return;
+            form.querySelector('input[name=node_id]').value = event.target.value;
+            // Reuse maybeConfirm logic before submit
+            if (!event.target.dispatchEvent(new Event('will-submit', { cancelable: true }))) return;
+            const dirty = document.querySelector('form[data-dirty="true"]');
+            if (dirty && !confirm('You have unsaved changes. Switch anyway?')) return;
+            form.submit();
+        }
+    };
+};
+
+// Mark a form as dirty on first interactive change so the switcher can warn.
+document.addEventListener('change', (e) => {
+    const form = e.target.closest('form');
+    if (form && !form.matches('[action^="/context/"], [action^="/language/"]')) {
+        form.dataset.dirty = 'true';
+    }
+});

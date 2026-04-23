@@ -1,0 +1,106 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('self_edit.title') }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">{{ t('self_edit.title') }}</h1>
+</div>
+
+<p class="text-body-secondary">{{ t('self_edit.explainer') }}</p>
+
+{% if pending|length > 0 %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-transparent border-bottom">
+        <h5 class="card-title mb-0"><i class="bi bi-hourglass-split me-2"></i>{{ t('self_edit.pending_heading') }}</h5>
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for p in pending %}
+        <li class="list-group-item small">
+            <strong>{{ t('members.' ~ p.field_name)|default(p.field_name) }}:</strong>
+            <span class="text-body-secondary">{{ p.old_value|default('—') }}</span>
+            <i class="bi bi-arrow-right mx-1"></i>
+            <span>{{ p.new_value|default('—') }}</span>
+            <span class="badge bg-warning text-dark ms-2">{{ t('self_edit.awaiting_review') }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="POST" action="/me/profile/edit">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent border-bottom">
+            <h5 class="card-title mb-0">{{ t('members.personal_details') }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="first_name" class="form-label">{{ t('members.first_name') }}</label>
+                    <input type="text" name="first_name" id="first_name" class="form-control" value="{{ member.first_name }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="surname" class="form-label">{{ t('members.surname') }}</label>
+                    <input type="text" name="surname" id="surname" class="form-control" value="{{ member.surname }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="dob" class="form-label">{{ t('members.dob') }}</label>
+                    <input type="date" name="dob" id="dob" class="form-control" value="{{ member.dob }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="gender" class="form-label">{{ t('members.gender') }}</label>
+                    <select name="gender" id="gender" class="form-select">
+                        <option value="">{{ t('common.none') }}</option>
+                        <option value="male"              {{ member.gender == 'male' ? 'selected' : '' }}>{{ t('members.gender_male') }}</option>
+                        <option value="female"            {{ member.gender == 'female' ? 'selected' : '' }}>{{ t('members.gender_female') }}</option>
+                        <option value="other"             {{ member.gender == 'other' ? 'selected' : '' }}>{{ t('members.gender_other') }}</option>
+                        <option value="prefer_not_to_say" {{ member.gender == 'prefer_not_to_say' ? 'selected' : '' }}>{{ t('members.gender_prefer_not_to_say') }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent border-bottom">
+            <h5 class="card-title mb-0">{{ t('members.contact_details') }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">{{ t('members.email') }}</label>
+                    <input type="email" name="email" id="email" class="form-control" value="{{ member.email }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">{{ t('members.phone') }}</label>
+                    <input type="tel" name="phone" id="phone" class="form-control" value="{{ member.phone }}">
+                </div>
+                <div class="col-12">
+                    <label for="address_line1" class="form-label">{{ t('members.address') }}</label>
+                    <input type="text" name="address_line1" id="address_line1" class="form-control mb-2" placeholder="{{ t('members.address_line1') }}" value="{{ member.address_line1 }}">
+                    <input type="text" name="address_line2" class="form-control" placeholder="{{ t('members.address_line2') }}" value="{{ member.address_line2 }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="city" class="form-label">{{ t('members.city') }}</label>
+                    <input type="text" name="city" id="city" class="form-control" value="{{ member.city }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="postcode" class="form-label">{{ t('members.postcode') }}</label>
+                    <input type="text" name="postcode" id="postcode" class="form-control" value="{{ member.postcode }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="country" class="form-label">{{ t('members.country') }}</label>
+                    <input type="text" name="country" id="country" class="form-control" value="{{ member.country }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <a href="/account" class="btn btn-outline-secondary">{{ t('common.cancel') }}</a>
+        <button type="submit" class="btn btn-primary">{{ t('self_edit.submit') }}</button>
+    </div>
+</form>
+{% endblock %}

@@ -8,6 +8,7 @@ use App\Core\Controller;
 use App\Core\Application;
 use App\Core\Request;
 use App\Core\Response;
+use App\Modules\Members\Services\MemberService;
 use App\Modules\Members\Services\RegistrationService;
 use App\Modules\Members\Services\BulkImportService;
 use App\Modules\Members\Services\WaitingListService;
@@ -47,7 +48,12 @@ class RegistrationController extends Controller
             return $guard;
         }
 
-        $scopeNodeIds = $this->app->getPermissionResolver()->getScopeNodeIds();
+        // Scope by ViewContext (plan Q2/Q22): the pending-approval queue must
+        // respect the admin's active scope, expanded to the full subtree via
+        // org_closure so a district admin sees applicants at every descendant.
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
         $registrations = $this->registrationService->getPendingRegistrations($scopeNodeIds);
 
         return $this->render('@members/registration/pending.html.twig', [

@@ -62,7 +62,10 @@ class DirectoryController extends Controller
         $nodeId = $request->getParam('node_id') ? (int) $request->getParam('node_id') : null;
         $search = $request->getParam('search') ? trim((string) $request->getParam('search')) : null;
 
-        $contacts = $this->directoryService->getContactDirectory($nodeId, $search);
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        $contacts = $this->directoryService->getContactDirectory($nodeId, $search, $scopeNodeIds);
         $nodes = $this->orgService->getTree();
 
         return $this->render('@directory/directory/contacts.html.twig', [

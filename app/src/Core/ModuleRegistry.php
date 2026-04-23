@@ -77,10 +77,16 @@ class ModuleRegistry
     /**
      * Get navigation items grouped by section, sorted, and filtered by permissions.
      *
+     * Each nav item may declare which view modes it appears in via `modes`
+     * (e.g. ['admin'], ['member'], ['admin', 'member']). Items without an
+     * explicit `modes` key default to admin-only — this matches every
+     * pre-existing nav item, so adding the filter is a no-op for them.
+     *
      * @param array|null $user The current user data (null if not authenticated)
+     * @param string $mode View mode to filter by ('admin' or 'member')
      * @return array<string, array> Navigation groups with their items
      */
-    public function getNavItems(?array $user): array
+    public function getNavItems(?array $user, string $mode = 'admin'): array
     {
         $groups = [];
 
@@ -102,6 +108,11 @@ class ModuleRegistry
                 // TODO: Check permissions when PermissionResolver is implemented
                 // For now, show all nav items to authenticated users
                 if ($user === null && ($nav['requires_auth'] ?? true)) {
+                    continue;
+                }
+
+                $itemModes = $nav['modes'] ?? ['admin'];
+                if (!in_array($mode, $itemModes, true)) {
                     continue;
                 }
 

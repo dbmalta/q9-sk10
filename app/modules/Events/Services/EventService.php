@@ -237,7 +237,7 @@ class EventService
      * @param int $perPage Items per page
      * @return array{items: array, total: int, page: int, pages: int, per_page: int}
      */
-    public function getAll(int $page = 1, int $perPage = 20, ?int $year = null, ?int $month = null): array
+    public function getAll(int $page = 1, int $perPage = 20, ?int $year = null, ?int $month = null, array $scopeNodeIds = []): array
     {
         $conditions = '1=1';
         $params = [];
@@ -248,6 +248,16 @@ class EventService
         if ($month !== null) {
             $conditions .= ' AND MONTH(e.start_date) = :month';
             $params['month'] = $month;
+        }
+        if (!empty($scopeNodeIds)) {
+            // Include events scoped to any given node OR org-wide (null).
+            $placeholders = [];
+            foreach ($scopeNodeIds as $i => $id) {
+                $key = "n_$i";
+                $placeholders[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            $conditions .= ' AND (e.node_scope_id IN (' . implode(',', $placeholders) . ') OR e.node_scope_id IS NULL)';
         }
 
         $total = (int) $this->db->fetchColumn(

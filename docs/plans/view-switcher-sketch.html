@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ScoutKeeper — View Switcher Sketch</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+    body { background: var(--bs-body-bg); }
+    .topbar {
+        background: var(--bs-body-bg);
+        border-bottom: 1px solid var(--bs-border-color);
+        padding: .5rem 1rem;
+    }
+    .topbar.mode-admin  { box-shadow: inset 0 -2px 0 var(--bs-primary); }
+    .topbar.mode-member { box-shadow: inset 0 -2px 0 var(--bs-success); }
+    .mock-page { max-width: 1040px; margin: 2rem auto; padding: 0 1rem; }
+    .mock-label { color: var(--bs-secondary); font-size: .85rem; margin: 1.5rem 0 .5rem; text-transform: uppercase; letter-spacing: .05em; }
+    pre { background: var(--bs-tertiary-bg); padding: 1rem; border-radius: .5rem; font-size: .85rem; overflow-x: auto; }
+    code { background: var(--bs-tertiary-bg); padding: .1em .3em; border-radius: .25rem; }
+    pre code { background: transparent; padding: 0; }
+    .scenario { border: 1px solid var(--bs-border-color); border-radius: .75rem; overflow: hidden; margin-bottom: 1.5rem; }
+    .scenario-caption { background: var(--bs-tertiary-bg); padding: .5rem 1rem; font-weight: 500; font-size: .9rem; }
+    details { margin-bottom: .5rem; }
+    details > summary { cursor: pointer; font-weight: 500; padding: .25rem 0; }
+    .decision-group { margin-bottom: 1rem; }
+    .decision-group h3 { font-size: 1rem; margin-bottom: .5rem; color: var(--bs-secondary); text-transform: uppercase; letter-spacing: .05em; }
+    .decision-group ul { margin-bottom: 0; }
+    .decision-group li { margin-bottom: .35rem; }
+</style>
+</head>
+<body>
+
+<div class="mock-page">
+    <h1 class="mb-1">View Switcher — Visual Sketch &amp; Decisions</h1>
+    <p class="text-body-secondary">Mode pills (Member / Admin) + node scope picker in the topbar. Only renders when the user has at least one admin scope. An admin scope can be any node in the org hierarchy (district, group, team, etc.). Full decision log from 40 Q&amp;A below.</p>
+
+    <h2 class="h4 mt-4">Scenarios</h2>
+
+    <div class="mock-label">Scenario A — Admin mode, scope "All nodes"</div>
+    <div class="scenario">
+        <div class="scenario-caption">Volunteer with admin rights at two nodes. In admin mode. No specific scope selected (aggregate view).</div>
+        <nav class="topbar mode-admin d-flex align-items-center">
+            <span class="fw-semibold me-3">ScoutKeeper</span>
+            <div class="d-flex align-items-center gap-2 me-3">
+                <div class="btn-group btn-group-sm" role="group" aria-label="View mode">
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-person me-1"></i>Member</button>
+                    <button type="button" class="btn btn-outline-secondary active"><i class="bi bi-shield-check me-1"></i>Admin</button>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-diagram-3 me-1"></i><span>All nodes</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item active"><i class="bi bi-globe me-2"></i>All nodes</button></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item">District A</button></li>
+                        <li><button class="dropdown-item">District A &rsaquo; Group 1</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <i class="bi bi-globe2"></i>
+                <i class="bi bi-person-circle"></i>
+            </div>
+        </nav>
+        <div class="p-3 small text-body-secondary">Lists show records across every node the user has rights to, with a node label column. Per-row capability checks drive edit/delete visibility.</div>
+    </div>
+
+    <div class="mock-label">Scenario B — Admin mode, scope "District A"</div>
+    <div class="scenario">
+        <div class="scenario-caption">Same user, filtered to one district. Blue accent stripe signals admin mode. Scope picker shows <em>leaf + parent</em> when deep in the tree.</div>
+        <nav class="topbar mode-admin d-flex align-items-center">
+            <span class="fw-semibold me-3">ScoutKeeper</span>
+            <div class="d-flex align-items-center gap-2 me-3">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-person me-1"></i>Member</button>
+                    <button type="button" class="btn btn-outline-secondary active"><i class="bi bi-shield-check me-1"></i>Admin</button>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-diagram-3 me-1"></i><span>District A</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item"><i class="bi bi-globe me-2"></i>All nodes</button></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item active">District A</button></li>
+                        <li><button class="dropdown-item">District A &rsaquo; Group 1</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <i class="bi bi-globe2"></i>
+                <i class="bi bi-person-circle"></i>
+            </div>
+        </nav>
+        <div class="p-3 small text-body-secondary">All scopable queries filter by <code>org_closure</code> subtree of node 4.</div>
+    </div>
+
+    <div class="mock-label">Scenario C — Member mode</div>
+    <div class="scenario">
+        <div class="scenario-caption">Same user toggled into member mode. Green stripe, no scope picker. "My people" view only — profile + participation views.</div>
+        <nav class="topbar mode-member d-flex align-items-center">
+            <span class="fw-semibold me-3">ScoutKeeper</span>
+            <div class="d-flex align-items-center gap-2 me-3">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary active"><i class="bi bi-person me-1"></i>Member</button>
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-shield-check me-1"></i>Admin</button>
+                </div>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <i class="bi bi-globe2"></i>
+                <i class="bi bi-person-circle"></i>
+            </div>
+        </nav>
+        <div class="p-3 small text-body-secondary">Shows: my profile, my upcoming events, my achievements, my children's records, my RSVPs, fees — always unscoped (includes secondary memberships).</div>
+    </div>
+
+    <div class="mock-label">Scenario D — Pure member (no admin scopes) OR pure admin (no member record)</div>
+    <div class="scenario">
+        <div class="scenario-caption">Switcher hidden entirely. Pure member sees member-only chrome; admin-only user (e.g. district coordinator) sees admin chrome with scope picker but no mode pills.</div>
+        <nav class="topbar mode-member d-flex align-items-center">
+            <span class="fw-semibold me-3">ScoutKeeper</span>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <i class="bi bi-globe2"></i>
+                <i class="bi bi-person-circle"></i>
+            </div>
+        </nav>
+    </div>
+
+    <div class="mock-label">Scenario E — Admin mode on a non-scopable page (e.g. system settings)</div>
+    <div class="scenario">
+        <div class="scenario-caption">Scope pill is hidden. Mode pills remain so the user can exit admin mode.</div>
+        <nav class="topbar mode-admin d-flex align-items-center">
+            <span class="fw-semibold me-3">ScoutKeeper</span>
+            <div class="d-flex align-items-center gap-2 me-3">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-person me-1"></i>Member</button>
+                    <button type="button" class="btn btn-outline-secondary active"><i class="bi bi-shield-check me-1"></i>Admin</button>
+                </div>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <i class="bi bi-globe2"></i>
+                <i class="bi bi-person-circle"></i>
+            </div>
+        </nav>
+    </div>
+
+    <div class="mock-label">Scenario F — Single-scope admin</div>
+    <div class="scenario">
+        <div class="scenario-caption">User has admin rights at exactly one node. Scope picker hidden entirely; the node is implicit and shown via breadcrumbs/page headers.</div>
+        <nav class="topbar mode-admin d-flex align-items-center">
+            <span class="fw-semibold me-3">ScoutKeeper</span>
+            <div class="d-flex align-items-center gap-2 me-3">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-person me-1"></i>Member</button>
+                    <button type="button" class="btn btn-outline-secondary active"><i class="bi bi-shield-check me-1"></i>Admin</button>
+                </div>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <i class="bi bi-globe2"></i>
+                <i class="bi bi-person-circle"></i>
+            </div>
+        </nav>
+    </div>
+
+    <hr class="my-4">
+
+    <h2 class="h4">Decisions (40 questions resolved)</h2>
+
+    <div class="decision-group">
+        <h3>Core model</h3>
+        <ul>
+            <li><strong>Terminology:</strong> "Admin" mode (fits volunteers). Scope is any node in the org hierarchy.</li>
+            <li><strong>Scoping pattern:</strong> single active scope at a time, with "All nodes" as aggregate.</li>
+            <li><strong>Scope inheritance:</strong> picker lists only explicit assignments; cascade via <code>org_closure</code>.</li>
+            <li><strong>Security principle:</strong> toggle is UX; server-side permission checks are always authoritative.</li>
+            <li><strong>Setup wizard:</strong> first admin assigned at root node — no super-admin bypass; closure table handles "everything".</li>
+        </ul>
+    </div>
+
+    <div class="decision-group">
+        <h3>UX rules</h3>
+        <ul>
+            <li><strong>Non-scopable pages:</strong> hide scope pill; keep mode pills.</li>
+            <li><strong>Member mode:</strong> never shows scope picker.</li>
+            <li><strong>Single-scope user:</strong> hide scope picker entirely.</li>
+            <li><strong>Admin-only user (no member record):</strong> hide mode pills entirely.</li>
+            <li><strong>Default mode on login:</strong> remember last per-user; stored on <code>users</code> row.</li>
+            <li><strong>Last-selected scope fallback:</strong> if invalid (deleted / revoked), fall back to single valid scope or "All nodes", with one-time flash message.</li>
+            <li><strong>Scope picker label:</strong> leaf + parent (e.g. <em>Group 1 &rsaquo; Patrol Blue</em>); full path in dropdown.</li>
+            <li><strong>Mobile layout:</strong> switcher moves into offcanvas sidebar header.</li>
+            <li><strong>Landing page:</strong> <code>/</code> and brand link resolve to the correct dashboard for current mode.</li>
+            <li><strong>Empty states:</strong> two-state — truly empty vs. scope-empty; latter offers "switch to All nodes".</li>
+            <li><strong>Unsaved forms:</strong> confirm dialog on scope switch if form is dirty.</li>
+            <li><strong>Keyboard shortcut:</strong> none in v1.</li>
+            <li><strong>Member mode content:</strong> profile + participation (events, achievements, children, RSVPs, fees).</li>
+        </ul>
+    </div>
+
+    <div class="decision-group">
+        <h3>Data &amp; semantics</h3>
+        <ul>
+            <li><strong>"All nodes" with mixed rights:</strong> union of readable records; per-row capability checks drive write buttons.</li>
+            <li><strong>Mixed roles across tree:</strong> per-row capability check based on that row's node.</li>
+            <li><strong>Cross-node records:</strong> single owning <code>node_id</code> + visibility cascade (visible to ancestors and descendants of owning node).</li>
+            <li><strong>Multi-node membership:</strong> primary <code>node_id</code> on member + optional secondary memberships via link table.</li>
+            <li><strong>Registrations:</strong> applicant specifies <code>target_node_id</code> at registration; routed to admins at that node.</li>
+            <li><strong>Bulk import:</strong> always requires explicit target node (pre-selected from active scope if available).</li>
+            <li><strong>Out-of-scope record access:</strong> silent redirect to member mode if the record is one of their own; otherwise friendly error.</li>
+        </ul>
+    </div>
+
+    <div class="decision-group">
+        <h3>URLs &amp; navigation</h3>
+        <ul>
+            <li><strong>Scope in URL:</strong> <code>?scope=&lt;id&gt;</code> or <code>?scope=all</code>; session seeds default; URL wins when present.</li>
+            <li><strong>Mode in URL:</strong> explicit <code>?mode=admin|member</code>; middleware injects it into admin-generated links.</li>
+            <li><strong>Multi-tab:</strong> URL is truth; session only seeds initial value.</li>
+            <li><strong>Scope is global:</strong> active scope applies to every scopable module uniformly.</li>
+        </ul>
+    </div>
+
+    <div class="decision-group">
+        <h3>Module-specific behaviour</h3>
+        <ul>
+            <li><strong>Search:</strong> scope-aware default with a "search all my nodes" toggle in results.</li>
+            <li><strong>Audit:</strong> scope-filtered where possible; system-level entries visible only at "All nodes". Requires optional <code>node_id</code> on <code>audit_log</code>.</li>
+            <li><strong>Reports:</strong> respect active scope.</li>
+            <li><strong>iCal feed:</strong> ignores scope; returns everything the user can see (personal schedule).</li>
+            <li><strong>Export:</strong> respects active scope.</li>
+            <li><strong>Backup:</strong> ignores scope (must be complete for restore).</li>
+            <li><strong>Impersonation (if planned):</strong> inherit target user's mode + scope.</li>
+            <li><strong>Emails:</strong> outbound links embed mode+scope appropriate to the email's purpose.</li>
+            <li><strong>Cron:</strong> no session scope; generated links embed mode+scope per Q13.</li>
+        </ul>
+    </div>
+
+    <div class="decision-group">
+        <h3>Security &amp; integrity</h3>
+        <ul>
+            <li><strong>Scope validation on submit:</strong> re-query <code>role_assignment_scopes</code> on every switch.</li>
+            <li><strong>Invalid scope submission:</strong> flash error + audit log entry; no rate limiting in v1.</li>
+            <li><strong>Audit entries:</strong> record <code>view_mode</code> and <code>active_scope_node_id</code> at time of action.</li>
+            <li><strong>Session cache invalidation:</strong> bust <code>scope_cache</code> on any role-assignment write.</li>
+        </ul>
+    </div>
+
+    <div class="decision-group">
+        <h3>Non-functional</h3>
+        <ul>
+            <li><strong>i18n keys:</strong> grouped under <code>view.*</code>.</li>
+            <li><strong>Accessibility:</strong> standard ARIA labels + <code>aria-live</code> region announcing mode/scope changes.</li>
+            <li><strong>Performance:</strong> no materialised descendant cache in session — rely on <code>org_closure</code> join at query time.</li>
+            <li><strong>Testing:</strong> unit tests for <code>ViewContextService</code> + integration tests per scopable service + E2E for critical flows.</li>
+            <li><strong>Rollout:</strong> no feature flag — ship it (pre-v1, no existing users).</li>
+            <li><strong>Documentation:</strong> update CLAUDE.md + save memory entry <em>after</em> implementation lands.</li>
+        </ul>
+    </div>
+
+    <hr class="my-4">
+
+    <h2 class="h4">Session shape</h2>
+<pre>$_SESSION['view_mode']            = 'member' | 'admin';
+$_SESSION['active_scope_node_id'] = int | null;   // null = "All nodes"
+$_SESSION['scope_cache']          = [             // rebuilt on login / role change
+    ['node_id' => 4,  'path' => 'District A',                 'leaf' => 'District A'],
+    ['node_id' => 12, 'path' => 'District A &rsaquo; Group 1', 'leaf' => 'Group 1'],
+];
+// URL params ?mode= and ?scope= override session on a per-request basis.</pre>
+
+    <h2 class="h4 mt-4">DB additions</h2>
+    <ul>
+        <li><code>users.view_mode_last</code> enum('admin','member')</li>
+        <li><code>users.scope_node_id_last</code> int null</li>
+        <li><code>audit_log.node_id</code> int null (for scope-filtered audit view)</li>
+        <li><code>audit_log.view_mode</code> varchar(10) null (for forensic context)</li>
+        <li>New link table <code>member_node_memberships</code> for secondary memberships (primary stays on <code>members.node_id</code>)</li>
+    </ul>
+
+    <h2 class="h4 mt-4">Endpoints</h2>
+    <ul>
+        <li><code>POST /context/mode</code> — body: <code>mode=admin|member</code></li>
+        <li><code>POST /context/scope</code> — body: <code>node_id=&lt;int&gt;</code> or <code>node_id=all</code></li>
+    </ul>
+    <p class="small text-body-secondary">Both CSRF-protected; both redirect to <code>redirect_to</code>. Both persist to <code>users</code> table.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

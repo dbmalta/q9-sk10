@@ -10,6 +10,8 @@ use App\Modules\Members\Controllers\AttachmentController;
 use App\Modules\Members\Controllers\MemberTabsController;
 use App\Modules\Members\Controllers\RegistrationController;
 use App\Modules\Members\Controllers\PublicRegistrationController;
+use App\Modules\Members\Controllers\MemberSelfEditController;
+use App\Modules\Members\Controllers\MemberDashboardController;
 
 return [
     'id' => 'members',
@@ -17,6 +19,33 @@ return [
     'version' => trim(@file_get_contents(ROOT_PATH . '/VERSION') ?: '0.0.0'),
 
     'nav' => [
+        // ── Member-mode (portal) ───────────────────────────────────────
+        [
+            'group' => '_top',
+            'label' => 'nav.dashboard',
+            'icon'  => 'bi-house-door',
+            'route' => '/me',
+            'order' => 10,
+            'modes' => ['member'],
+        ],
+        [
+            'group' => '_top',
+            'label' => 'nav.view_profile',
+            'icon'  => 'bi-person',
+            'route' => '/me/profile',
+            'order' => 20,
+            'modes' => ['member'],
+        ],
+        [
+            'group' => '_top',
+            'label' => 'nav.edit_profile',
+            'icon'  => 'bi-pencil-square',
+            'route' => '/me/profile/edit',
+            'order' => 30,
+            'modes' => ['member'],
+        ],
+
+        // ── Admin-mode ─────────────────────────────────────────────────
         [
             'label' => 'nav.members',
             'icon' => 'bi-people',
@@ -68,6 +97,14 @@ return [
     ],
 
     'routes' => function (\App\Core\Router $router): void {
+        // Member landing page
+        $router->get('/me',          [MemberDashboardController::class, 'show'],           'me.dashboard');
+        $router->get('/me/profile',  [MemberDashboardController::class, 'viewOwnProfile'], 'me.profile.view');
+
+        // Self-service profile edit (suggestions go to pending-changes queue)
+        $router->get('/me/profile/edit',  [MemberSelfEditController::class, 'edit'], 'me.profile.edit');
+        $router->post('/me/profile/edit', [MemberSelfEditController::class, 'save'], 'me.profile.save');
+
         // Member list
         $router->get('/members', [MembersController::class, 'index'], 'members.index');
 

@@ -21,33 +21,83 @@
     --sk-radius-sm: 0.25rem;  /* small elements */
 
     /* Shadows */
-    --sk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --sk-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-    --sk-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --sk-shadow-sm: 0 1px 2px rgba(20, 18, 28, 0.05);
+    --sk-shadow-md: 0 4px 12px rgba(20, 18, 28, 0.07), 0 2px 4px rgba(20, 18, 28, 0.04);
+    --sk-shadow-lg: 0 10px 24px rgba(20, 18, 28, 0.10), 0 4px 8px rgba(20, 18, 28, 0.05);
 
     /* Sidebar */
     --sk-sidebar-width: 260px;
     --sk-sidebar-collapsed-width: 64px;
     --sk-topbar-height: 56px;
 
+    /* ---------------------------------------------------------------
+       Heritage Violet — ScoutKeeper default accent palette
+       Tenant branding can override --sk-accent / --sk-accent-hover /
+       --sk-accent-rgb via the conditional <style> block in base.twig.
+       Soft surfaces use rgba(var(--sk-accent-rgb), alpha) so tenant
+       overrides propagate without needing a full tonal scale.
+       --------------------------------------------------------------- */
+    --sk-accent-50:  #F8F4FC;
+    --sk-accent-100: #ECE0F5;
+    --sk-accent-200: #D9C2EA;
+    --sk-accent-300: #BE9ADB;
+    --sk-accent-400: #9E71C7;
+    --sk-accent-500: #6B3FA0;
+    --sk-accent-600: #582F87;
+    --sk-accent-700: #46256D;
+    --sk-accent-800: #371C56;
+    --sk-accent-900: #27143E;
+    --sk-accent-950: #170B26;
+
+    /* Semantic roles (tenant-overridable) */
+    --sk-accent:        var(--sk-accent-500);
+    --sk-accent-hover:  var(--sk-accent-600);
+    --sk-accent-active: var(--sk-accent-700);
+    --sk-accent-strong: var(--sk-accent-700);
+    --sk-accent-fg:     #ffffff;
+    --sk-accent-rgb:    107, 63, 160;
+    --sk-accent-soft:       rgba(var(--sk-accent-rgb), 0.10);
+    --sk-accent-soft-hover: rgba(var(--sk-accent-rgb), 0.18);
+    --sk-accent-ring:       rgba(var(--sk-accent-rgb), 0.25);
+
     /* Light mode palette */
-    --sk-accent: #2563eb;
-    --sk-accent-hover: #1d4ed8;
     --sk-surface: #ffffff;
-    --sk-surface-secondary: #f8f9fa;
-    --sk-border: #e5e7eb;
-    --sk-text: #111827;
-    --sk-text-secondary: #6b7280;
+    --sk-surface-secondary: #faf9fb;
+    --sk-border: #e8e6ec;
+    --sk-text: #1c1b1f;
+    --sk-text-secondary: #605d67;
+
+    /* Bootstrap token overrides — cascades to every .btn-primary,
+       .form-check-input:checked, .link-primary, .text-primary, etc. */
+    --bs-primary: var(--sk-accent);
+    --bs-primary-rgb: var(--sk-accent-rgb);
+    --bs-link-color: var(--sk-accent-strong);
+    --bs-link-hover-color: var(--sk-accent-active);
+    --bs-link-color-rgb: 70, 37, 109;
 }
 
 [data-bs-theme="dark"] {
-    --sk-accent: #3b82f6;
-    --sk-accent-hover: #60a5fa;
-    --sk-surface: #1f2937;
-    --sk-surface-secondary: #111827;
-    --sk-border: #374151;
-    --sk-text: #f9fafb;
-    --sk-text-secondary: #9ca3af;
+    --sk-accent:        var(--sk-accent-400);
+    --sk-accent-hover:  var(--sk-accent-300);
+    --sk-accent-active: var(--sk-accent-200);
+    --sk-accent-strong: var(--sk-accent-200);
+    --sk-accent-fg:     #1c1033;
+    --sk-accent-rgb:    158, 113, 199;
+    --sk-accent-soft:       rgba(var(--sk-accent-rgb), 0.18);
+    --sk-accent-soft-hover: rgba(var(--sk-accent-rgb), 0.28);
+    --sk-accent-ring:       rgba(var(--sk-accent-rgb), 0.35);
+
+    --sk-surface: #1c1b22;
+    --sk-surface-secondary: #14131a;
+    --sk-border: #2e2d36;
+    --sk-text: #ecebf0;
+    --sk-text-secondary: #9a98a4;
+
+    --bs-primary: var(--sk-accent);
+    --bs-primary-rgb: var(--sk-accent-rgb);
+    --bs-link-color: var(--sk-accent-strong);
+    --bs-link-hover-color: var(--sk-accent-active);
+    --bs-link-color-rgb: 217, 194, 234;
 }
 
 /* ===========================
@@ -55,14 +105,35 @@
    =========================== */
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                  "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Focus rings (accessibility) */
+/* Display typography — Fraunces on top-level page headings adds
+   character without shouting. Kept out of component headings (h4-h6)
+   and card titles to preserve density. */
+h1, .h1, h2, .h2 {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    font-feature-settings: 'ss01';
+}
+
+/* Focus rings (accessibility) — use the accent ring token so tenant
+   overrides flow through. Solid outline + soft halo. */
 :focus-visible {
     outline: 2px solid var(--sk-accent) !important;
     outline-offset: 2px !important;
+}
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 0.25rem var(--sk-accent-ring) !important;
 }
 
 /* Minimum touch target (44x44px) */
@@ -93,17 +164,55 @@ body {
 .btn {
     border-radius: var(--sk-radius-md);
     font-weight: 500;
-    transition: all 0.15s ease;
+    transition: background-color 0.12s ease, border-color 0.12s ease,
+                color 0.12s ease, box-shadow 0.12s ease, transform 0.06s ease;
 }
+
+.btn:active { transform: translateY(0.5px); }
 
 .btn-primary {
     background-color: var(--sk-accent);
     border-color: var(--sk-accent);
+    color: var(--sk-accent-fg);
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus {
     background-color: var(--sk-accent-hover);
     border-color: var(--sk-accent-hover);
+    color: var(--sk-accent-fg);
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.btn-check:checked + .btn-primary {
+    background-color: var(--sk-accent-active) !important;
+    border-color: var(--sk-accent-active) !important;
+    color: var(--sk-accent-fg) !important;
+}
+
+.btn-outline-primary {
+    color: var(--sk-accent-strong);
+    border-color: var(--sk-accent);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--sk-accent);
+    border-color: var(--sk-accent);
+    color: var(--sk-accent-fg);
+}
+
+/* Soft/ghost secondary that sits well beside a primary without
+   competing — our preferred "Cancel" companion on Heritage Violet. */
+.btn-soft-primary {
+    background-color: var(--sk-accent-soft);
+    border-color: transparent;
+    color: var(--sk-accent-strong);
+}
+.btn-soft-primary:hover,
+.btn-soft-primary:focus {
+    background-color: var(--sk-accent-soft-hover);
+    color: var(--sk-accent-strong);
 }
 
 /* ===========================
@@ -118,8 +227,30 @@ body {
 
 .form-control:focus, .form-select:focus {
     border-color: var(--sk-accent);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 3px var(--sk-accent-ring);
 }
+
+/* Checkboxes and toggles — override Bootstrap's default blue focus
+   halo. The :checked background inherits from --bs-primary (set above). */
+.form-check-input:checked {
+    background-color: var(--sk-accent);
+    border-color: var(--sk-accent);
+}
+.form-check-input:focus {
+    border-color: var(--sk-accent);
+    box-shadow: 0 0 0 0.25rem var(--sk-accent-ring);
+}
+.form-check-input:active { filter: brightness(0.92); }
+
+/* Toggle switch — inject the white-knob SVG on the checked state so
+   it renders against our violet, not Bootstrap's blue. */
+.form-switch .form-check-input:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+/* Range slider thumb */
+.form-range::-webkit-slider-thumb { background-color: var(--sk-accent); }
+.form-range::-moz-range-thumb     { background-color: var(--sk-accent); }
 
 /* ===========================
    Table Styling
@@ -377,3 +508,12 @@ body {
 .wysiwyg-editor h3:last-child {
     margin-bottom: 0;
 }
+
+/* ============================
+   View Switcher — mode accent
+   ============================ */
+.topbar.mode-admin  { box-shadow: inset 0 -2px 0 var(--bs-primary); }
+.topbar.mode-member { box-shadow: inset 0 -2px 0 var(--bs-success); }
+.view-switcher form { display: inline-block; }
+.view-switcher .dropdown-item.active,
+.view-switcher .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }

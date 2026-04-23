@@ -10,8 +10,10 @@ return [
     'version' => trim(@file_get_contents(ROOT_PATH . '/VERSION') ?: '0.0.0'),
     'system' => true,
 
-    // No nav entry — auth is a system module
-    // 'nav' => ...
+    // Member-mode nav stub — keeps the sidebar useful until the full member
+    // portal lands in Phase 5+. Points at /account which already exists.
+    // No nav entry — member-mode nav now lives on the Members module so it
+    // can share /me/* routes with the member dashboard.
 
     'routes' => function (\App\Core\Router $router): void {
         // Login

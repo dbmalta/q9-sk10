@@ -373,6 +373,7 @@ class FilflaDemoSeeder
             'is_super_admin' => 1,
             'is_active' => 1,
             'password_changed_at' => $now,
+            'view_mode_last' => 'admin',
         ]);
 
         $memberId = $this->db->insert('members', [

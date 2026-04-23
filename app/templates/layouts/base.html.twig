@@ -33,6 +33,11 @@
         Skip to content
     </a>
 
+    {# Live region for mode/scope-change announcements. Populated by JS after
+       successful POST /context/{mode,scope}; Phase 8 will wire a flash-keyed
+       channel that doesn't consume the main flash stream. #}
+    <div id="view-announce" class="visually-hidden" aria-live="polite" role="status"></div>
+
     {% block layout %}{% endblock %}
 
     {% block body_wrapper %}

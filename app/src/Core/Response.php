@@ -30,6 +30,11 @@ class Response
     {
         $response = new self($statusCode, $content);
         $response->setHeader('Content-Type', 'text/html; charset=UTF-8');
+        // Authenticated admin pages change on every request based on session
+        // state (flash messages, pending-change counts, scope). Without this,
+        // browsers can serve a stale page after POST→302→GET flows and mask
+        // successful writes (e.g. "I approved but the row is still listed").
+        $response->setHeader('Cache-Control', 'no-store, must-revalidate');
         return $response;
     }
 

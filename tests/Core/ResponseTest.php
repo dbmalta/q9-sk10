@@ -30,6 +30,17 @@ class ResponseTest extends TestCase
         $this->assertSame('text/html; charset=UTF-8', $response->getHeaders()['Content-Type']);
     }
 
+    /**
+     * Regression guard: after the pending-changes / approval-UI bug caused
+     * by browser caching (POST → 302 → GET serving stale HTML), every
+     * authenticated HTML response must set Cache-Control: no-store.
+     */
+    public function testHtmlFactorySetsNoStoreCacheControl(): void
+    {
+        $response = Response::html('<p>hi</p>');
+        $this->assertSame('no-store, must-revalidate', $response->getHeaders()['Cache-Control'] ?? '');
+    }
+
     public function testJsonFactoryMethod(): void
     {
         $response = Response::json(['name' => 'test']);

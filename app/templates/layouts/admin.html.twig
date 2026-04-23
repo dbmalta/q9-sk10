@@ -4,7 +4,7 @@
 
 {% block body_wrapper %}
 {# --- Topbar --- #}
-<nav class="topbar navbar navbar-expand fixed-top border-bottom bg-body">
+<nav class="topbar navbar navbar-expand fixed-top border-bottom bg-body mode-{{ view.mode|default('admin') }}">
     <div class="container-fluid">
         {# Left: hamburger + logo #}
         <div class="d-flex align-items-center">
@@ -18,9 +18,10 @@
                     x-data x-on:click="$store.sidebar.toggle()">
                 <i class="bi bi-list fs-4"></i>
             </button>
-            <a href="/admin/dashboard" class="navbar-brand mb-0 fw-semibold text-body text-decoration-none">
+            <a href="/" class="navbar-brand mb-0 fw-semibold text-body text-decoration-none">
                 {{ app_name|default('ScoutKeeper') }}
             </a>
+            {% include "components/_view_switcher.html.twig" ignore missing %}
         </div>
 
         {# Centre: search (desktop only) #}
@@ -118,7 +119,7 @@
         {% endif %}
     {% endfor %}
 {% endfor %}
-<aside class="sidebar d-none d-lg-block" x-data :class="$store.sidebar.collapsed ? 'sidebar-collapsed' : ''">
+<aside class="sidebar {{ nav_items is empty ? 'd-none' : 'd-none d-lg-block' }}" x-data :class="$store.sidebar.collapsed ? 'sidebar-collapsed' : ''">
     <nav class="sidebar-nav">
         {% for group_id, items in nav_items %}
         <div class="sidebar-group">
@@ -167,6 +168,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ t('common.close') }}"></button>
     </div>
     <div class="offcanvas-body p-0">
+        {% include "components/_view_switcher_mobile.html.twig" ignore missing %}
         {# Search (mobile) — no <form> wrapper, same rationale as desktop. #}
         <div class="p-3 border-bottom">
             <div class="input-group input-group-sm">

@@ -152,6 +152,69 @@ class ModuleRegistryTest extends TestCase
         $this->assertArrayHasKey('admin.manage', $permissions);
     }
 
+    public function testNavWithNoModesDeclaredDefaultsToAdminOnly(): void
+    {
+        // The two pre-existing modules in setUp() do NOT declare `modes`.
+        // They must therefore appear in admin mode and be hidden in member.
+        $registry = new ModuleRegistry();
+        $registry->loadModules($this->modulesPath);
+
+        $adminNav = $registry->getNavItems(['id' => 1], 'admin');
+        $adminFlat = [];
+        foreach ($adminNav as $items) { foreach ($items as $i) { $adminFlat[] = $i['id']; } }
+        $this->assertContains('test_module', $adminFlat);
+
+        $memberNav = $registry->getNavItems(['id' => 1], 'member');
+        $this->assertEmpty($memberNav);
+    }
+
+    public function testNavFilteredByMode(): void
+    {
+        // Extra module declaring member-mode nav only.
+        $this->createTestModule('member_only_module', [
+            'id' => 'member_only_module',
+            'name' => 'Member Only',
+            'version' => '1.0.0',
+            'nav' => [
+                'group' => 'members',
+                'label' => 'nav.my_stuff',
+                'icon' => 'bi-person',
+                'route' => '/me/stuff',
+                'order' => 5,
+                'modes' => ['member'],
+            ],
+            'routes' => function (Router $router) {},
+            'permissions' => [],
+            'cron' => [],
+        ]);
+
+        $registry = new ModuleRegistry();
+        $registry->loadModules($this->modulesPath);
+
+        // Admin mode: pre-existing items (which default to admin) appear,
+        // the member-only item is hidden.
+        $adminNav = $registry->getNavItems(['id' => 1], 'admin');
+        $adminIds = [];
+        foreach ($adminNav as $items) {
+            foreach ($items as $item) {
+                $adminIds[] = $item['id'];
+            }
+        }
+        $this->assertContains('test_module', $adminIds);
+        $this->assertContains('admin_module', $adminIds);
+        $this->assertNotContains('member_only_module', $adminIds);
+
+        // Member mode: only the member-only item shows.
+        $memberNav = $registry->getNavItems(['id' => 1], 'member');
+        $memberIds = [];
+        foreach ($memberNav as $items) {
+            foreach ($items as $item) {
+                $memberIds[] = $item['id'];
+            }
+        }
+        $this->assertSame(['member_only_module'], $memberIds);
+    }
+
     public function testLoadModulesHandlesEmptyDirectory(): void
     {
         $registry = new ModuleRegistry();

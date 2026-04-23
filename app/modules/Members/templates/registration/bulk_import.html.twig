@@ -40,8 +40,11 @@
                         <label for="import-node" class="form-label small">{{ t('registration.target_node') }}</label>
                         <select name="node_id" id="import-node" class="form-select form-select-sm" required>
                             <option value="">{{ t('common.select') }}...</option>
-                            {{ _self.render_node_options(nodes, '') }}
+                            {{ _self.render_node_options(nodes, '', view.active_scope_node_id|default(null)) }}
                         </select>
+                        {% if view.active_scope %}
+                        <small class="text-body-secondary">{{ t('registration.target_node_hint_scoped', {node: view.active_scope.leaf}) }}</small>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">
@@ -58,11 +61,11 @@
     </div>
 </div>
 
-{% macro render_node_options(nodes, prefix) %}
+{% macro render_node_options(nodes, prefix, selected) %}
     {% for node in nodes %}
-    <option value="{{ node.id }}">{{ prefix }}{{ node.name }}</option>
+    <option value="{{ node.id }}" {{ selected is not null and node.id == selected ? 'selected' : '' }}>{{ prefix }}{{ node.name }}</option>
         {% if node.children is defined and node.children is not empty %}
-            {{ _self.render_node_options(node.children, prefix ~ '  ') }}
+            {{ _self.render_node_options(node.children, prefix ~ '  ', selected) }}
         {% endif %}
     {% endfor %}
 {% endmacro %}

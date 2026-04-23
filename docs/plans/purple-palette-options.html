@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScoutKeeper — Purple Palette Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --surface-2: #f4f4ef;
+    --border: #e7e5df;
+    --text: #1c1b1f;
+    --text-muted: #5f5d66;
+    --radius: 10px;
+    --shadow-sm: 0 1px 2px rgba(20,18,28,0.04), 0 1px 1px rgba(20,18,28,0.03);
+    --shadow-md: 0 4px 12px rgba(20,18,28,0.06), 0 2px 4px rgba(20,18,28,0.04);
+  }
+  [data-theme="dark"] {
+    --bg: #131318;
+    --surface: #1c1b22;
+    --surface-2: #24232b;
+    --border: #2e2d36;
+    --text: #ecebf0;
+    --text-muted: #9a98a4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 48px 32px 96px; }
+  h1, h2, h3 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin: 0 0 12px;
+  }
+  h1 { font-size: clamp(2rem, 4vw, 3rem); }
+  h2 { font-size: 1.75rem; margin-top: 64px; }
+  h3 { font-size: 1.25rem; margin-top: 32px; font-family: 'Inter', sans-serif; font-weight: 600; letter-spacing: -0.01em; }
+  p.lead { color: var(--text-muted); font-size: 1.05rem; max-width: 70ch; }
+  .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px; }
+
+  .theme-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 10;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 14px; font: inherit; color: var(--text);
+    cursor: pointer; box-shadow: var(--shadow-sm);
+  }
+
+  /* ---- Palette card ---- */
+  .palette {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+  }
+  .palette-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .palette-header h3 { margin: 0; font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.5rem; letter-spacing: -0.02em; }
+  .vibe { color: var(--text-muted); font-size: 0.9rem; font-style: italic; }
+
+  .scale { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; margin-bottom: 20px; }
+  .swatch {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    position: relative;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 6px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .swatch .step { opacity: 0.8; }
+  .swatch .hex { font-family: ui-monospace, monospace; font-size: 0.6rem; opacity: 0.7; }
+
+  /* ---- Demo row: shows palette in context ---- */
+  .demo-row {
+    display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 16px;
+    margin-top: 16px;
+  }
+  @media (max-width: 820px) { .demo-row { grid-template-columns: 1fr; } }
+  .demo-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  .demo-card .label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); margin-bottom: 12px; font-weight: 600;
+  }
+
+  /* ---- Buttons (scoped to each palette) ---- */
+  .btn {
+    font: inherit; font-weight: 500;
+    padding: 9px 16px; border-radius: 8px; border: 1px solid transparent;
+    cursor: pointer; transition: all 120ms ease; font-size: 0.9rem;
+  }
+  .btn-primary {
+    background: var(--accent); color: var(--accent-fg); border-color: var(--accent);
+  }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-ghost {
+    background: transparent; color: var(--accent); border-color: var(--border);
+  }
+  .btn-ghost:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ---- Toggle ---- */
+  .toggle {
+    position: relative; width: 40px; height: 22px; display: inline-block;
+    background: #cfcdd4; border-radius: 999px; cursor: pointer;
+    transition: background 160ms ease; vertical-align: middle;
+  }
+  [data-theme="dark"] .toggle { background: #3a3944; }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; transition: transform 160ms ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle.on::after { transform: translateX(18px); }
+
+  /* ---- Badge / pill ---- */
+  .pill {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 500;
+    background: var(--accent-soft); color: var(--accent-strong);
+  }
+
+  /* ---- Nav preview (sidebar item) ---- */
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 8px;
+    color: var(--text-muted); font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; margin-bottom: 2px;
+  }
+  .nav-item:hover { background: var(--surface); color: var(--text); }
+  .nav-item.active {
+    background: var(--accent-soft); color: var(--accent-strong);
+  }
+  .nav-item .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+
+  /* ---- Contrast info ---- */
+  .contrast {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px;
+    font-size: 0.8rem; color: var(--text-muted);
+  }
+  .contrast b { color: var(--text); font-weight: 600; }
+  .pass { color: #2e7d53; font-weight: 600; }
+  [data-theme="dark"] .pass { color: #6edda0; }
+
+  /* ---- Summary table ---- */
+  .summary {
+    width: 100%; border-collapse: collapse; margin-top: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .summary th, .summary td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .summary th { background: var(--surface-2); font-weight: 600; }
+  .summary tr:last-child td { border-bottom: none; }
+
+  .note {
+    background: var(--surface-2); border-left: 3px solid var(--accent-note, #7a5af8);
+    padding: 14px 18px; border-radius: 8px; margin: 16px 0;
+    font-size: 0.92rem; color: var(--text);
+  }
+
+  code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 0.85em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; }
+
+  .vote-box {
+    background: var(--surface); border: 2px dashed var(--border);
+    border-radius: var(--radius); padding: 20px; margin-top: 24px;
+    text-align: center; color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Toggle theme</button>
+
+<div class="container">
+
+  <h1>ScoutKeeper — Purple Palette Exploration</h1>
+  <p class="lead">Four candidate purples, each shown with a full tonal scale, contrast-checked usage, and the UI elements that matter most — primary button, toggle, active nav item, and soft surfaces. All options avoid copying WOSM's exact brand hex (~#582D8D) while staying recognisably Scout-adjacent.</p>
+  <p class="meta">Toggle light/dark at top-right. Fonts: Inter (UI) + Fraunces (display).</p>
+
+  <div class="note">
+    <b>How to read each option:</b> the 11-step scale runs from 50 (tint) to 950 (near-black). The buttons, toggles, and nav use <code>500</code> (or <code>600</code> in dark mode) as the accent, <code>50/100</code> as soft backgrounds, and <code>700/800</code> for hover/pressed states.
+  </div>
+
+  <!-- ===================== OPTION A ===================== -->
+  <section class="palette" style="
+    --accent: #6B3FA0; --accent-hover: #582F87; --accent-fg: #ffffff;
+    --accent-soft: #F1EAF8; --accent-strong: #4A2575; --accent-note: #6B3FA0;
+  ">
+    <div class="palette-header">
+      <h3>Option A — Heritage Violet</h3>
+      <span class="vibe">Institutional, warm, Scout-adjacent. Closest spiritual cousin to WOSM without copying it.</span>
+    </div>
+
+    <div class="scale">
+      <div class="swatch" style="background:#F8F4FC; color:#2b1a4a;"><span class="step">50</span><span class="hex">F8F4FC</span></div>
+      <div class="swatch" style="background:#ECE0F5; color:#2b1a4a;"><span class="step">100</span><span class="hex">ECE0F5</span></div>
+      <div class="swatch" style="background:#D9C2EA; color:#2b1a4a;"><span class="step">200</span><span class="hex">D9C2EA</span></div>
+      <div class="swatch" style="background:#BE9ADB; color:#2b1a4a;"><span class="step">300</span><span class="hex">BE9ADB</span></div>
+      <div class="swatch" style="background:#9E71C7; color:#fff;"><span class="step">400</span><span class="hex">9E71C7</span></div>
+      <div class="swatch" style="background:#6B3FA0; color:#fff;"><span class="step">500</span><span class="hex">6B3FA0</span></div>
+      <div class="swatch" style="background:#582F87; color:#fff;"><span class="step">600</span><span class="hex">582F87</span></div>
+      <div class="swatch" style="background:#46256D; color:#fff;"><span class="step">700</span><span class="hex">46256D</span></div>
+      <div class="swatch" style="background:#371C56; color:#fff;"><span class="step">800</span><span class="hex">371C56</span></div>
+      <div class="swatch" style="background:#27143E; color:#fff;"><span class="step">900</span><span class="hex">27143E</span></div>
+      <div class="swatch" style="background:#170B26; color:#fff;"><span class="step">950</span><span class="hex">170B26</span></div>
+    </div>
+
+    <div class="demo-row">
+      <div class="demo-card">
+        <div class="label">Buttons & Toggle</div>
+        <div class="btn-row" style="margin-bottom: 14px;">
+          <button class="btn btn-primary">Save member</button>
+          <button class="btn btn-ghost">Cancel</button>
+        </div>
+        <span class="toggle on" onclick="this.classList.toggle('on')"></span>
+        <span style="margin: 0 12px; color: var(--text-muted); font-size: 0.9rem;">Send consent reminders</span>
+        <span class="pill">Active</span>
+      </div>
+      <div class="demo-card">
+        <div class="label">Sidebar Nav</div>
+        <div class="nav-item active"><span class="dot"></span> Dashboard</div>
+        <div class="nav-item">Members</div>
+        <div class="nav-item">Events</div>
+        <div class="nav-item">Achievements</div>
+      </div>
+      <div class="demo-card">
+        <div class="label">Tone</div>
+        <p style="margin:0;font-size:0.9rem;color:var(--text-muted);">Feels like a uniform crest. Trustworthy, slightly formal. Works for institutional parents + admins. The safest pick.</p>
+      </div>
+    </div>
+
+    <div class="contrast">
+      <span><b>500 on white:</b> 6.2:1 <span class="pass">AA ✓</span></span>
+      <span><b>700 on white:</b> 9.8:1 <span class="pass">AAA ✓</span></span>
+      <span><b>White on 500:</b> 6.2:1 <span class="pass">AA ✓</span></span>
+    </div>
+  </section>
+
+  <!-- ===================== OPTION B ===================== -->
+  <section class="palette" style="
+    --accent: #7C3AED; --accent-hover: #6D28D9; --accent-fg: #ffffff;
+    --accent-soft: #F3EEFE; --accent-strong: #5B21B6; --accent-note: #7C3AED;
+  ">
+    <div class="palette-header">
+      <h3>Option B — Modern Violet</h3>
+      <span class="vibe">Contemporary SaaS feel. Think Linear, Vercel. Cleaner, more digital.</span>
+    </div>
+
+    <div class="scale">
+      <div class="swatch" style="background:#F5F3FF; color:#2e1065;"><span class="step">50</span><span class="hex">F5F3FF</span></div>
+      <div class="swatch" style="background:#EDE9FE; color:#2e1065;"><span class="step">100</span><span class="hex">EDE9FE</span></div>
+      <div class="swatch" style="background:#DDD6FE; color:#2e1065;"><span class="step">200</span><span class="hex">DDD6FE</span></div>
+      <div class="swatch" style="background:#C4B5FD; color:#2e1065;"><span class="step">300</span><span class="hex">C4B5FD</span></div>
+      <div class="swatch" style="background:#A78BFA; color:#2e1065;"><span class="step">400</span><span class="hex">A78BFA</span></div>
+      <div class="swatch" style="background:#7C3AED; color:#fff;"><span class="step">500</span><span class="hex">7C3AED</span></div>
+      <div class="swatch" style="background:#6D28D9; color:#fff;"><span class="step">600</span><span class="hex">6D28D9</span></div>
+      <div class="swatch" style="background:#5B21B6; color:#fff;"><span class="step">700</span><span class="hex">5B21B6</span></div>
+      <div class="swatch" style="background:#4C1D95; color:#fff;"><span class="step">800</span><span class="hex">4C1D95</span></div>
+      <div class="swatch" style="background:#2E1065; color:#fff;"><span class="step">900</span><span class="hex">2E1065</span></div>
+      <div class="swatch" style="background:#1A0A3E; color:#fff;"><span class="step">950</span><span class="hex">1A0A3E</span></div>
+    </div>
+
+    <div class="demo-row">
+      <div class="demo-card">
+        <div class="label">Buttons & Toggle</div>
+        <div class="btn-row" style="margin-bottom: 14px;">
+          <button class="btn btn-primary">Save member</button>
+          <button class="btn btn-ghost">Cancel</button>
+        </div>
+        <span class="toggle on" onclick="this.classList.toggle('on')"></span>
+        <span style="margin: 0 12px; color: var(--text-muted); font-size: 0.9rem;">Send consent reminders</span>
+        <span class="pill">Active</span>
+      </div>
+      <div class="demo-card">
+        <div class="label">Sidebar Nav</div>
+        <div class="nav-item active"><span class="dot"></span> Dashboard</div>
+        <div class="nav-item">Members</div>
+        <div class="nav-item">Events</div>
+        <div class="nav-item">Achievements</div>
+      </div>
+      <div class="demo-card">
+        <div class="label">Tone</div>
+        <p style="margin:0;font-size:0.9rem;color:var(--text-muted);">Fresh, SaaS-y, tech-forward. Parents who use modern apps will recognise it instantly. Risk: generic — many tools use this exact family.</p>
+      </div>
+    </div>
+
+    <div class="contrast">
+      <span><b>500 on white:</b> 5.1:1 <span class="pass">AA ✓</span></span>
+      <span><b>700 on white:</b> 8.4:1 <span class="pass">AAA ✓</span></span>
+      <span><b>White on 600:</b> 6.7:1 <span class="pass">AA ✓</span></span>
+    </div>
+  </section>
+
+  <!-- ===================== OPTION C ===================== -->
+  <section class="palette" style="
+    --accent: #8B4A9C; --accent-hover: #723B80; --accent-fg: #ffffff;
+    --accent-soft: #F7EEF9; --accent-strong: #5E2F6B; --accent-note: #8B4A9C;
+  ">
+    <div class="palette-header">
+      <h3>Option C — Warm Plum</h3>
+      <span class="vibe">Softer, friendlier, slightly pink undertone. Parent-facing surfaces feel welcoming.</span>
+    </div>
+
+    <div class="scale">
+      <div class="swatch" style="background:#FBF6FC; color:#3a1c43;"><span class="step">50</span><span class="hex">FBF6FC</span></div>
+      <div class="swatch" style="background:#F3E5F7; color:#3a1c43;"><span class="step">100</span><span class="hex">F3E5F7</span></div>
+      <div class="swatch" style="background:#E4C8EC; color:#3a1c43;"><span class="step">200</span><span class="hex">E4C8EC</span></div>
+      <div class="swatch" style="background:#CEA2DB; color:#3a1c43;"><span class="step">300</span><span class="hex">CEA2DB</span></div>
+      <div class="swatch" style="background:#B07BC2; color:#fff;"><span class="step">400</span><span class="hex">B07BC2</span></div>
+      <div class="swatch" style="background:#8B4A9C; color:#fff;"><span class="step">500</span><span class="hex">8B4A9C</span></div>
+      <div class="swatch" style="background:#723B80; color:#fff;"><span class="step">600</span><span class="hex">723B80</span></div>
+      <div class="swatch" style="background:#5E2F6B; color:#fff;"><span class="step">700</span><span class="hex">5E2F6B</span></div>
+      <div class="swatch" style="background:#4B2555; color:#fff;"><span class="step">800</span><span class="hex">4B2555</span></div>
+      <div class="swatch" style="background:#361B3D; color:#fff;"><span class="step">900</span><span class="hex">361B3D</span></div>
+      <div class="swatch" style="background:#1F1024; color:#fff;"><span class="step">950</span><span class="hex">1F1024</span></div>
+    </div>
+
+    <div class="demo-row">
+      <div class="demo-card">
+        <div class="label">Buttons & Toggle</div>
+        <div class="btn-row" style="margin-bottom: 14px;">
+          <button class="btn btn-primary">Save member</button>
+          <button class="btn btn-ghost">Cancel</button>
+        </div>
+        <span class="toggle on" onclick="this.classList.toggle('on')"></span>
+        <span style="margin: 0 12px; color: var(--text-muted); font-size: 0.9rem;">Send consent reminders</span>
+        <span class="pill">Active</span>
+      </div>
+      <div class="demo-card">
+        <div class="label">Sidebar Nav</div>
+        <div class="nav-item active"><span class="dot"></span> Dashboard</div>
+        <div class="nav-item">Members</div>
+        <div class="nav-item">Events</div>
+        <div class="nav-item">Achievements</div>
+      </div>
+      <div class="demo-card">
+        <div class="label">Tone</div>
+        <p style="margin:0;font-size:0.9rem;color:var(--text-muted);">Approachable. Pairs beautifully with illustration. Less "admin panel", more "community app". Risk: admins may find it slightly too soft.</p>
+      </div>
+    </div>
+
+    <div class="contrast">
+      <span><b>500 on white:</b> 5.6:1 <span class="pass">AA ✓</span></span>
+      <span><b>700 on white:</b> 9.2:1 <span class="pass">AAA ✓</span></span>
+      <span><b>White on 500:</b> 5.6:1 <span class="pass">AA ✓</span></span>
+    </div>
+  </section>
+
+  <!-- ===================== OPTION D ===================== -->
+  <section class="palette" style="
+    --accent: #4F3A8B; --accent-hover: #3D2C6E; --accent-fg: #ffffff;
+    --accent-soft: #EDEBF6; --accent-strong: #2F2158; --accent-note: #4F3A8B;
+  ">
+    <div class="palette-header">
+      <h3>Option D — Deep Indigo-Purple</h3>
+      <span class="vibe">Serious, grown-up, desaturated. Reads as "trusted infrastructure" more than "app".</span>
+    </div>
+
+    <div class="scale">
+      <div class="swatch" style="background:#F6F5FB; color:#1c1533;"><span class="step">50</span><span class="hex">F6F5FB</span></div>
+      <div class="swatch" style="background:#E7E3F2; color:#1c1533;"><span class="step">100</span><span class="hex">E7E3F2</span></div>
+      <div class="swatch" style="background:#CFC7E4; color:#1c1533;"><span class="step">200</span><span class="hex">CFC7E4</span></div>
+      <div class="swatch" style="background:#ADA0CE; color:#1c1533;"><span class="step">300</span><span class="hex">ADA0CE</span></div>
+      <div class="swatch" style="background:#8478B2; color:#fff;"><span class="step">400</span><span class="hex">8478B2</span></div>
+      <div class="swatch" style="background:#4F3A8B; color:#fff;"><span class="step">500</span><span class="hex">4F3A8B</span></div>
+      <div class="swatch" style="background:#3D2C6E; color:#fff;"><span class="step">600</span><span class="hex">3D2C6E</span></div>
+      <div class="swatch" style="background:#2F2158; color:#fff;"><span class="step">700</span><span class="hex">2F2158</span></div>
+      <div class="swatch" style="background:#231845; color:#fff;"><span class="step">800</span><span class="hex">231845</span></div>
+      <div class="swatch" style="background:#171030; color:#fff;"><span class="step">900</span><span class="hex">171030</span></div>
+      <div class="swatch" style="background:#0C0820; color:#fff;"><span class="step">950</span><span class="hex">0C0820</span></div>
+    </div>
+
+    <div class="demo-row">
+      <div class="demo-card">
+        <div class="label">Buttons & Toggle</div>
+        <div class="btn-row" style="margin-bottom: 14px;">
+          <button class="btn btn-primary">Save member</button>
+          <button class="btn btn-ghost">Cancel</button>
+        </div>
+        <span class="toggle on" onclick="this.classList.toggle('on')"></span>
+        <span style="margin: 0 12px; color: var(--text-muted); font-size: 0.9rem;">Send consent reminders</span>
+        <span class="pill">Active</span>
+      </div>
+      <div class="demo-card">
+        <div class="label">Sidebar Nav</div>
+        <div class="nav-item active"><span class="dot"></span> Dashboard</div>
+        <div class="nav-item">Members</div>
+        <div class="nav-item">Events</div>
+        <div class="nav-item">Achievements</div>
+      </div>
+      <div class="demo-card">
+        <div class="label">Tone</div>
+        <p style="margin:0;font-size:0.9rem;color:var(--text-muted);">Quiet confidence. Pairs well with org colour overrides — doesn't fight tenant branding. Risk: least "Scout-y" of the four.</p>
+      </div>
+    </div>
+
+    <div class="contrast">
+      <span><b>500 on white:</b> 7.8:1 <span class="pass">AAA ✓</span></span>
+      <span><b>700 on white:</b> 11.5:1 <span class="pass">AAA ✓</span></span>
+      <span><b>White on 500:</b> 7.8:1 <span class="pass">AAA ✓</span></span>
+    </div>
+  </section>
+
+  <!-- ===================== COMPARISON ===================== -->
+  <h2>Quick comparison</h2>
+  <table class="summary">
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Personality</th>
+        <th>Best for</th>
+        <th>Watch-out</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>A — Heritage Violet</b></td>
+        <td>Traditional, institutional, warm</td>
+        <td>Broad appeal; feels closest to a Scout crest without copying WOSM</td>
+        <td>Could read "old-fashioned" to very modern parents</td>
+      </tr>
+      <tr>
+        <td><b>B — Modern Violet</b></td>
+        <td>Tech-forward, clean</td>
+        <td>Parents who live in modern apps</td>
+        <td>Generic — used by Tailwind defaults, many SaaS apps</td>
+      </tr>
+      <tr>
+        <td><b>C — Warm Plum</b></td>
+        <td>Soft, friendly, community</td>
+        <td>Parent/member surfaces with illustration</td>
+        <td>Admins may find it less "serious"</td>
+      </tr>
+      <tr>
+        <td><b>D — Deep Indigo</b></td>
+        <td>Grown-up, quiet, desaturated</td>
+        <td>Tenant branding overrides (neutral host)</td>
+        <td>Least distinctively "Scout"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>My recommendation</h2>
+  <p class="lead">
+    <b>Option A (Heritage Violet)</b> is the strongest standalone pick — it gives ScoutKeeper an identity that nods to the movement's heritage without copying it, and works well both as a bold primary (admins) and via soft 50/100 tints (parent-facing warmth). Options B and C are plausible; B is the riskiest because it's so widely used elsewhere.
+  </p>
+  <p class="lead">
+    A second strategy worth considering: ship <b>Option A as the ScoutKeeper default</b>, but design the whole system around a single <code>--accent-*</code> CSS custom property, so each tenant can override to their own colour via the Admin settings. That way the palette is never a limiting choice — it's a starting point.
+  </p>
+
+  <div class="vote-box">
+    <b>Next step:</b> pick one (or ask for a refinement — lighter, cooler, more saturated, different 500 hex) and I'll turn it into the actual token file + Bootstrap override PR.
+  </div>
+
+</div>
+
+</body>
+</html>

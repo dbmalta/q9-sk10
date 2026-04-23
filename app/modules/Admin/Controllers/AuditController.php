@@ -46,7 +46,16 @@ class AuditController extends Controller
         $dateFrom   = $request->getParam('date_from') ?: null;
         $dateTo     = $request->getParam('date_to') ?: null;
 
-        $result = $this->service->getLog($page, $perPage, $entityType, $userId, $action, $dateFrom, $dateTo);
+        // Apply scope filter only when NOT at "All nodes" — system-level
+        // entries (null node_id) are visible only at All nodes per plan Q23.
+        $ctx = $this->resolveViewContext();
+        $scopeNodeIds = [];
+        if (!$ctx->isAllNodes()) {
+            $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+            $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        }
+
+        $result = $this->service->getLog($page, $perPage, $entityType, $userId, $action, $dateFrom, $dateTo, $scopeNodeIds);
 
         // Fetch filter options
         $actions     = $this->service->getActions();

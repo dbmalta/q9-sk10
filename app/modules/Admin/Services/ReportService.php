@@ -46,33 +46,43 @@ class ReportService
      * @return array List of [{period, count}]
      * @throws \InvalidArgumentException if interval is invalid
      */
-    public function getMemberGrowth(string $interval = 'month', ?string $startDate = null, ?string $endDate = null): array
+    public function getMemberGrowth(string $interval = 'month', ?string $startDate = null, ?string $endDate = null, array $scopeNodeIds = []): array
     {
         $truncExpr = match ($interval) {
-            'month'   => "DATE_FORMAT(joined_date, '%Y-%m')",
-            'quarter' => "CONCAT(YEAR(joined_date), '-Q', QUARTER(joined_date))",
-            'year'    => "YEAR(joined_date)",
+            'month'   => "DATE_FORMAT(m.joined_date, '%Y-%m')",
+            'quarter' => "CONCAT(YEAR(m.joined_date), '-Q', QUARTER(m.joined_date))",
+            'year'    => "YEAR(m.joined_date)",
             default   => throw new \InvalidArgumentException("Invalid interval: {$interval}. Must be month, quarter, or year."),
         };
 
-        $conditions = ["joined_date IS NOT NULL"];
+        $conditions = ["m.joined_date IS NOT NULL"];
         $params = [];
 
         if ($startDate !== null) {
-            $conditions[] = "joined_date >= :start_date";
+            $conditions[] = "m.joined_date >= :start_date";
             $params['start_date'] = $startDate;
         }
 
         if ($endDate !== null) {
-            $conditions[] = "joined_date <= :end_date";
+            $conditions[] = "m.joined_date <= :end_date";
             $params['end_date'] = $endDate;
+        }
+
+        if (!empty($scopeNodeIds)) {
+            $placeholders = [];
+            foreach ($scopeNodeIds as $i => $id) {
+                $key = "s_$i";
+                $placeholders[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            $conditions[] = "EXISTS (SELECT 1 FROM member_nodes mn WHERE mn.member_id = m.id AND mn.node_id IN (" . implode(',', $placeholders) . "))";
         }
 
         $where = implode(' AND ', $conditions);
 
         $rows = $this->db->fetchAll(
             "SELECT {$truncExpr} AS period, COUNT(*) AS count
-             FROM `members`
+             FROM `members` m
              WHERE {$where}
              GROUP BY period
              ORDER BY period ASC",

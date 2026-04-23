@@ -1,0 +1,71 @@
+{#
+    Topbar view switcher: mode pills (Member/Admin) + node scope dropdown.
+
+    Rendering rules (enforced by ViewContext flags):
+      - mode pills hidden unless the user is dual-role
+      - scope dropdown hidden in member mode, on non-scopable pages, or single-scope users
+      - single-scope admins see no scope dropdown (their node is implicit)
+
+    Both pills and the dropdown submit to POST /context/{mode,scope} with
+    CSRF and redirect_to. Alpine intercepts submission if a form on the page
+    is dirty (see assets/js/app.js).
+#}
+{% if view.shows_mode_pills or view.shows_scope_picker %}
+<div class="view-switcher d-none d-lg-flex align-items-center gap-2 me-3" x-data="viewSwitcher()">
+    {% if view.shows_mode_pills %}
+    <div class="btn-group btn-group-sm" role="group" aria-label="{{ t('view.mode.aria') }}">
+        {% for target in ['member', 'admin'] %}
+        <form method="POST" action="/context/mode" class="m-0" x-on:submit="maybeConfirm($event)">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="mode" value="{{ target }}">
+            <input type="hidden" name="redirect_to" value="{{ current_uri }}">
+            <button type="submit"
+                    class="btn btn-outline-secondary {{ view.mode == target ? 'active' : '' }}"
+                    aria-pressed="{{ view.mode == target ? 'true' : 'false' }}">
+                <i class="bi {{ target == 'admin' ? 'bi-shield-check' : 'bi-person' }} me-1"></i>{{ t('view.mode.' ~ target) }}
+            </button>
+        </form>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if view.shows_scope_picker %}
+    <div class="dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-label="{{ t('view.scope.label') }}">
+            <i class="bi bi-diagram-3 me-1"></i>
+            <span>{{ view.active_scope ? view.active_scope.leaf : t('view.scope.all') }}</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <form method="POST" action="/context/scope" class="m-0" x-on:submit="maybeConfirm($event)">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="node_id" value="all">
+                    <input type="hidden" name="redirect_to" value="{{ current_uri }}">
+                    <button type="submit" class="dropdown-item {{ view.active_scope_node_id is null ? 'active' : '' }}">
+                        <i class="bi bi-globe me-2"></i>{{ t('view.scope.all') }}
+                    </button>
+                </form>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            {% for scope in view.available_scopes %}
+            <li>
+                <form method="POST" action="/context/scope" class="m-0" x-on:submit="maybeConfirm($event)">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="node_id" value="{{ scope.node_id }}">
+                    <input type="hidden" name="redirect_to" value="{{ current_uri }}">
+                    <button type="submit" class="dropdown-item {{ view.active_scope_node_id == scope.node_id ? 'active' : '' }}"
+                            title="{{ scope.path }}">
+                        {{ scope.path }}
+                    </button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endif %}

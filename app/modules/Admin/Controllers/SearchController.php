@@ -53,7 +53,13 @@ class SearchController extends Controller
         $members = [];
         $total = 0;
         if ($resolver->can('members.read')) {
-            $scopeNodeIds = $resolver->getScopeNodeIds();
+            // Scope-aware by default (plan Q28): narrow to the active scope's
+            // subtree. A "search all my nodes" toggle (?search_all=1) widens
+            // to the full set of assignment subtrees.
+            $ctx = $this->resolveViewContext();
+            $searchAll = (bool) $request->getParam('search_all', false);
+            $roots = $searchAll ? array_column($ctx->availableScopes, 'node_id') : $ctx->scopeNodeIds();
+            $scopeNodeIds = $this->memberService->expandNodeSubtree($roots);
             $result = $this->memberService->search($query, [], 1, 8, $scopeNodeIds);
             $members = $result['items'];
             $total = $result['total'];

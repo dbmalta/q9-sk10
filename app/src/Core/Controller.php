@@ -31,6 +31,7 @@ abstract class Controller
     protected function render(string $template, array $data = [], int $statusCode = 200): Response
     {
         $request = $this->app->getRequest();
+        $view = $this->resolveViewContext();
 
         // Inject standard template variables
         $data = array_merge([
@@ -41,9 +42,11 @@ abstract class Controller
             'current_uri' => $request->getUri(),
             'user' => $this->app->getSession()->get('user'),
             'nav_items' => $this->app->getModuleRegistry()->getNavItems(
-                $this->app->getSession()->get('user')
+                $this->app->getSession()->get('user'),
+                $view->mode,
             ),
             'breadcrumbs' => $data['breadcrumbs'] ?? [],
+            'view' => $view->toArray(),
         ], $data);
 
         // HTMX requests get only the partial content, not the full layout
@@ -144,5 +147,34 @@ abstract class Controller
     protected function flash(string $type, string $message): void
     {
         $this->app->getSession()->flash($type, $message);
+    }
+
+    /**
+     * Resolve the current ViewContext. Subclasses may override
+     * scopeAppliesToCurrentPage() to hide the scope picker on non-scopable pages.
+     */
+    protected function resolveViewContext(): ViewContext
+    {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
+        $service = new ViewContextService(
+            $this->app->getDb(),
+            $this->app->getSession(),
+        );
+        return $cached = $service->resolve(
+            $this->app->getRequest(),
+            $this->scopeAppliesToCurrentPage(),
+        );
+    }
+
+    /**
+     * Override in controllers whose pages never honour a node scope
+     * (e.g. system settings, account profile). Default: scopable.
+     */
+    protected function scopeAppliesToCurrentPage(): bool
+    {
+        return true;
     }
 }

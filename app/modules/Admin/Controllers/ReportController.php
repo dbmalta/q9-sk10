@@ -66,7 +66,10 @@ class ReportController extends Controller
         $startDate = $request->getParam('start_date') ?: null;
         $endDate = $request->getParam('end_date') ?: null;
 
-        $growth = $this->reportService->getMemberGrowth($interval, $startDate, $endDate);
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        $growth = $this->reportService->getMemberGrowth($interval, $startDate, $endDate, $scopeNodeIds);
 
         return $this->render('@admin/admin/reports/growth.html.twig', [
             'growth' => $growth,
@@ -116,7 +119,10 @@ class ReportController extends Controller
             return $guard;
         }
 
-        $csv = $this->reportService->exportMembersCsv(null);
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        $csv = $this->reportService->exportMembersCsv($scopeNodeIds ?: null);
 
         return (new Response(200, $csv))
             ->setHeader('Content-Type', 'text/csv')

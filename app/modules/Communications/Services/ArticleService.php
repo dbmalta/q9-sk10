@@ -240,9 +240,24 @@ class ArticleService
      * @param int $perPage Items per page
      * @return array{items: array, total: int, page: int, pages: int, per_page: int}
      */
-    public function getAll(int $page = 1, int $perPage = 20): array
+    public function getAll(int $page = 1, int $perPage = 20, array $scopeNodeIds = []): array
     {
-        $total = (int) $this->db->fetchColumn("SELECT COUNT(*) FROM articles");
+        $where = '';
+        $params = [];
+        if (!empty($scopeNodeIds)) {
+            // Scope-aware admin list: include articles scoped to any of the
+            // given nodes PLUS org-wide articles (node_scope_id IS NULL).
+            // Those must still be editable by any admin who can see them.
+            $placeholders = [];
+            foreach ($scopeNodeIds as $i => $id) {
+                $key = "n_$i";
+                $placeholders[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            $where = "WHERE (a.node_scope_id IN (" . implode(',', $placeholders) . ") OR a.node_scope_id IS NULL) ";
+        }
+
+        $total = (int) $this->db->fetchColumn("SELECT COUNT(*) FROM articles a {$where}", $params);
 
         $pages = max(1, (int) ceil($total / $perPage));
         $page = max(1, min($page, $pages));
@@ -252,9 +267,10 @@ class ArticleService
             "SELECT a.*, u.email AS author_email
              FROM articles a
              LEFT JOIN users u ON u.id = a.author_id
+             {$where}
              ORDER BY a.created_at DESC
              LIMIT :limit OFFSET :offset",
-            ['limit' => $perPage, 'offset' => $offset]
+            array_merge($params, ['limit' => $perPage, 'offset' => $offset])
         );
 
         $items = array_map([$this, 'castTypes'], $items);

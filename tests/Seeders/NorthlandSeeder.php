@@ -354,6 +354,12 @@ class NorthlandSeeder
                 'password_changed_at' => $now,
             ]);
         }
+
+        // Seed last-used view mode so the switcher has a realistic starting
+        // point for each Playwright archetype. The admin user stays null to
+        // exercise the "first login, no preference" path.
+        $this->db->update('users', ['view_mode_last' => 'admin'],  ['email' => 'leader@northland.test']);
+        $this->db->update('users', ['view_mode_last' => 'member'], ['email' => 'member@northland.test']);
     }
 
     // ── Members ──────────────────────────────────────────────────

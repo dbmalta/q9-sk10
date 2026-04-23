@@ -123,7 +123,10 @@ class EventController extends Controller
             $month = null;
         }
 
-        $result = $this->eventService->getAll($page, 20, $year, $month);
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        $result = $this->eventService->getAll($page, 20, $year, $month, $scopeNodeIds);
         $years = $this->eventService->getDistinctYears();
 
         return $this->render('@events/events/admin_index.html.twig', [

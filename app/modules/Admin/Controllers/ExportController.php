@@ -54,7 +54,10 @@ class ExportController extends Controller
             return $guard;
         }
 
-        $csv = $this->service->exportMembersCsv();
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        $csv = $this->service->exportMembersCsv($scopeNodeIds ?: null);
         $filename = 'members_' . date('Ymd_His') . '.csv';
 
         return (new Response(200, $csv))

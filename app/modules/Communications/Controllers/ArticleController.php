@@ -90,7 +90,10 @@ class ArticleController extends Controller
         }
 
         $page = max(1, (int) $request->getParam('page', 1));
-        $result = $this->articleService->getAll($page, 20);
+        $ctx = $this->resolveViewContext();
+        $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
+        $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
+        $result = $this->articleService->getAll($page, 20, $scopeNodeIds);
 
         return $this->render('@communications/articles/admin_index.html.twig', [
             'articles' => $result['items'],

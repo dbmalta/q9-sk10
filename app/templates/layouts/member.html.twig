@@ -4,11 +4,12 @@
 
 {% block body_wrapper %}
 {# --- Topbar only (no sidebar for member shell) --- #}
-<nav class="navbar navbar-expand fixed-top border-bottom bg-body">
+<nav class="topbar navbar navbar-expand fixed-top border-bottom bg-body mode-{{ view.mode|default('member') }}">
     <div class="container">
-        <a href="/account" class="navbar-brand mb-0 fw-semibold text-body text-decoration-none">
+        <a href="/" class="navbar-brand mb-0 fw-semibold text-body text-decoration-none">
             {{ app_name|default('ScoutKeeper') }}
         </a>
+        {% include "components/_view_switcher.html.twig" ignore missing %}
 
         <div class="d-flex align-items-center gap-1">
             {# Pending acknowledgements #}

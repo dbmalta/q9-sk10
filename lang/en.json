@@ -959,5 +959,45 @@
 
     "terms.published": "Policy published.",
 
-    "user.account.no_member_linked": "Your user account is not linked to a member record."
+    "user.account.no_member_linked": "Your user account is not linked to a member record.",
+
+    "view.mode.member": "Member",
+    "view.mode.admin": "Admin",
+    "view.mode.aria": "Switch view mode",
+    "view.scope.all": "All nodes",
+    "view.scope.label": "Scope",
+    "view.scope.none": "No scope available",
+    "view.mismatch.title": "View context mismatch",
+    "view.mismatch.body": "That view or scope isn't available to your account.",
+    "view.empty.scope_filtered": "No records match the current scope.",
+    "view.empty.switch_to_all": "Switch to All nodes",
+    "view.mode_changed_announcement": "View mode changed.",
+    "view.scope_changed_announcement": "Scope changed.",
+    "view.scope_fallback.deleted": "Your previous scope no longer exists.",
+    "view.scope_fallback.revoked": "Your previous scope is no longer available.",
+
+    "nav.my_profile": "My Profile",
+    "nav.view_profile": "View Profile",
+    "nav.edit_profile": "Edit Profile",
+
+    "me.dashboard.title": "My Dashboard",
+    "me.welcome": "Welcome, {name}",
+    "me.member_of": "You belong to:",
+    "me.no_nodes": "You are not yet assigned to a section.",
+    "me.notices_heading": "Please read",
+    "me.upcoming_events": "Upcoming Events",
+    "me.no_upcoming_events": "No upcoming events.",
+    "me.recent_articles": "Recent Articles",
+    "me.no_articles": "No recent articles.",
+    "me.membership_number": "Membership #",
+
+    "registration.target_node_hint_scoped": "Pre-selected from your active scope: {node}.",
+
+    "self_edit.title": "Update My Details",
+    "self_edit.explainer": "Submit changes to your contact and personal details. A leader will review and approve each change before it takes effect.",
+    "self_edit.pending_heading": "Awaiting review",
+    "self_edit.awaiting_review": "Awaiting review",
+    "self_edit.submit": "Submit for review",
+    "self_edit.submitted": "Your changes have been submitted for review.",
+    "self_edit.no_changes": "No changes to submit."
 }

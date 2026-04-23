@@ -6,6 +6,7 @@ namespace App\Modules\Members\Services;
 
 use App\Core\Database;
 use App\Core\Encryption;
+use App\Core\ViewContext;
 
 /**
  * Member management service.
@@ -30,10 +31,39 @@ class MemberService
         'joined_date', 'left_date', 'gdpr_consent',
     ];
 
-    /** @var array Fields that should trigger pending change review for self-edit */
-    private const SELF_EDIT_FIELDS = [
-        'first_name', 'surname', 'email', 'phone',
+    /**
+     * Fields a member may suggest edits to. EVERY change submitted through
+     * self-service lands in member_pending_changes and requires admin review
+     * before it takes effect — no direct writes from the member side.
+     *
+     * Identity, contact, and address fields are included because the member
+     * is the authoritative source, but approval protects against typos,
+     * unauthorised account changes, and safeguarding slippage.
+     */
+    public const SELF_EDIT_FIELDS = [
+        'first_name', 'surname', 'dob', 'gender',
+        'email', 'phone',
         'address_line1', 'address_line2', 'city', 'postcode', 'country',
+        'photo_path',
+    ];
+
+    /**
+     * Fields that are never editable via self-service — not even as a
+     * suggestion. Enforced by submitSelfEdit() rejecting unknown keys.
+     *
+     * - membership_number: effectively immutable once assigned
+     * - medical_notes: admin-curated (safeguarding / encrypted at rest)
+     * - status, status_reason, joined_date, left_date: workflow-controlled
+     * - gdpr_consent: needs a proper consent-withdrawal UI, not a form edit
+     * - node assignments: section/group membership is an admin decision
+     * - member_custom_data: admins promote individual custom fields via
+     *   custom_field_definitions once per-field self-edit flags exist
+     */
+    public const SELF_EDIT_NEVER = [
+        'id', 'user_id', 'membership_number', 'medical_notes',
+        'status', 'status_reason', 'joined_date', 'left_date',
+        'gdpr_consent', 'member_custom_data',
+        'created_at', 'updated_at',
     ];
 
     public function __construct(Database $db, ?Encryption $encryption = null)
@@ -221,6 +251,70 @@ class MemberService
         if (array_key_exists('node_ids', $data)) {
             $this->updateNodeAssignments($id, $data['node_ids'] ?? [], $data['primary_node_id'] ?? null);
         }
+    }
+
+    /**
+     * Submit a batch of member-initiated changes. Every supplied field that
+     * differs from the current record is queued in member_pending_changes
+     * for admin review. Nothing is applied to the `members` table directly.
+     *
+     * Unknown keys, keys in SELF_EDIT_NEVER, and no-op values are silently
+     * dropped. Returns the list of field names that were queued so the caller
+     * can render a confirmation.
+     *
+     * @param array<string, mixed> $submitted Field => proposed value
+     * @return array<int, string> Field names that produced pending-change rows
+     */
+    public function submitSelfEdit(int $memberId, array $submitted, int $requestedBy): array
+    {
+        $current = $this->db->fetchOne(
+            "SELECT * FROM members WHERE id = :id",
+            ['id' => $memberId]
+        );
+        if ($current === null) {
+            throw new \RuntimeException("Member not found: {$memberId}");
+        }
+
+        $queued = [];
+        foreach ($submitted as $field => $rawValue) {
+            if (!in_array($field, self::SELF_EDIT_FIELDS, true)) {
+                continue;
+            }
+            $newValue = is_string($rawValue) ? trim($rawValue) : $rawValue;
+            if ($newValue === '') {
+                $newValue = null;
+            }
+            if ($field === 'email' && is_string($newValue)) {
+                $newValue = strtolower($newValue);
+            }
+            $oldValue = $current[$field] ?? null;
+            // No-op: nothing to review.
+            if ((string) $oldValue === (string) $newValue) {
+                continue;
+            }
+            // Skip if the member already has an identical pending suggestion
+            // awaiting review — avoids duplicate rows on repeated submits.
+            $existing = $this->db->fetchOne(
+                "SELECT id FROM member_pending_changes
+                  WHERE member_id = :mid AND field_name = :f
+                    AND status = 'pending' AND requested_by = :uid
+                    AND (new_value <=> :nv)",
+                ['mid' => $memberId, 'f' => $field, 'uid' => $requestedBy, 'nv' => $newValue]
+            );
+            if ($existing !== null) {
+                continue;
+            }
+
+            $this->createPendingChange(
+                $memberId,
+                $field,
+                is_scalar($oldValue) ? (string) $oldValue : null,
+                is_scalar($newValue) ? (string) $newValue : null,
+                $requestedBy,
+            );
+            $queued[] = $field;
+        }
+        return $queued;
     }
 
     /**
@@ -445,6 +539,98 @@ class MemberService
             'per_page' => $perPage,
             'pages' => $pages,
         ];
+    }
+
+    /**
+     * List members filtered by the viewer's active ViewContext.
+     *
+     * Expansion rules:
+     *   - "All nodes" (activeScopeNodeId null) → every node the user has
+     *     a scope assignment at, plus all descendants via org_closure.
+     *   - Specific node → that node + all descendants via org_closure.
+     *   - Empty available scopes → returns an empty page (caller should
+     *     render the scope-filtered empty state).
+     *
+     * The actual search, filters, and pagination are delegated to search()
+     * so this method stays thin.
+     *
+     * @param array{status?:string, node_id?:int, query?:string} $filters
+     * @return array{items:array, total:int, page:int, per_page:int, pages:int}
+     */
+    public function listScoped(ViewContext $ctx, array $filters = [], int $page = 1, int $perPage = 25): array
+    {
+        $query = (string) ($filters['query'] ?? '');
+        unset($filters['query']);
+
+        $roots = $ctx->scopeNodeIds();
+        // No available scopes → empty result. Happens for member-mode callers
+        // or admin users with no role assignments; the controller decides
+        // whether to render this or redirect.
+        if ($roots === []) {
+            return ['items' => [], 'total' => 0, 'page' => 1, 'per_page' => $perPage, 'pages' => 1];
+        }
+
+        $scopeNodeIds = $this->expandNodeSubtree($roots);
+        return $this->search($query, $filters, $page, $perPage, $scopeNodeIds);
+    }
+
+    /**
+     * Expand a list of root node IDs into the union of themselves and all
+     * their descendants via org_closure. Returns a sorted, deduplicated list.
+     *
+     * @param array<int, int> $rootNodeIds
+     * @return array<int, int>
+     */
+    public function expandNodeSubtree(array $rootNodeIds): array
+    {
+        if ($rootNodeIds === []) {
+            return [];
+        }
+        $placeholders = [];
+        $params = [];
+        foreach ($rootNodeIds as $i => $id) {
+            $key = "root_$i";
+            $placeholders[] = ":$key";
+            $params[$key] = (int) $id;
+        }
+        $rows = $this->db->fetchAll(
+            "SELECT DISTINCT descendant_id
+             FROM org_closure
+             WHERE ancestor_id IN (" . implode(',', $placeholders) . ")",
+            $params
+        );
+        return array_map('intval', array_column($rows, 'descendant_id'));
+    }
+
+    /**
+     * Decide whether a given member falls inside the viewer's active scope.
+     * Used by the detail view to silently redirect own-family records to
+     * member mode and show a scope-error page for truly out-of-scope ones.
+     */
+    public function isMemberInScope(int $memberId, ViewContext $ctx): bool
+    {
+        if ($ctx->availableScopes === []) {
+            return false;
+        }
+        $allowed = $this->expandNodeSubtree($ctx->scopeNodeIds());
+        if ($allowed === []) {
+            return false;
+        }
+        $placeholders = [];
+        $params = ['mid' => $memberId];
+        foreach ($allowed as $i => $id) {
+            $key = "n_$i";
+            $placeholders[] = ":$key";
+            $params[$key] = $id;
+        }
+        $row = $this->db->fetchOne(
+            "SELECT 1 FROM member_nodes
+              WHERE member_id = :mid
+                AND node_id IN (" . implode(',', $placeholders) . ")
+              LIMIT 1",
+            $params
+        );
+        return $row !== null;
     }
 
     /**

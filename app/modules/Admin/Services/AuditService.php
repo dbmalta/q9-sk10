@@ -56,17 +56,21 @@ class AuditService
         ?array $newValues,
         ?int $userId = null,
         ?string $ip = null,
-        ?string $userAgent = null
+        ?string $userAgent = null,
+        ?int $nodeId = null,
+        ?string $viewMode = null
     ): void {
         $this->db->insert('audit_log', [
-            'user_id'    => $userId,
-            'action'     => $action,
+            'user_id'     => $userId,
+            'action'      => $action,
             'entity_type' => $entityType,
-            'entity_id'  => $entityId,
+            'entity_id'   => $entityId,
             'old_values'  => $oldValues !== null ? json_encode($this->redact($oldValues)) : null,
             'new_values'  => $newValues !== null ? json_encode($this->redact($newValues)) : null,
             'ip_address'  => $ip,
             'user_agent'  => $userAgent !== null ? mb_substr($userAgent, 0, 500) : null,
+            'node_id'     => $nodeId,
+            'view_mode'   => $viewMode,
         ]);
     }
 
@@ -91,7 +95,8 @@ class AuditService
         ?int $userId = null,
         ?string $action = null,
         ?string $dateFrom = null,
-        ?string $dateTo = null
+        ?string $dateTo = null,
+        array $scopeNodeIds = []
     ): array {
         $conditions = [];
         $params = [];
@@ -119,6 +124,22 @@ class AuditService
         if ($dateTo !== null) {
             $conditions[] = 'a.created_at <= :date_to';
             $params['date_to'] = $dateTo . ' 23:59:59';
+        }
+
+        if (!empty($scopeNodeIds)) {
+            // Scope-aware filter (plan Q23): keep rows whose node_id is in
+            // the user's subtree OR which are unscoped system-level entries
+            // (null node_id — only visible at "All nodes"). The controller
+            // passes scopeNodeIds only when the user is NOT at "All nodes",
+            // so the null-entry carveout is a deliberate inclusion of the
+            // rows that still belong to every sensible admin view.
+            $placeholders = [];
+            foreach ($scopeNodeIds as $i => $id) {
+                $key = "n_$i";
+                $placeholders[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            $conditions[] = '(a.node_id IN (' . implode(',', $placeholders) . ') OR a.node_id IS NULL)';
         }
 
         $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';

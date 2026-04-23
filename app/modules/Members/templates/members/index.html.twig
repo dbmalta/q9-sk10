@@ -74,12 +74,28 @@
 <div id="live-search-results"></div>
 
 {% if members is empty %}
-    {% include "components/_empty_state.html.twig" with {
-        icon: 'bi-people',
-        message: t('members.no_members'),
-        action_label: t('members.add_member'),
-        action_url: '/members/create'
-    } %}
+    {% if has_results_in_broader_scope|default(false) %}
+        {# Scope-empty: offer a quick switch to All nodes #}
+        <div class="text-center py-5">
+            <i class="bi bi-funnel fs-1 text-body-secondary d-block mb-2"></i>
+            <p class="mb-3">{{ t('view.empty.scope_filtered') }}</p>
+            <form method="POST" action="/context/scope" class="d-inline">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <input type="hidden" name="node_id" value="all">
+                <input type="hidden" name="redirect_to" value="{{ current_uri }}">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-globe me-1"></i>{{ t('view.empty.switch_to_all') }}
+                </button>
+            </form>
+        </div>
+    {% else %}
+        {% include "components/_empty_state.html.twig" with {
+            icon: 'bi-people',
+            message: t('members.no_members'),
+            action_label: t('members.add_member'),
+            action_url: '/members/create'
+        } %}
+    {% endif %}
 {% else %}
 {# Member table #}
 <div class="card border-0 shadow-sm">

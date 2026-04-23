@@ -31,7 +31,7 @@
         <a href="/members" class="btn btn-outline-secondary btn-sm">
             <i class="bi bi-arrow-left me-1"></i>{{ t('common.back') }}
         </a>
-        {% if has_permission('members.write') %}
+        {% if view.mode == 'admin' and has_permission('members.write') %}
         <a href="/members/{{ member.id }}/edit" class="btn btn-primary btn-sm">
             <i class="bi bi-pencil me-1"></i>{{ t('common.edit') }}
         </a>
@@ -138,8 +138,8 @@
             </div>
         </div>
 
-        {# Status change (admin) #}
-        {% if has_permission('members.write') %}
+        {# Status change (admin-mode only) #}
+        {% if view.mode == 'admin' and has_permission('members.write') %}
         <div class="card border-0 shadow-sm mt-4">
             <div class="card-header bg-transparent border-bottom">
                 <h5 class="card-title mb-0"><i class="bi bi-toggles me-2"></i>{{ t('members.change_status') }}</h5>

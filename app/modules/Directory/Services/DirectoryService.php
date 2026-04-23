@@ -83,7 +83,7 @@ class DirectoryService
      * @param string|null $search Free-text search string
      * @return array Flat list of directory contacts
      */
-    public function getContactDirectory(?int $nodeId = null, ?string $search = null): array
+    public function getContactDirectory(?int $nodeId = null, ?string $search = null, array $scopeNodeIds = []): array
     {
         $conditions = [
             "r.is_directory_visible = 1",
@@ -96,6 +96,16 @@ class DirectoryService
         if ($nodeId !== null) {
             $conditions[] = "ra.context_id = :node_id";
             $params['node_id'] = $nodeId;
+        }
+
+        if (!empty($scopeNodeIds)) {
+            $placeholders = [];
+            foreach ($scopeNodeIds as $i => $id) {
+                $key = "scope_$i";
+                $placeholders[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            $conditions[] = 'ra.context_id IN (' . implode(',', $placeholders) . ')';
         }
 
         if ($search !== null && trim($search) !== '') {

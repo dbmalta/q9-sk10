@@ -1,0 +1,41 @@
+{#
+    Mobile variant of the view switcher for the offcanvas sidebar.
+    Stacks pills and scope picker vertically to fit a narrow header.
+#}
+{% if view.shows_mode_pills or view.shows_scope_picker %}
+<div class="view-switcher-mobile border-bottom p-3" x-data="viewSwitcher()">
+    {% if view.shows_mode_pills %}
+    <div class="btn-group btn-group-sm w-100 mb-2" role="group" aria-label="{{ t('view.mode.aria') }}">
+        {% for target in ['member', 'admin'] %}
+        <form method="POST" action="/context/mode" class="m-0 flex-fill" x-on:submit="maybeConfirm($event)">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="mode" value="{{ target }}">
+            <input type="hidden" name="redirect_to" value="{{ current_uri }}">
+            <button type="submit"
+                    class="btn btn-outline-secondary w-100 {{ view.mode == target ? 'active' : '' }}"
+                    aria-pressed="{{ view.mode == target ? 'true' : 'false' }}">
+                <i class="bi {{ target == 'admin' ? 'bi-shield-check' : 'bi-person' }} me-1"></i>{{ t('view.mode.' ~ target) }}
+            </button>
+        </form>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if view.shows_scope_picker %}
+    <div class="small text-body-secondary mb-1">{{ t('view.scope.label') }}</div>
+    <select class="form-select form-select-sm"
+            x-on:change="submitScope($event)"
+            aria-label="{{ t('view.scope.label') }}">
+        <option value="all" {{ view.active_scope_node_id is null ? 'selected' : '' }}>{{ t('view.scope.all') }}</option>
+        {% for scope in view.available_scopes %}
+        <option value="{{ scope.node_id }}" {{ view.active_scope_node_id == scope.node_id ? 'selected' : '' }}>{{ scope.path }}</option>
+        {% endfor %}
+    </select>
+    <form id="view-scope-mobile-form" method="POST" action="/context/scope" class="d-none">
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <input type="hidden" name="node_id" value="{{ view.active_scope_node_id ?? 'all' }}">
+        <input type="hidden" name="redirect_to" value="{{ current_uri }}">
+    </form>
+    {% endif %}
+</div>
+{% endif %}
