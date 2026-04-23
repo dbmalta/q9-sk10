@@ -143,6 +143,10 @@ h1, .h1, h2, .h2 {
     align-items: center;
 }
 
+/* Buttons centre their label horizontally too; nav/dropdown/sidebar
+   items keep start-alignment so icons sit beside text. */
+.btn { justify-content: center; }
+
 /* ===========================
    Card Styling
    =========================== */
@@ -258,6 +262,8 @@ h1, .h1, h2, .h2 {
 
 .table {
     --bs-table-border-color: var(--sk-border);
+    --bs-table-hover-bg: var(--sk-accent-soft);
+    --bs-table-active-bg: var(--sk-accent-soft-hover);
 }
 
 .table > thead > tr > th {
@@ -373,7 +379,11 @@ h1, .h1, h2, .h2 {
 
 .sidebar-link.active {
     background-color: var(--sk-accent);
-    color: #fff;
+    color: var(--sk-accent-fg);
+}
+.sidebar-link.active:hover {
+    background-color: var(--sk-accent-hover);
+    color: var(--sk-accent-fg);
 }
 
 .sidebar-icon {
@@ -393,7 +403,33 @@ h1, .h1, h2, .h2 {
     padding-top: var(--sk-topbar-height);
     min-height: 100vh;
     transition: margin-left 0.2s ease;
+    display: flex;
+    flex-direction: column;
 }
+
+/* Push the app footer to the bottom on short pages (works because
+   .main-content is a flex column and the footer uses mt-auto). */
+.main-content > main { flex: 1 0 auto; }
+
+/* ===========================
+   App Footer
+   =========================== */
+
+/* The footer recedes visually: in light mode a soft warm grey that
+   sits below the page bg; in dark mode a deeper near-black below the
+   surface bg. Either way it reads as "end of page". */
+.app-footer {
+    background-color: #f2f0f5 !important;
+    border-top: 1px solid var(--sk-border) !important;
+    color: var(--sk-text-secondary);
+}
+[data-bs-theme="dark"] .app-footer {
+    background-color: #0e0d12 !important;
+    border-top-color: #24232b !important;
+}
+.app-footer a { transition: color 0.12s ease; }
+.app-footer a:hover { color: var(--sk-accent-strong); }
+[data-bs-theme="dark"] .app-footer a:hover { color: var(--sk-accent-300); }
 
 /* When sidebar is hidden */
 .sidebar-collapsed ~ .main-content {
@@ -475,6 +511,13 @@ h1, .h1, h2, .h2 {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--sk-accent-strong);
+}
+.page-link:hover  { background-color: var(--sk-accent-soft); color: var(--sk-accent-strong); }
+.page-item.active .page-link {
+    background-color: var(--sk-accent);
+    border-color: var(--sk-accent);
+    color: var(--sk-accent-fg);
 }
 
 /* ===========================
@@ -512,8 +555,38 @@ h1, .h1, h2, .h2 {
 /* ============================
    View Switcher — mode accent
    ============================ */
-.topbar.mode-admin  { box-shadow: inset 0 -2px 0 var(--bs-primary); }
+.topbar.mode-admin  { box-shadow: inset 0 -2px 0 var(--sk-accent); }
 .topbar.mode-member { box-shadow: inset 0 -2px 0 var(--bs-success); }
 .view-switcher form { display: inline-block; }
 .view-switcher .dropdown-item.active,
-.view-switcher .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }
+.view-switcher .dropdown-item:active { background-color: var(--sk-accent); color: var(--sk-accent-fg); }
+
+/* ===========================
+   Dropdown active items
+   =========================== */
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: var(--sk-accent);
+    color: var(--sk-accent-fg);
+}
+
+/* ===========================
+   Text/link utility overrides
+   =========================== */
+
+.text-primary { color: var(--sk-accent-strong) !important; }
+.bg-primary   { background-color: var(--sk-accent) !important; }
+.border-primary { border-color: var(--sk-accent) !important; }
+.link-primary {
+    color: var(--sk-accent-strong) !important;
+    text-decoration-color: var(--sk-accent-soft-hover);
+}
+.link-primary:hover,
+.link-primary:focus {
+    color: var(--sk-accent-active) !important;
+    text-decoration-color: currentColor;
+}
+
+/* Skip-to-content pill uses accent instead of raw bg-primary blue */
+a.visually-hidden-focusable.bg-primary { background-color: var(--sk-accent) !important; }

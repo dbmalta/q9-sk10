@@ -47,6 +47,8 @@ abstract class Controller
             ),
             'breadcrumbs' => $data['breadcrumbs'] ?? [],
             'view' => $view->toArray(),
+            'org_accent' => $this->resolveOrgAccent(),
+            'app_version' => trim(@file_get_contents(dirname(__DIR__, 2) . '/VERSION') ?: ''),
         ], $data);
 
         // HTMX requests get only the partial content, not the full layout
@@ -57,6 +59,43 @@ abstract class Controller
         }
 
         return Response::html($html, $statusCode);
+    }
+
+    /**
+     * Resolve the per-tenant accent colour, if configured.
+     *
+     * Returns null when no override is set or the settings table is not
+     * yet available (e.g. during the setup wizard). The base layout reads
+     * this to emit a conditional <style> block that overrides the default
+     * Heritage Violet tokens. Soft surfaces derive from `rgb`, so a single
+     * hex + its RGB triplet is the minimum for a full reskin; `hover`,
+     * `active`, `strong`, and `fg` are optional refinements.
+     *
+     * @return array{hex:string,rgb:string,hover?:string,active?:string,strong?:string,fg?:string}|null
+     */
+    private function resolveOrgAccent(): ?array
+    {
+        try {
+            $settings = new \App\Modules\Admin\Services\SettingsService($this->app->getDb());
+            $hex = $settings->get('branding.accent_hex');
+            $rgb = $settings->get('branding.accent_rgb');
+        } catch (\Throwable) {
+            return null;
+        }
+
+        if (!is_string($hex) || !is_string($rgb) || $hex === '' || $rgb === '') {
+            return null;
+        }
+
+        $accent = ['hex' => $hex, 'rgb' => $rgb];
+        foreach (['hover', 'active', 'strong', 'fg'] as $role) {
+            $v = $settings->get('branding.accent_' . $role);
+            if (is_string($v) && $v !== '') {
+                $accent[$role] = $v;
+            }
+        }
+
+        return $accent;
     }
 
     /**

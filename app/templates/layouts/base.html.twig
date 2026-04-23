@@ -22,8 +22,32 @@
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
+    <!-- Typography: Inter (UI) + Fraunces (display headings) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap">
     <!-- ScoutKeeper Design System -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    {# Per-tenant accent override. If the org has configured a primary
+       colour via Admin settings, override the accent tokens here so every
+       component (buttons, toggles, nav, pagination, focus ring) picks it
+       up without touching CSS. Soft surfaces derive from --sk-accent-rgb
+       so a single colour is enough. #}
+    {% if org_accent is defined and org_accent.hex is defined %}
+    <style>
+        :root, [data-bs-theme="dark"] {
+            --sk-accent: {{ org_accent.hex }};
+            --sk-accent-hover: {{ org_accent.hover|default(org_accent.hex) }};
+            --sk-accent-active: {{ org_accent.active|default(org_accent.hover|default(org_accent.hex)) }};
+            --sk-accent-strong: {{ org_accent.strong|default(org_accent.hex) }};
+            --sk-accent-rgb: {{ org_accent.rgb }};
+            --sk-accent-fg: {{ org_accent.fg|default('#ffffff') }};
+            --bs-primary: var(--sk-accent);
+            --bs-primary-rgb: var(--sk-accent-rgb);
+        }
+    </style>
+    {% endif %}
 
     {% block head %}{% endblock %}
 </head>
@@ -32,11 +56,6 @@
     <a href="#main-content" class="visually-hidden-focusable position-absolute top-0 start-0 p-2 bg-primary text-white">
         Skip to content
     </a>
-
-    {# Live region for mode/scope-change announcements. Populated by JS after
-       successful POST /context/{mode,scope}; Phase 8 will wire a flash-keyed
-       channel that doesn't consume the main flash stream. #}
-    <div id="view-announce" class="visually-hidden" aria-live="polite" role="status"></div>
 
     {% block layout %}{% endblock %}
 
