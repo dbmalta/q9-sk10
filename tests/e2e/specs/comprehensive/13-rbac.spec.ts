@@ -292,7 +292,10 @@ test.describe('Pending member access', () => {
   test('pending member cannot access admin routes', async ({ page }) => {
     await login(page, 'pending');
     await page.goto('/admin/settings');
-    await page.waitForLoadState('networkidle');
+    // Pending users see a blocking pending-ack modal; Bootstrap modal fade
+    // transitions prevent networkidle from firing reliably in headless CI.
+    // domcontentloaded is sufficient for the URL/body assertions below.
+    await page.waitForLoadState('domcontentloaded');
 
     const url = page.url();
     const body = await page.locator('body').textContent();
