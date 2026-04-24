@@ -98,6 +98,24 @@ class OrgServiceTest extends TestCase
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
 
+        // Minimal members + member_nodes tables so getTree's member-count
+        // rollup subquery has something to join against.
+        $this->db->query("
+            CREATE TABLE `members` (
+                `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                `first_name` VARCHAR(100) NOT NULL DEFAULT '',
+                `surname` VARCHAR(100) NOT NULL DEFAULT ''
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+        $this->db->query("
+            CREATE TABLE `member_nodes` (
+                `member_id` INT UNSIGNED NOT NULL,
+                `node_id` INT UNSIGNED NOT NULL,
+                `is_primary` TINYINT(1) NOT NULL DEFAULT 0,
+                PRIMARY KEY (`member_id`, `node_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+
         // Seed level types
         $this->db->insert('org_level_types', ['name' => 'National', 'depth' => 0, 'sort_order' => 0]);
         $this->db->insert('org_level_types', ['name' => 'Region', 'depth' => 1, 'sort_order' => 1]);
@@ -112,6 +130,8 @@ class OrgServiceTest extends TestCase
         if ($this->db) {
             $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
             $this->db->query("DROP TABLE IF EXISTS `org_teams`");
+            $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
+            $this->db->query("DROP TABLE IF EXISTS `members`");
             $this->db->query("DROP TABLE IF EXISTS `org_closure`");
             $this->db->query("DROP TABLE IF EXISTS `org_nodes`");
             $this->db->query("DROP TABLE IF EXISTS `org_level_types`");

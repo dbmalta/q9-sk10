@@ -35,7 +35,8 @@ class OrgController extends Controller
             return $guard;
         }
 
-        $tree = $this->orgService->getTree();
+        $allowed = $this->resolveViewAllowedNodeIds();
+        $tree = $this->orgService->getTree(true, $allowed);
         $levelTypes = $this->orgService->getLevelTypes();
 
         return $this->render('@orgstructure/org/index.html.twig', [
@@ -62,7 +63,21 @@ class OrgController extends Controller
             return $this->render('errors/404.html.twig', [], 404);
         }
 
+        $allowed = $this->resolveViewAllowedNodeIds();
+        $scopeGuard = $this->assertNodeInAllowed((int) $vars['id'], $allowed);
+        if ($scopeGuard !== null) {
+            return $scopeGuard;
+        }
+
         $ancestors = $this->orgService->getAncestors((int) $vars['id']);
+        if ($allowed !== null) {
+            // Out-of-scope ancestors are pruned from the breadcrumb trail
+            // so their names don't leak through the detail page.
+            $ancestors = array_values(array_filter(
+                $ancestors,
+                fn(array $a) => in_array((int) $a['id'], $allowed, true)
+            ));
+        }
         $children = $this->orgService->getChildren((int) $vars['id']);
         $teams = $this->orgService->getTeamsForNode((int) $vars['id']);
         $levelTypes = $this->orgService->getLevelTypes();
@@ -91,6 +106,16 @@ class OrgController extends Controller
         $parent = null;
         if ($parentId !== null) {
             $parent = $this->orgService->getNode((int) $parentId);
+            $scopeGuard = $this->assertNodeInAllowed((int) $parentId, $this->resolveWriteAllowedNodeIds());
+            if ($scopeGuard !== null) {
+                return $scopeGuard;
+            }
+        } else {
+            // Creating a root node is effectively super-admin only — no parent
+            // means the new node sits above any existing scope.
+            if ($this->resolveWriteAllowedNodeIds() !== null) {
+                return $this->render('errors/403.html.twig', [], 403);
+            }
         }
 
         $levelTypes = $this->orgService->getLevelTypes();
@@ -126,6 +151,20 @@ class OrgController extends Controller
             return $this->redirect('/admin/org/nodes/create');
         }
 
+        $parentIdRaw = $this->getParam('parent_id');
+        $parentId = $parentIdRaw !== null && $parentIdRaw !== '' ? (int) $parentIdRaw : null;
+        $writeAllowed = $this->resolveWriteAllowedNodeIds();
+        if ($parentId === null) {
+            if ($writeAllowed !== null) {
+                return $this->render('errors/403.html.twig', [], 403);
+            }
+        } else {
+            $scopeGuard = $this->assertNodeInAllowed($parentId, $writeAllowed);
+            if ($scopeGuard !== null) {
+                return $scopeGuard;
+            }
+        }
+
         $nodeId = $this->orgService->createNode([
             'name' => $name,
             'short_name' => $this->getParam('short_name') ?: null,
@@ -154,6 +193,11 @@ class OrgController extends Controller
         $node = $this->orgService->getNode((int) $vars['id']);
         if ($node === null) {
             return $this->render('errors/404.html.twig', [], 404);
+        }
+
+        $scopeGuard = $this->assertNodeInAllowed((int) $vars['id'], $this->resolveWriteAllowedNodeIds());
+        if ($scopeGuard !== null) {
+            return $scopeGuard;
         }
 
         $parent = $node['parent_id'] ? $this->orgService->getNode((int) $node['parent_id']) : null;
@@ -186,6 +230,11 @@ class OrgController extends Controller
         $node = $this->orgService->getNode($nodeId);
         if ($node === null) {
             return $this->render('errors/404.html.twig', [], 404);
+        }
+
+        $scopeGuard = $this->assertNodeInAllowed($nodeId, $this->resolveWriteAllowedNodeIds());
+        if ($scopeGuard !== null) {
+            return $scopeGuard;
         }
 
         $name = trim((string) $this->getParam('name', ''));
@@ -224,6 +273,11 @@ class OrgController extends Controller
 
         $nodeId = (int) $vars['id'];
 
+        $scopeGuard = $this->assertNodeInAllowed($nodeId, $this->resolveWriteAllowedNodeIds());
+        if ($scopeGuard !== null) {
+            return $scopeGuard;
+        }
+
         try {
             $this->orgService->deleteNode($nodeId);
             $this->flash('success', $this->t('flash.deleted'));
@@ -249,6 +303,12 @@ class OrgController extends Controller
         }
 
         $nodeId = (int) $vars['id'];
+
+        $scopeGuard = $this->assertNodeInAllowed($nodeId, $this->resolveWriteAllowedNodeIds());
+        if ($scopeGuard !== null) {
+            return $scopeGuard;
+        }
+
         $name = trim((string) $this->getParam('team_name', ''));
 
         if ($name === '') {
@@ -288,6 +348,11 @@ class OrgController extends Controller
             return $this->render('errors/404.html.twig', [], 404);
         }
 
+        $scopeGuard = $this->assertNodeInAllowed((int) $team['node_id'], $this->resolveWriteAllowedNodeIds());
+        if ($scopeGuard !== null) {
+            return $scopeGuard;
+        }
+
         $this->orgService->deleteTeam($teamId);
         $this->flash('success', $this->t('flash.deleted'));
         return $this->redirect("/admin/org/nodes/{$team['node_id']}");
@@ -323,5 +388,76 @@ class OrgController extends Controller
     private function t(string $key, array $params = []): string
     {
         return $this->app->getI18n()->t($key, $params);
+    }
+
+    /**
+     * Allowed node IDs for the tree/detail view. Null = unrestricted
+     * (super admin with no active scope). An empty array means the user
+     * has no scope at all. Narrowed by the active ViewContext scope when
+     * the user has explicitly picked a subset of their scopes.
+     *
+     * @return array<int>|null
+     */
+    private function resolveViewAllowedNodeIds(): ?array
+    {
+        $resolver = $this->app->getPermissionResolver();
+        $ctx = $this->resolveViewContext();
+
+        if ($resolver->isSuperAdmin()) {
+            if ($ctx->activeScopeNodeId !== null) {
+                return $this->orgService->expandAllowedSubtree([$ctx->activeScopeNodeId]);
+            }
+            return null;
+        }
+
+        $roleScopes = $resolver->getScopeNodeIds();
+        if ($roleScopes === []) {
+            return [];
+        }
+
+        if ($ctx->activeScopeNodeId !== null && in_array($ctx->activeScopeNodeId, $roleScopes, true)) {
+            return $this->orgService->expandAllowedSubtree([$ctx->activeScopeNodeId]);
+        }
+
+        return $this->orgService->expandAllowedSubtree($roleScopes);
+    }
+
+    /**
+     * Allowed node IDs for write operations. Null = unrestricted (super
+     * admin). Unlike the view-allowed set this does NOT narrow by the
+     * active scope picker — the user can always mutate any node inside
+     * their role-assigned scopes, regardless of which subset they're
+     * currently filtering the UI to.
+     *
+     * @return array<int>|null
+     */
+    private function resolveWriteAllowedNodeIds(): ?array
+    {
+        $resolver = $this->app->getPermissionResolver();
+        if ($resolver->isSuperAdmin()) {
+            return null;
+        }
+        $roleScopes = $resolver->getScopeNodeIds();
+        if ($roleScopes === []) {
+            return [];
+        }
+        return $this->orgService->expandAllowedSubtree($roleScopes);
+    }
+
+    /**
+     * Return a 403 response if $nodeId is not in $allowed. A null
+     * $allowed means unrestricted (super admin) and always passes.
+     *
+     * @param array<int>|null $allowed
+     */
+    private function assertNodeInAllowed(int $nodeId, ?array $allowed): ?Response
+    {
+        if ($allowed === null) {
+            return null;
+        }
+        if (!in_array($nodeId, $allowed, true)) {
+            return $this->render('errors/403.html.twig', [], 403);
+        }
+        return null;
     }
 }

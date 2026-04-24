@@ -193,23 +193,93 @@ class OrgService
      * Get the full org tree as a nested array.
      *
      * @param bool $activeOnly Only include active nodes
+     * @param array<int>|null $allowedNodeIds If provided, restrict the tree
+     *        to these node IDs. Null = no restriction (super admin). An
+     *        empty array returns an empty tree. Member-count rollups are
+     *        also restricted to the allowed set, so a user scoped to a
+     *        subtree sees counts summed only over nodes they can see.
      * @return array Nested tree structure
      */
-    public function getTree(bool $activeOnly = true): array
+    public function getTree(bool $activeOnly = true, ?array $allowedNodeIds = null): array
     {
+        if ($allowedNodeIds !== null && $allowedNodeIds === []) {
+            return [];
+        }
+
+        $params = [];
+        $where = [];
+        if ($activeOnly) {
+            $where[] = "n.is_active = 1";
+        }
+
+        $memberSubqueryTail = '';
+        if ($allowedNodeIds !== null) {
+            $nodePhs = [];
+            foreach (array_values($allowedNodeIds) as $i => $id) {
+                $key = "allowed_$i";
+                $nodePhs[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            $where[] = "n.id IN (" . implode(',', $nodePhs) . ")";
+
+            $mcPhs = [];
+            foreach (array_values($allowedNodeIds) as $i => $id) {
+                $key = "mc_allowed_$i";
+                $mcPhs[] = ":$key";
+                $params[$key] = (int) $id;
+            }
+            $memberSubqueryTail = " AND mn.node_id IN (" . implode(',', $mcPhs) . ")";
+        }
+
         $sql = "SELECT n.*, lt.name AS level_type_name, lt.is_leaf,
-                       (SELECT COUNT(*) FROM org_teams t WHERE t.node_id = n.id) AS team_count
+                       (SELECT COUNT(*) FROM org_teams t WHERE t.node_id = n.id) AS team_count,
+                       (SELECT COUNT(DISTINCT mn.member_id)
+                          FROM member_nodes mn
+                          JOIN org_closure c ON c.descendant_id = mn.node_id
+                          WHERE c.ancestor_id = n.id{$memberSubqueryTail}) AS member_count
                 FROM org_nodes n
                 JOIN org_level_types lt ON lt.id = n.level_type_id";
 
-        if ($activeOnly) {
-            $sql .= " WHERE n.is_active = 1";
+        if ($where !== []) {
+            $sql .= " WHERE " . implode(' AND ', $where);
         }
 
         $sql .= " ORDER BY n.sort_order, n.name";
-        $nodes = $this->db->fetchAll($sql);
+        $nodes = $this->db->fetchAll($sql, $params);
 
-        return $this->buildTree($nodes);
+        // When the result set is a subtree, nodes whose parent_id points
+        // to a filtered-out ancestor must still render as a root of the
+        // visible tree. buildTree() handles that via a presence-set check.
+        $presentIds = array_map(fn($n) => (int) $n['id'], $nodes);
+        return $this->buildTree($nodes, null, array_flip($presentIds));
+    }
+
+    /**
+     * Expand a list of root node IDs into the union of themselves and all
+     * their descendants via the closure table. Returns a deduplicated list
+     * of node IDs. Empty input returns empty output.
+     *
+     * @param array<int> $rootNodeIds
+     * @return array<int>
+     */
+    public function expandAllowedSubtree(array $rootNodeIds): array
+    {
+        if ($rootNodeIds === []) {
+            return [];
+        }
+        $placeholders = [];
+        $params = [];
+        foreach (array_values($rootNodeIds) as $i => $id) {
+            $key = "root_$i";
+            $placeholders[] = ":$key";
+            $params[$key] = (int) $id;
+        }
+        $rows = $this->db->fetchAll(
+            "SELECT DISTINCT descendant_id FROM org_closure
+             WHERE ancestor_id IN (" . implode(',', $placeholders) . ")",
+            $params
+        );
+        return array_map('intval', array_column($rows, 'descendant_id'));
     }
 
     /**
@@ -423,13 +493,22 @@ class OrgService
     /**
      * Build a nested tree from a flat list of nodes.
      */
-    private function buildTree(array $nodes, ?int $parentId = null): array
+    private function buildTree(array $nodes, ?int $parentId = null, ?array $presentIds = null): array
     {
         $tree = [];
         foreach ($nodes as $node) {
             $nodeParent = $node['parent_id'] !== null ? (int) $node['parent_id'] : null;
-            if ($nodeParent === $parentId) {
-                $node['children'] = $this->buildTree($nodes, (int) $node['id']);
+
+            // A node counts as a root of the visible tree when its parent
+            // is either null OR outside the present-ids set (pruned by the
+            // scope filter). This lets a subtree render standalone.
+            $effectiveParent = $nodeParent;
+            if ($presentIds !== null && $nodeParent !== null && !isset($presentIds[$nodeParent])) {
+                $effectiveParent = null;
+            }
+
+            if ($effectiveParent === $parentId) {
+                $node['children'] = $this->buildTree($nodes, (int) $node['id'], $presentIds);
                 $tree[] = $node;
             }
         }
