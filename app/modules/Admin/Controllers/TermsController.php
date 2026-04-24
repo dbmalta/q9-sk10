@@ -56,6 +56,57 @@ class TermsController extends Controller
         ]);
     }
 
+    /**
+     * GET /admin/terms/create — convenience alias that routes to the version
+     * create form for the first policy (or auto-creates a default policy if none).
+     */
+    public function createAlias(Request $request, array $vars): Response
+    {
+        $guard = $this->requirePermission('admin.terms');
+        if ($guard !== null) {
+            return $guard;
+        }
+
+        $policies = $this->policiesService->getAll();
+        if (empty($policies)) {
+            $userId = (int) $this->app->getSession()->get('user')['id'];
+            $policyId = $this->policiesService->createPolicy(
+                $this->t('policies.default_name'),
+                null,
+                $userId,
+                []
+            );
+        } else {
+            $policyId = (int) $policies[0]['id'];
+        }
+        return $this->createVersionForm($request, ['id' => (string) $policyId]);
+    }
+
+    /**
+     * POST /admin/terms — alias for storing a new version against the default policy.
+     */
+    public function storeAlias(Request $request, array $vars): Response
+    {
+        $guard = $this->requirePermission('admin.terms');
+        if ($guard !== null) {
+            return $guard;
+        }
+
+        $policies = $this->policiesService->getAll();
+        if (empty($policies)) {
+            $userId = (int) $this->app->getSession()->get('user')['id'];
+            $policyId = $this->policiesService->createPolicy(
+                $this->t('policies.default_name'),
+                null,
+                $userId,
+                []
+            );
+        } else {
+            $policyId = (int) $policies[0]['id'];
+        }
+        return $this->storeVersion($request, ['id' => (string) $policyId]);
+    }
+
     // ──── Policy CRUD ────
 
     public function createPolicyForm(Request $request, array $vars): Response

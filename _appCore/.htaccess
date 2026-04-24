@@ -1,0 +1,44 @@
+# appCore — Apache configuration
+# Part of the bootstrap tier; not replaced by the updater.
+
+RewriteEngine On
+
+# Deny access to sensitive directories
+RewriteRule ^app/ - [F,L]
+RewriteRule ^config/ - [F,L]
+RewriteRule ^var/ - [F,L]
+RewriteRule ^data/ - [F,L]
+RewriteRule ^vendor/ - [F,L]
+RewriteRule ^tests/ - [F,L]
+RewriteRule ^tools/ - [F,L]
+
+# Allow direct access to specific entry points
+RewriteRule ^updater/run\.php$ - [L]
+RewriteRule ^cron/run\.php$ - [L]
+
+# Static assets
+RewriteRule ^assets/ - [L]
+
+# Route all other requests through the front controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'self'"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+</IfModule>
+
+Options -Indexes
+AddDefaultCharset UTF-8
+
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 12M
+    php_value max_execution_time 120
+</IfModule>

@@ -1,0 +1,1278 @@
+
+Running 906 tests using 1 worker
+
+[1A[2K[1/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/dashboard — no 404/500
+[1A[2K[2/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /members — no 404/500
+[1A[2K[3/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/registrations — no 404/500
+[1A[2K[4/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/custom-fields — no 404/500
+[1A[2K[5/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /events — no 404/500
+[1A[2K[6/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/events — no 404/500
+[1A[2K[7/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /articles — no 404/500
+[1A[2K[8/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/articles — no 404/500
+[1A[2K[9/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/email — no 404/500
+[1A[2K[10/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /directory — no 404/500
+[1A[2K[11/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /directory/contacts — no 404/500
+[1A[2K[12/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/org — no 404/500
+[1A[2K[13/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/org/levels — no 404/500
+[1A[2K[14/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/achievements — no 404/500
+[1A[2K[15/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/roles — no 404/500
+[1A[2K[16/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/reports — no 404/500
+[1A[2K[17/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/terms — no 404/500
+[1A[2K[18/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/notices — no 404/500
+[1A[2K[19/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/settings — no 404/500
+[1A[2K[20/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/audit — no 404/500
+[1A[2K[21/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/logs — no 404/500
+[1A[2K[22/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/export — no 404/500
+[1A[2K[23/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/backups — no 404/500
+[1A[2K[24/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/languages — no 404/500
+[1A[2K[25/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/updates — no 404/500
+[1A[2K[26/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:58:7 › Root route › GET / redirects to dashboard when logged in
+[1A[2K[27/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:67:7 › Root route › GET / redirects to login when logged out
+[1A[2K[28/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:83:7 › Logo link › clicking logo returns to dashboard
+[1A[2K[29/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:106:7 › Sidebar collapse/expand › sidebar toggle button exists and is clickable
+[1A[2K[30/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:130:7 › Theme toggle › clicking theme toggle changes data-bs-theme on <html>
+[1A[2K[31/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:160:7 › Dead-link scan › no dead links on admin dashboard
+[1A[2K[32/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:178:7 › Dead-link scan › no dead links on members list
+[1A[2K[33/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:206:7 › Breadcrumbs › member create page has breadcrumb back to members list
+[1A[2K[34/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:224:7 › Breadcrumbs › event create page breadcrumb links work
+[1A[2K[35/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:238:7 › Breadcrumbs › role create page breadcrumbs work
+[1A[2K[36/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:252:7 › Breadcrumbs › org node create page breadcrumbs work
+[1A[2K[37/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /members/create works
+[1A[2K[38/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/events/create works
+[1A[2K[39/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/articles/create works
+[1A[2K[40/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/roles/create works
+[1A[2K[41/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/achievements/create works
+[1A[2K[42/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/terms/create works
+[1A[2K[43/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/notices/create works
+[1A[2K[44/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/org/nodes/create works
+[1A[2K[45/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/custom-fields/create works
+[1A[2K[46/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:311:7 › User account menu › logout link is present on every admin page
+[1A[2K[47/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:330:7 › User account menu › my data export link resolves
+[1A[2K[48/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:352:7 › Global topbar search › search input is present in the topbar (desktop)
+[1A[2K[49/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:363:7 › Global topbar search › /search route exists and returns non-404
+[1A[2K  1) [chromium] › specs\comprehensive\01-navigation.spec.ts:363:7 › Global topbar search › /search route exists and returns non-404 
+
+    Error: /search route returned 404 — route is not registered
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mnot[2m.[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: not [32m404[39m
+
+      365 |     // Currently FAILS: no /search route exists in any module.
+      366 |     const resp = await page.request.get('/search?q=test', { failOnStatusCode: false });
+    > 367 |     expect(resp.status(), '/search route returned 404 — route is not registered').not.toBe(404);
+          |                                                                                       ^
+      368 |     expect(resp.status(), '/search route returned 500').not.toBe(500);
+      369 |   });
+      370 |
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\01-navigation.spec.ts:367:87
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-01-navigatio-5daa7--exists-and-returns-non-404-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-01-navigatio-5daa7--exists-and-returns-non-404-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-01-navigatio-5daa7--exists-and-returns-non-404-chromium\error-context.md
+
+
+[1A[2K[50/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:371:7 › Global topbar search › typing and pressing Enter in the search bar produces visible output
+[1A[2K  2) [chromium] › specs\comprehensive\01-navigation.spec.ts:371:7 › Global topbar search › typing and pressing Enter in the search bar produces visible output 
+
+    Error: Pressing Enter in search bar should show results
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      381 |     const results = page.locator('#search-results, .search-results, [data-search-results]');
+      382 |     const hasContent = await results.evaluate(el => el.textContent?.trim().length ?? 0) > 0;
+    > 383 |     expect(hasContent, 'Pressing Enter in search bar should show results').toBe(true);
+          |                                                                            ^
+      384 |   });
+      385 |
+      386 |   test('search results appear below the input, not at the bottom of the page', async ({ page }) => {
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\01-navigation.spec.ts:383:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-01-navigatio-bcf6e-bar-produces-visible-output-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-01-navigatio-bcf6e-bar-produces-visible-output-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-01-navigatio-bcf6e-bar-produces-visible-output-chromium\error-context.md
+
+
+[1A[2K[51/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:386:7 › Global topbar search › search results appear below the input, not at the bottom of the page
+[1A[2K[52/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:409:7 › Global topbar search › mobile offcanvas search input has HTMX attributes wired up
+[1A[2K[53/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:434:7 › User menu links › logout link is inside the user dropdown and resolves
+[1A[2K[54/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:443:7 › User menu links › /account link in user dropdown resolves (not 404)
+[1A[2K[55/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:458:7 › Mobile navigation › login page renders on mobile without overflow errors
+[1A[2K[56/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:465:7 › Mobile navigation › admin dashboard renders on mobile
+[1A[2K[57/906] [chromium] › specs\comprehensive\01-navigation.spec.ts:472:7 › Mobile navigation › hamburger/nav-toggle is visible on mobile
+[1A[2K[58/906] [chromium] › specs\comprehensive\02-auth.spec.ts:28:7 › Login page — form anatomy › has email field, password field, and submit button
+[1A[2K[59/906] [chromium] › specs\comprehensive\02-auth.spec.ts:35:7 › Login page — form anatomy › has a link to forgot-password page
+[1A[2K[60/906] [chromium] › specs\comprehensive\02-auth.spec.ts:43:7 › Login page — form anatomy › login form contains a CSRF token or equivalent protection
+[1A[2K[61/906] [chromium] › specs\comprehensive\02-auth.spec.ts:64:7 › Successful login › admin login redirects away from /login
+[1A[2K[62/906] [chromium] › specs\comprehensive\02-auth.spec.ts:70:7 › Successful login › leader login works
+[1A[2K[63/906] [chromium] › specs\comprehensive\02-auth.spec.ts:75:7 › Successful login › member login works
+[1A[2K[64/906] [chromium] › specs\comprehensive\02-auth.spec.ts:86:7 › Failed login › wrong password shows error, stays on login
+[1A[2K[65/906] [chromium] › specs\comprehensive\02-auth.spec.ts:97:7 › Failed login › unknown email shows error, stays on login
+[1A[2K[66/906] [chromium] › specs\comprehensive\02-auth.spec.ts:108:7 › Failed login › empty email shows validation error
+[1A[2K[67/906] [chromium] › specs\comprehensive\02-auth.spec.ts:120:7 › Failed login › empty password shows validation error
+[1A[2K[68/906] [chromium] › specs\comprehensive\02-auth.spec.ts:137:7 › Already authenticated › visiting /login when already logged in redirects away
+[1A[2K[69/906] [chromium] › specs\comprehensive\02-auth.spec.ts:150:7 › Logout › GET /logout redirects to login page
+[1A[2K[70/906] [chromium] › specs\comprehensive\02-auth.spec.ts:156:7 › Logout › after logout, protected page redirects to login
+[1A[2K[71/906] [chromium] › specs\comprehensive\02-auth.spec.ts:163:7 › Logout › after logout, /members redirects to login
+[1A[2K[72/906] [chromium] › specs\comprehensive\02-auth.spec.ts:176:7 › Forgot password › page loads with email input and submit button
+[1A[2K[73/906] [chromium] › specs\comprehensive\02-auth.spec.ts:182:7 › Forgot password › submitting a real email address shows a success or info message
+[1A[2K[74/906] [chromium] › specs\comprehensive\02-auth.spec.ts:194:7 › Forgot password › submitting an unknown email still shows a message (no enumeration)
+[1A[2K[75/906] [chromium] › specs\comprehensive\02-auth.spec.ts:205:7 › Forgot password › submitting empty email does not crash
+[1A[2K[76/906] [chromium] › specs\comprehensive\02-auth.spec.ts:217:7 › Reset password › invalid token shows an error, not a 500
+[1A[2K[77/906] [chromium] › specs\comprehensive\02-auth.spec.ts:238:7 › Multi-factor authentication › MFA user sees TOTP input after password step
+[1A[2K[78/906] [chromium] › specs\comprehensive\02-auth.spec.ts:249:7 › Multi-factor authentication › wrong TOTP code shows an error
+[1A[2K  3) [chromium] › specs\comprehensive\02-auth.spec.ts:249:7 › Multi-factor authentication › wrong TOTP code shows an error 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('.alert-danger, [role="alert"], .text-danger')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('.alert-danger, [role="alert"], .text-danger')[22m
+
+
+      260 |     await expect(
+      261 |       page.locator('.alert-danger, [role="alert"], .text-danger')
+    > 262 |     ).toBeVisible({ timeout: 5_000 });
+          |       ^
+      263 |   });
+      264 |
+      265 |   test('MFA page has a CSRF token', async ({ page }) => {
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\02-auth.spec.ts:262:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-02-auth-Mult-94bd5-ng-TOTP-code-shows-an-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-02-auth-Mult-94bd5-ng-TOTP-code-shows-an-error-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-02-auth-Mult-94bd5-ng-TOTP-code-shows-an-error-chromium\error-context.md
+
+
+[1A[2K[79/906] [chromium] › specs\comprehensive\02-auth.spec.ts:265:7 › Multi-factor authentication › MFA page has a CSRF token
+[1A[2K[80/906] [chromium] › specs\comprehensive\02-auth.spec.ts:285:7 › Session persistence › admin stays authenticated across multiple page navigations
+[1A[2K[81/906] [chromium] › specs\comprehensive\03-members.spec.ts:37:7 › Member list › list page loads with a table or card list
+[1A[2K[82/906] [chromium] › specs\comprehensive\03-members.spec.ts:46:7 › Member list › shows multiple members from seeded data
+[1A[2K[83/906] [chromium] › specs\comprehensive\03-members.spec.ts:54:7 › Member list › page title / heading contains Members or similar
+[1A[2K[84/906] [chromium] › specs\comprehensive\03-members.spec.ts:60:7 › Member list › search input is present
+[1A[2K[85/906] [chromium] › specs\comprehensive\03-members.spec.ts:68:7 › Member list › searching by name filters results via HTMX
+[1A[2K[86/906] [chromium] › specs\comprehensive\03-members.spec.ts:85:7 › Member list › searching by partial email filters results
+[1A[2K[87/906] [chromium] › specs\comprehensive\03-members.spec.ts:96:7 › Member list › clearing search shows all members again
+[1A[2K[88/906] [chromium] › specs\comprehensive\03-members.spec.ts:111:7 › Member list › each member row has a clickable link to their profile
+[1A[2K[89/906] [chromium] › specs\comprehensive\03-members.spec.ts:120:7 › Member list › add member button is present and leads to create form
+[1A[2K[90/906] [chromium] › specs\comprehensive\03-members.spec.ts:140:7 › Create member › create form loads with required fields
+[1A[2K[91/906] [chromium] › specs\comprehensive\03-members.spec.ts:148:7 › Create member › form has date of birth, gender, or other expected fields
+[1A[2K[92/906] [chromium] › specs\comprehensive\03-members.spec.ts:158:7 › Create member › submitting empty form shows validation errors
+[1A[2K[93/906] [chromium] › specs\comprehensive\03-members.spec.ts:168:7 › Create member › submitting missing surname shows server validation error
+[1A[2K[94/906] [chromium] › specs\comprehensive\03-members.spec.ts:177:7 › Create member › valid submission creates member and redirects
+[1A[2K[95/906] [chromium] › specs\comprehensive\03-members.spec.ts:231:7 › Member profile tabs › profile page loads with tab navigation
+[1A[2K[96/906] [chromium] › specs\comprehensive\03-members.spec.ts:237:7 › Member profile tabs › Personal tab loads content
+[1A[2K[97/906] [chromium] › specs\comprehensive\03-members.spec.ts:251:7 › Member profile tabs › Contact tab loads content
+[1A[2K[98/906] [chromium] › specs\comprehensive\03-members.spec.ts:261:7 › Member profile tabs › Medical tab loads content
+[1A[2K[99/906] [chromium] › specs\comprehensive\03-members.spec.ts:271:7 › Member profile tabs › Roles tab loads content
+[1A[2K[100/906] [chromium] › specs\comprehensive\03-members.spec.ts:281:7 › Member profile tabs › Timeline tab loads content
+[1A[2K[101/906] [chromium] › specs\comprehensive\03-members.spec.ts:291:7 › Member profile tabs › Documents tab loads content
+[1A[2K[102/906] [chromium] › specs\comprehensive\03-members.spec.ts:301:7 › Member profile tabs › Additional/custom-fields tab loads content
+[1A[2K[103/906] [chromium] › specs\comprehensive\03-members.spec.ts:311:7 › Member profile tabs › clicking each visible tab does not produce a 500 error
+[1A[2K[104/906] [chromium] › specs\comprehensive\03-members.spec.ts:332:7 › Edit member › edit form is accessible from the profile page
+[1A[2K[105/906] [chromium] › specs\comprehensive\03-members.spec.ts:351:7 › Edit member › edit form fields are pre-filled with existing data
+[1A[2K[106/906] [chromium] › specs\comprehensive\03-members.spec.ts:368:7 › Edit member › updating first name and submitting succeeds
+[1A[2K[107/906] [chromium] › specs\comprehensive\03-members.spec.ts:405:7 › Member status change › status change control is visible on member profile
+[1A[2K[108/906] [chromium] › specs\comprehensive\03-members.spec.ts:429:7 › Member timeline › timeline tab shows add-entry form or button
+[1A[2K[109/906] [chromium] › specs\comprehensive\03-members.spec.ts:456:7 › Member timeline › adding a timeline entry succeeds
+[1A[2K[110/906] [chromium] › specs\comprehensive\03-members.spec.ts:489:7 › Member attachments › documents tab shows upload section
+[1A[2K[111/906] [chromium] › specs\comprehensive\03-members.spec.ts:514:7 › Pending member changes › pending changes page loads for admin
+[1A[2K[112/906] [chromium] › specs\comprehensive\03-members.spec.ts:532:7 › Member API partials › GET /members/api/search returns HTML partial, not 404
+[1A[2K[113/906] [chromium] › specs\comprehensive\03-members.spec.ts:538:7 › Member API partials › GET /members/api/{id}/card returns content for first member
+[1A[2K[114/906] [chromium] › specs\comprehensive\03-members.spec.ts:549:7 › Member API partials › GET /members/api/{id}/status-badge returns content
+[1A[2K[115/906] [chromium] › specs\comprehensive\04-registration.spec.ts:30:7 › Public registration form › GET /register loads without requiring login
+[1A[2K[116/906] [chromium] › specs\comprehensive\04-registration.spec.ts:38:7 › Public registration form › form has first_name, surname, email fields
+[1A[2K[117/906] [chromium] › specs\comprehensive\04-registration.spec.ts:46:7 › Public registration form › submitting empty form shows validation errors
+[1A[2K[118/906] [chromium] › specs\comprehensive\04-registration.spec.ts:56:7 › Public registration form › valid registration submit gives success feedback
+[1A[2K  4) [chromium] › specs\comprehensive\04-registration.spec.ts:56:7 › Public registration form › valid registration submit gives success feedback 
+
+    Error: Registration should give success feedback
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      86 |       bodyText?.toLowerCase().includes('received') ||
+      87 |       await page.locator('.alert-success').isVisible();
+    > 88 |     expect(ok, 'Registration should give success feedback').toBe(true);
+         |                                                             ^
+      89 |   });
+      90 |
+      91 |   test('form contains CSRF token', async ({ page }) => {
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\04-registration.spec.ts:88:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-89b5f-bmit-gives-success-feedback-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-89b5f-bmit-gives-success-feedback-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-04-registrat-89b5f-bmit-gives-success-feedback-chromium\error-context.md
+
+
+[1A[2K[119/906] [chromium] › specs\comprehensive\04-registration.spec.ts:91:7 › Public registration form › form contains CSRF token
+[1A[2K[120/906] [chromium] › specs\comprehensive\04-registration.spec.ts:106:7 › Public waiting list form › GET /waiting-list loads without login
+[1A[2K[121/906] [chromium] › specs\comprehensive\04-registration.spec.ts:113:7 › Public waiting list form › form has name and email fields
+[1A[2K[122/906] [chromium] › specs\comprehensive\04-registration.spec.ts:120:7 › Public waiting list form › submitting empty form does not crash
+[1A[2K[123/906] [chromium] › specs\comprehensive\04-registration.spec.ts:127:7 › Public waiting list form › valid submit gives success feedback
+[1A[2K[124/906] [chromium] › specs\comprehensive\04-registration.spec.ts:160:7 › Admin: pending registrations › pending registrations page loads
+[1A[2K[125/906] [chromium] › specs\comprehensive\04-registration.spec.ts:167:7 › Admin: pending registrations › approve button present if there are pending registrations
+[1A[2K[126/906] [chromium] › specs\comprehensive\04-registration.spec.ts:177:7 › Admin: pending registrations › reject button present alongside approve
+[1A[2K  5) [chromium] › specs\comprehensive\04-registration.spec.ts:177:7 › Admin: pending registrations › reject button present alongside approve 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('button:has-text("Reject"):not([data-bs-dismiss]), button:has-text("Decline"):not([data-bs-dismiss])').first()
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('button:has-text("Reject"):not([data-bs-dismiss]), button:has-text("Decline"):not([data-bs-dismiss])').first()[22m
+    [2m    9 × locator resolved to <button type="submit" class="btn btn-sm btn-danger">registration.reject</button>[22m
+    [2m      - unexpected value "hidden"[22m
+
+
+      184 |     );
+      185 |     if (await rejectBtn.count() > 0) {
+    > 186 |       await expect(rejectBtn.first()).toBeVisible();
+          |                                       ^
+      187 |     }
+      188 |   });
+      189 | });
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\04-registration.spec.ts:186:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-6cad5-n-present-alongside-approve-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-6cad5-n-present-alongside-approve-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-04-registrat-6cad5-n-present-alongside-approve-chromium\error-context.md
+
+
+[1A[2K[127/906] [chromium] › specs\comprehensive\04-registration.spec.ts:200:7 › Admin: invitations › invitations list page loads
+[1A[2K[128/906] [chromium] › specs\comprehensive\04-registration.spec.ts:207:7 › Admin: invitations › create invitation form has email field
+[1A[2K[129/906] [chromium] › specs\comprehensive\04-registration.spec.ts:214:7 › Admin: invitations › submitting invitation with valid email shows success or confirmation
+[1A[2K[130/906] [chromium] › specs\comprehensive\04-registration.spec.ts:238:7 › Admin: waiting list management › admin waiting list page loads
+[1A[2K[131/906] [chromium] › specs\comprehensive\04-registration.spec.ts:245:7 › Admin: waiting list management › status change / convert buttons present for waiting-list entries
+[1A[2K[132/906] [chromium] › specs\comprehensive\04-registration.spec.ts:258:7 › Admin: waiting list management › reorder section or drag handles present
+[1A[2K[133/906] [chromium] › specs\comprehensive\04-registration.spec.ts:283:7 › Admin: bulk import › bulk import form page loads
+[1A[2K[134/906] [chromium] › specs\comprehensive\04-registration.spec.ts:290:7 › Admin: bulk import › has file upload input
+[1A[2K[135/906] [chromium] › specs\comprehensive\04-registration.spec.ts:296:7 › Admin: bulk import › template download link is present and resolves
+[1A[2K[136/906] [chromium] › specs\comprehensive\04-registration.spec.ts:310:7 › Admin: bulk import › submitting without a file shows validation error
+[1A[2K[137/906] [chromium] › specs\comprehensive\04-registration.spec.ts:327:7 › Admin: custom fields › custom fields list loads
+[1A[2K[138/906] [chromium] › specs\comprehensive\04-registration.spec.ts:334:7 › Admin: custom fields › create custom field form loads
+[1A[2K[139/906] [chromium] › specs\comprehensive\04-registration.spec.ts:341:7 › Admin: custom fields › submitting empty create form shows validation errors
+[1A[2K[140/906] [chromium] › specs\comprehensive\04-registration.spec.ts:348:7 › Admin: custom fields › valid custom field creation succeeds
+[1A[2K[141/906] [chromium] › specs\comprehensive\04-registration.spec.ts:364:7 › Admin: custom fields › existing custom field can be edited
+[1A[2K[142/906] [chromium] › specs\comprehensive\04-registration.spec.ts:376:7 › Admin: custom fields › deactivate and activate buttons present on list
+[1A[2K[143/906] [chromium] › specs\comprehensive\04-registration.spec.ts:387:7 › Admin: custom fields › reorder section present when multiple fields exist
+[1A[2K[144/906] [chromium] › specs\comprehensive\04-registration.spec.ts:404:7 › Invitation-based registration › invalid invite token returns error, not 500
+[1A[2K[145/906] [chromium] › specs\comprehensive\05-events.spec.ts:36:7 › Events calendar (public/member view) › calendar page loads
+[1A[2K[146/906] [chromium] › specs\comprehensive\05-events.spec.ts:43:7 › Events calendar (public/member view) › has a heading or title
+[1A[2K[147/906] [chromium] › specs\comprehensive\05-events.spec.ts:49:7 › Events calendar (public/member view) › seeded events are visible
+[1A[2K[148/906] [chromium] › specs\comprehensive\05-events.spec.ts:57:7 › Events calendar (public/member view) › clicking an event link goes to detail page
+[1A[2K[149/906] [chromium] › specs\comprehensive\05-events.spec.ts:68:7 › Events calendar (public/member view) › /events requires authentication
+[1A[2K[150/906] [chromium] › specs\comprehensive\05-events.spec.ts:84:7 › Event detail page › detail page shows event title, date, description
+[1A[2K[151/906] [chromium] › specs\comprehensive\05-events.spec.ts:99:7 › Event detail page › non-existent event ID returns graceful error
+[1A[2K[152/906] [chromium] › specs\comprehensive\05-events.spec.ts:119:7 › Admin events list › admin events list loads
+[1A[2K[153/906] [chromium] › specs\comprehensive\05-events.spec.ts:126:7 › Admin events list › seeded events appear in admin list
+[1A[2K[154/906] [chromium] › specs\comprehensive\05-events.spec.ts:133:7 › Admin events list › create event button links to create form
+[1A[2K[155/906] [chromium] › specs\comprehensive\05-events.spec.ts:143:7 › Admin events list › each event row has edit link
+[1A[2K[156/906] [chromium] › specs\comprehensive\05-events.spec.ts:162:7 › Create event › create form loads with title and date fields
+[1A[2K[157/906] [chromium] › specs\comprehensive\05-events.spec.ts:172:7 › Create event › form has end date or time fields
+[1A[2K[158/906] [chromium] › specs\comprehensive\05-events.spec.ts:179:7 › Create event › submitting empty title shows validation error
+[1A[2K[159/906] [chromium] › specs\comprehensive\05-events.spec.ts:186:7 › Create event › valid event creation redirects or shows success
+[1A[2K[160/906] [chromium] › specs\comprehensive\05-events.spec.ts:221:7 › Edit event › edit form loads for first event
+[1A[2K[161/906] [chromium] › specs\comprehensive\05-events.spec.ts:233:7 › Edit event › edit form is pre-filled with existing title
+[1A[2K[162/906] [chromium] › specs\comprehensive\05-events.spec.ts:245:7 › Edit event › updating title and submitting succeeds
+[1A[2K[163/906] [chromium] › specs\comprehensive\05-events.spec.ts:273:7 › Event publish/unpublish › publish button visible on draft events
+[1A[2K[164/906] [chromium] › specs\comprehensive\05-events.spec.ts:284:7 › Event publish/unpublish › unpublish button visible on published events
+[1A[2K[165/906] [chromium] › specs\comprehensive\05-events.spec.ts:301:7 › Delete event › delete button or link present on event admin page
+[1A[2K[166/906] [chromium] › specs\comprehensive\05-events.spec.ts:323:7 › iCal integration › iCal management page loads
+[1A[2K[167/906] [chromium] › specs\comprehensive\05-events.spec.ts:330:7 › iCal integration › generate iCal token button or form is present
+[1A[2K[168/906] [chromium] › specs\comprehensive\05-events.spec.ts:341:7 › iCal integration › generating a token shows a feed URL
+[1A[2K[169/906] [chromium] › specs\comprehensive\05-events.spec.ts:360:7 › iCal integration › iCal feed URL with valid token returns ical content or 200
+[1A[2K[170/906] [chromium] › specs\comprehensive\05-events.spec.ts:389:7 › iCal integration › iCal feed with invalid token returns 404 or 403
+[1A[2K[171/906] [chromium] › specs\comprehensive\06-communications.spec.ts:36:7 › Articles list (member view) › articles index loads
+[1A[2K[172/906] [chromium] › specs\comprehensive\06-communications.spec.ts:43:7 › Articles list (member view) › has page heading
+[1A[2K[173/906] [chromium] › specs\comprehensive\06-communications.spec.ts:49:7 › Articles list (member view) › seeded published articles appear in list
+[1A[2K[174/906] [chromium] › specs\comprehensive\06-communications.spec.ts:57:7 › Articles list (member view) › /articles requires authentication
+[1A[2K[175/906] [chromium] › specs\comprehensive\06-communications.spec.ts:73:7 › Article detail page › clicking article link leads to detail page
+[1A[2K[176/906] [chromium] › specs\comprehensive\06-communications.spec.ts:86:7 › Article detail page › article detail shows title and body content
+[1A[2K[177/906] [chromium] › specs\comprehensive\06-communications.spec.ts:97:7 › Article detail page › non-existent article slug returns graceful error
+[1A[2K[178/906] [chromium] › specs\comprehensive\06-communications.spec.ts:114:7 › Admin articles list › admin articles list loads
+[1A[2K[179/906] [chromium] › specs\comprehensive\06-communications.spec.ts:121:7 › Admin articles list › shows both published and draft articles
+[1A[2K[180/906] [chromium] › specs\comprehensive\06-communications.spec.ts:130:7 › Admin articles list › create article button is present
+[1A[2K[181/906] [chromium] › specs\comprehensive\06-communications.spec.ts:139:7 › Admin articles list › each article row has edit and publish/unpublish actions
+[1A[2K[182/906] [chromium] › specs\comprehensive\06-communications.spec.ts:161:7 › Create article › create form loads with title and body fields
+[1A[2K[183/906] [chromium] › specs\comprehensive\06-communications.spec.ts:169:7 › Create article › submitting with empty title shows validation error
+[1A[2K[184/906] [chromium] › specs\comprehensive\06-communications.spec.ts:176:7 › Create article › valid article creation succeeds
+[1A[2K[185/906] [chromium] › specs\comprehensive\06-communications.spec.ts:207:7 › Edit article › edit form loads for first article
+[1A[2K[186/906] [chromium] › specs\comprehensive\06-communications.spec.ts:219:7 › Edit article › edit form title field is pre-filled
+[1A[2K[187/906] [chromium] › specs\comprehensive\06-communications.spec.ts:231:7 › Edit article › updating title and saving succeeds
+[1A[2K[188/906] [chromium] › specs\comprehensive\06-communications.spec.ts:259:7 › Article publish/unpublish › publish button visible on draft articles
+[1A[2K[189/906] [chromium] › specs\comprehensive\06-communications.spec.ts:270:7 › Article publish/unpublish › unpublish button visible on published articles
+[1A[2K[190/906] [chromium] › specs\comprehensive\06-communications.spec.ts:291:7 › Email compose › email compose page loads
+[1A[2K[191/906] [chromium] › specs\comprehensive\06-communications.spec.ts:298:7 › Email compose › compose form has subject and body fields
+[1A[2K[192/906] [chromium] › specs\comprehensive\06-communications.spec.ts:307:7 › Email compose › compose form has recipient selection
+[1A[2K[193/906] [chromium] › specs\comprehensive\06-communications.spec.ts:316:7 › Email compose › submitting empty form does not crash
+[1A[2K[194/906] [chromium] › specs\comprehensive\06-communications.spec.ts:324:7 › Email compose › form contains CSRF token
+[1A[2K[195/906] [chromium] › specs\comprehensive\06-communications.spec.ts:343:7 › Email log › email log page loads
+[1A[2K[196/906] [chromium] › specs\comprehensive\06-communications.spec.ts:350:7 › Email log › email log has a table or list structure
+[1A[2K[197/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:35:7 › Org structure index › org tree index loads
+[1A[2K[198/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:42:7 › Org structure index › has a heading
+[1A[2K[199/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:48:7 › Org structure index › seeded org nodes appear
+[1A[2K[200/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:55:7 › Org structure index › create node button is present and links correctly
+[1A[2K[201/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:78:7 › Org node detail › node detail page loads
+[1A[2K[202/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:90:7 › Org node detail › node detail shows teams section
+[1A[2K[203/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:101:7 › Org node detail › node detail has edit link
+[1A[2K[204/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:115:7 › Org node detail › non-existent node returns graceful error
+[1A[2K[205/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:132:7 › Create org node › create form loads
+[1A[2K[206/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:139:7 › Create org node › form has parent selector
+[1A[2K[207/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:147:7 › Create org node › submitting empty name shows validation error
+[1A[2K[208/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:154:7 › Create org node › valid node creation succeeds
+[1A[2K[209/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:179:7 › Edit org node › edit form loads for first node
+[1A[2K[210/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:191:7 › Edit org node › edit form is pre-filled with node name
+[1A[2K[211/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:203:7 › Edit org node › updating name and submitting succeeds
+[1A[2K[212/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:231:7 › Teams on org node › add team form is present on node detail page
+[1A[2K[213/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:248:7 › Teams on org node › adding a team to a node succeeds
+[1A[2K[214/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:267:7 › Teams on org node › delete team button present when teams exist
+[1A[2K[215/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:294:7 › Org level types › level types page loads
+[1A[2K[216/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:301:7 › Org level types › seeded level types appear
+[1A[2K[217/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:308:7 › Org level types › create level type form is present on the page
+[1A[2K[218/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:318:7 › Org level types › creating a level type succeeds
+[1A[2K[219/906] [chromium] › specs\comprehensive\07-org-structure.spec.ts:337:7 › Org level types › delete level type button is present
+[1A[2K[220/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:31:7 › Roles list › roles list page loads
+[1A[2K[221/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:38:7 › Roles list › has page heading
+[1A[2K[222/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:44:7 › Roles list › seeded roles appear in the list
+[1A[2K[223/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:51:7 › Roles list › create role button is present
+[1A[2K[224/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:62:7 › Roles list › each role has edit link
+[1A[2K[225/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:81:7 › Create role › create form loads with name field
+[1A[2K[226/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:88:7 › Create role › form has permission checkboxes or multi-select
+[1A[2K[227/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:98:7 › Create role › submitting empty name shows validation error
+[1A[2K[228/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:105:7 › Create role › valid role creation succeeds
+[1A[2K[229/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:124:7 › Create role › duplicate role name shows error
+[1A[2K[230/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:144:7 › Edit role › edit form loads for first role
+[1A[2K[231/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:156:7 › Edit role › edit form is pre-filled with role name
+[1A[2K[232/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:168:7 › Edit role › updating role and submitting succeeds
+[1A[2K[233/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:189:7 › Delete role › delete button or link is present on roles list
+[1A[2K[234/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:201:7 › Delete role › delete requires confirmation (modal or confirm dialog)
+[1A[2K[235/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:229:7 › Role assignments › assignments page loads for the admin user
+[1A[2K[236/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:253:7 › Role assignments › assignments page has assign form
+[1A[2K[237/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:285:7 › Role assignments › end assignment button present when assignments exist
+[1A[2K[238/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:311:7 › Permissions module nav visibility › admin sees Roles in sidebar
+[1A[2K[239/906] [chromium] › specs\comprehensive\08-permissions.spec.ts:326:7 › Permissions module nav visibility › regular member does not see Roles in sidebar
+[1A[2K[240/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:32:7 › Achievements list › achievements list page loads
+[1A[2K[241/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:39:7 › Achievements list › has a heading
+[1A[2K[242/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:45:7 › Achievements list › seeded achievements appear
+[1A[2K[243/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:52:7 › Achievements list › create achievement button is present
+[1A[2K[244/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:63:7 › Achievements list › each achievement has edit link
+[1A[2K[245/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:72:7 › Achievements list › achievements show active/inactive status
+[1A[2K[246/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:90:7 › Create achievement › create form loads with name field
+[1A[2K[247/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:97:7 › Create achievement › form has type/category selector
+[1A[2K[248/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:106:7 › Create achievement › form has description field
+[1A[2K[249/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:115:7 › Create achievement › submitting empty name shows validation error
+[1A[2K[250/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:122:7 › Create achievement › valid achievement creation succeeds
+[1A[2K[251/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:153:7 › Edit achievement › edit form loads for first achievement
+[1A[2K[252/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:165:7 › Edit achievement › edit form is pre-filled with achievement name
+[1A[2K[253/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:177:7 › Edit achievement › updating achievement name and submitting succeeds
+[1A[2K[254/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:205:7 › Achievement activation › deactivate button present on active achievements
+[1A[2K[255/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:216:7 › Achievement activation › activate button present on inactive achievements
+[1A[2K[256/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:243:7 › Award achievement to member › achievements section visible on member profile
+[1A[2K[257/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:267:7 › Award achievement to member › award achievement form is accessible
+[1A[2K[258/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:292:7 › Award achievement to member › awarding an achievement succeeds
+[1A[2K[259/906] [chromium] › specs\comprehensive\09-achievements.spec.ts:323:7 › Award achievement to member › revoke achievement button present when member has achievements
+[1A[2K[260/906] [chromium] › specs\comprehensive\10-admin.spec.ts:36:7 › Admin dashboard › dashboard page loads
+[1A[2K[261/906] [chromium] › specs\comprehensive\10-admin.spec.ts:42:7 › Admin dashboard › dashboard shows member count or statistics
+[1A[2K[262/906] [chromium] › specs\comprehensive\10-admin.spec.ts:50:7 › Admin dashboard › dashboard has navigation links to modules
+[1A[2K[263/906] [chromium] › specs\comprehensive\10-admin.spec.ts:57:7 › Admin dashboard › recent activity section visible
+[1A[2K[264/906] [chromium] › specs\comprehensive\10-admin.spec.ts:76:7 › Admin reports › reports index loads
+[1A[2K[265/906] [chromium] › specs\comprehensive\10-admin.spec.ts:83:7 › Admin reports › growth report loads
+[1A[2K[266/906] [chromium] › specs\comprehensive\10-admin.spec.ts:90:7 › Admin reports › status changes report loads
+[1A[2K[267/906] [chromium] › specs\comprehensive\10-admin.spec.ts:97:7 › Admin reports › member CSV export link resolves
+[1A[2K[268/906] [chromium] › specs\comprehensive\10-admin.spec.ts:103:7 › Admin reports › member XML export link resolves
+[1A[2K[269/906] [chromium] › specs\comprehensive\10-admin.spec.ts:109:7 › Admin reports › settings export link resolves
+[1A[2K[270/906] [chromium] › specs\comprehensive\10-admin.spec.ts:115:7 › Admin reports › reports index has links to sub-reports
+[1A[2K[271/906] [chromium] › specs\comprehensive\10-admin.spec.ts:136:7 › Admin settings › settings page loads
+[1A[2K[272/906] [chromium] › specs\comprehensive\10-admin.spec.ts:143:7 › Admin settings › settings form has save/update button
+[1A[2K[273/906] [chromium] › specs\comprehensive\10-admin.spec.ts:149:7 › Admin settings › submitting settings form succeeds
+[1A[2K[274/906] [chromium] › specs\comprehensive\10-admin.spec.ts:167:7 › Audit log › audit log page loads
+[1A[2K[275/906] [chromium] › specs\comprehensive\10-admin.spec.ts:174:7 › Audit log › audit log shows entries from seeded activity
+[1A[2K[276/906] [chromium] › specs\comprehensive\10-admin.spec.ts:181:7 › Audit log › audit log has user, action, and timestamp columns
+[1A[2K[277/906] [chromium] › specs\comprehensive\10-admin.spec.ts:189:7 › Audit log › entity audit trail page loads for a member
+[1A[2K[278/906] [chromium] › specs\comprehensive\10-admin.spec.ts:202:7 › Audit log › audit log has pagination if many entries
+[1A[2K[279/906] [chromium] › specs\comprehensive\10-admin.spec.ts:220:7 › System logs › system logs page loads
+[1A[2K[280/906] [chromium] › specs\comprehensive\10-admin.spec.ts:227:7 › System logs › log types (error, slow query, etc.) are shown
+[1A[2K[281/906] [chromium] › specs\comprehensive\10-admin.spec.ts:235:7 › System logs › clear log button is present
+[1A[2K[282/906] [chromium] › specs\comprehensive\10-admin.spec.ts:256:7 › Backups › backups page loads
+[1A[2K[283/906] [chromium] › specs\comprehensive\10-admin.spec.ts:263:7 › Backups › create backup button is present
+[1A[2K[284/906] [chromium] › specs\comprehensive\10-admin.spec.ts:274:7 › Backups › creating a backup succeeds
+[1A[2K[285/906] [chromium] › specs\comprehensive\10-admin.spec.ts:287:7 › Backups › download link present for existing backups
+[1A[2K[286/906] [chromium] › specs\comprehensive\10-admin.spec.ts:296:7 › Backups › delete button present for existing backups
+[1A[2K[287/906] [chromium] › specs\comprehensive\10-admin.spec.ts:317:7 › Data export › data export page loads
+[1A[2K[288/906] [chromium] › specs\comprehensive\10-admin.spec.ts:324:7 › Data export › export page shows CSV and XML options
+[1A[2K[289/906] [chromium] › specs\comprehensive\10-admin.spec.ts:331:7 › Data export › my data export resolves
+[1A[2K[290/906] [chromium] › specs\comprehensive\10-admin.spec.ts:347:7 › API monitoring endpoints › GET /api/health returns non-500 response
+[1A[2K[291/906] [chromium] › specs\comprehensive\10-admin.spec.ts:354:7 › API monitoring endpoints › /api/health response is JSON
+[1A[2K[292/906] [chromium] › specs\comprehensive\10-admin.spec.ts:360:7 › API monitoring endpoints › GET /api/logs returns non-500 response
+[1A[2K[293/906] [chromium] › specs\comprehensive\10-admin.spec.ts:376:7 › Terms and conditions › terms management page loads
+[1A[2K[294/906] [chromium] › specs\comprehensive\10-admin.spec.ts:383:7 › Terms and conditions › create terms form loads
+[1A[2K[295/906] [chromium] › specs\comprehensive\10-admin.spec.ts:390:7 › Terms and conditions › valid terms creation succeeds
+[1A[2K[296/906] [chromium] › specs\comprehensive\10-admin.spec.ts:409:7 › Terms and conditions › terms detail page loads
+[1A[2K[297/906] [chromium] › specs\comprehensive\10-admin.spec.ts:420:7 › Terms and conditions › publish button present on draft terms
+[1A[2K[298/906] [chromium] › specs\comprehensive\10-admin.spec.ts:441:7 › Notices › notices page loads
+[1A[2K[299/906] [chromium] › specs\comprehensive\10-admin.spec.ts:448:7 › Notices › create notice form loads
+[1A[2K[300/906] [chromium] › specs\comprehensive\10-admin.spec.ts:455:7 › Notices › valid notice creation succeeds
+[1A[2K[301/906] [chromium] › specs\comprehensive\10-admin.spec.ts:470:7 › Notices › edit notice form loads
+[1A[2K[302/906] [chromium] › specs\comprehensive\10-admin.spec.ts:482:7 › Notices › deactivate button present on active notices
+[1A[2K[303/906] [chromium] › specs\comprehensive\10-admin.spec.ts:493:7 › Notices › notice acknowledgements page loads
+[1A[2K[304/906] [chromium] › specs\comprehensive\10-admin.spec.ts:515:7 › Language management › languages list page loads
+[1A[2K[305/906] [chromium] › specs\comprehensive\10-admin.spec.ts:522:7 › Language management › English language appears in list
+[1A[2K[306/906] [chromium] › specs\comprehensive\10-admin.spec.ts:528:7 › Language management › language strings page loads for English
+[1A[2K[307/906] [chromium] › specs\comprehensive\10-admin.spec.ts:539:7 › Language management › strings page shows key-value pairs
+[1A[2K[308/906] [chromium] › specs\comprehensive\10-admin.spec.ts:546:7 › Language management › upload language file page loads
+[1A[2K[309/906] [chromium] › specs\comprehensive\10-admin.spec.ts:556:7 › Language management › export master language file resolves
+[1A[2K[310/906] [chromium] › specs\comprehensive\10-admin.spec.ts:572:7 › Updates › updates page loads
+[1A[2K[311/906] [chromium] › specs\comprehensive\10-admin.spec.ts:579:7 › Updates › current version is displayed
+[1A[2K[312/906] [chromium] › specs\comprehensive\10-admin.spec.ts:588:7 › Updates › check for updates button is present
+[1A[2K[313/906] [chromium] › specs\comprehensive\10-admin.spec.ts:599:7 › Updates › check updates endpoint resolves
+[1A[2K[314/906] [chromium] › specs\comprehensive\11-directory.spec.ts:26:7 › Organogram › organogram page loads
+[1A[2K[315/906] [chromium] › specs\comprehensive\11-directory.spec.ts:33:7 › Organogram › has page heading
+[1A[2K[316/906] [chromium] › specs\comprehensive\11-directory.spec.ts:39:7 › Organogram › organogram shows org nodes from seeded data
+[1A[2K[317/906] [chromium] › specs\comprehensive\11-directory.spec.ts:53:7 › Organogram › organogram shows hierarchical structure
+[1A[2K[318/906] [chromium] › specs\comprehensive\11-directory.spec.ts:63:7 › Organogram › organogram does not show member email addresses (privacy)
+[1A[2K[319/906] [chromium] › specs\comprehensive\11-directory.spec.ts:75:7 › Organogram › /directory requires authentication
+[1A[2K[320/906] [chromium] › specs\comprehensive\11-directory.spec.ts:91:7 › Contacts directory › contacts page loads
+[1A[2K[321/906] [chromium] › specs\comprehensive\11-directory.spec.ts:98:7 › Contacts directory › contacts page shows member names
+[1A[2K[322/906] [chromium] › specs\comprehensive\11-directory.spec.ts:106:7 › Contacts directory › contacts page has search or filter capability
+[1A[2K[323/906] [chromium] › specs\comprehensive\11-directory.spec.ts:116:7 › Contacts directory › /directory/contacts requires authentication
+[1A[2K[324/906] [chromium] › specs\comprehensive\11-directory.spec.ts:128:7 › Directory access by role › leader can access organogram
+[1A[2K[325/906] [chromium] › specs\comprehensive\11-directory.spec.ts:137:7 › Directory access by role › leader can access contacts
+[1A[2K[326/906] [chromium] › specs\comprehensive\11-directory.spec.ts:146:7 › Directory access by role › member can access organogram
+[1A[2K[327/906] [chromium] › specs\comprehensive\11-directory.spec.ts:155:7 › Directory access by role › member can access contacts
+[1A[2K[328/906] [chromium] › specs\comprehensive\11-directory.spec.ts:173:7 › Directory navigation › organogram page has link to contacts
+[1A[2K[329/906] [chromium] › specs\comprehensive\11-directory.spec.ts:182:7 › Directory navigation › contacts page has link back to organogram
+[1A[2K[330/906] [chromium] › specs\comprehensive\11-directory.spec.ts:192:7 › Directory navigation › directory pages appear in sidebar navigation
+[1A[2K[331/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:23:7 › 404 — unknown routes › completely unknown route shows 404 page (authenticated)
+[1A[2K[332/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:38:7 › 404 — unknown routes › unknown route shows 404 page (unauthenticated)
+[1A[2K[333/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:46:7 › 404 — unknown routes › unknown member ID returns 404
+[1A[2K[334/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:58:7 › 404 — unknown routes › unknown event ID returns 404
+[1A[2K[335/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:66:7 › 404 — unknown routes › unknown article ID returns graceful error
+[1A[2K[336/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:74:7 › 404 — unknown routes › unknown role ID returns graceful error
+[1A[2K[337/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:82:7 › 404 — unknown routes › unknown achievement ID returns graceful error
+[1A[2K[338/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:90:7 › 404 — unknown routes › unknown org node ID returns graceful error
+[1A[2K[339/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:98:7 › 404 — unknown routes › unknown custom field ID returns graceful error
+[1A[2K[340/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:106:7 › 404 — unknown routes › unknown terms ID returns graceful error
+[1A[2K[341/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:114:7 › 404 — unknown routes › unknown notice acknowledgements returns graceful error
+[1A[2K[342/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:132:7 › Error page quality › 404 page has a helpful message, not a blank page
+[1A[2K[343/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:139:7 › Error page quality › 404 page still has navigation (user not stranded)
+[1A[2K[344/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/dashboard redirects unauthenticated user to login
+[1A[2K[345/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/settings redirects unauthenticated user to login
+[1A[2K[346/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/audit redirects unauthenticated user to login
+[1A[2K[347/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/logs redirects unauthenticated user to login
+[1A[2K[348/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/backups redirects unauthenticated user to login
+[1A[2K[349/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/export redirects unauthenticated user to login
+[1A[2K[350/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/reports redirects unauthenticated user to login
+[1A[2K[351/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/terms redirects unauthenticated user to login
+[1A[2K[352/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/notices redirects unauthenticated user to login
+[1A[2K[353/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/languages redirects unauthenticated user to login
+[1A[2K[354/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/updates redirects unauthenticated user to login
+[1A[2K[355/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/roles redirects unauthenticated user to login
+[1A[2K[356/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/achievements redirects unauthenticated user to login
+[1A[2K[357/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/events redirects unauthenticated user to login
+[1A[2K[358/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/articles redirects unauthenticated user to login
+[1A[2K[359/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/email redirects unauthenticated user to login
+[1A[2K[360/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/email/log redirects unauthenticated user to login
+[1A[2K[361/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/org redirects unauthenticated user to login
+[1A[2K[362/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/registrations redirects unauthenticated user to login
+[1A[2K[363/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/waiting-list redirects unauthenticated user to login
+[1A[2K[364/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/invitations redirects unauthenticated user to login
+[1A[2K[365/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/custom-fields redirects unauthenticated user to login
+[1A[2K[366/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/bulk-import redirects unauthenticated user to login
+[1A[2K[367/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /members redirects unauthenticated user to login
+[1A[2K[368/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /events redirects unauthenticated user to login
+[1A[2K[369/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /articles redirects unauthenticated user to login
+[1A[2K[370/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /directory redirects unauthenticated user to login
+[1A[2K[371/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /directory/contacts redirects unauthenticated user to login
+[1A[2K[372/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:202:7 › CSRF protection › POST to login without CSRF token is rejected or handled
+[1A[2K[373/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:219:7 › CSRF protection › login form always has CSRF token on page load
+[1A[2K[374/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:229:7 › CSRF protection › registration form has CSRF token
+[1A[2K[375/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:238:7 › CSRF protection › settings form has CSRF token
+[1A[2K[376/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:249:7 › CSRF protection › member create form has CSRF token
+[1A[2K[377/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:270:7 › API health endpoint › /api/health returns 200 with JSON body
+[1A[2K[378/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:277:7 › API health endpoint › /api/health JSON contains status field
+[1A[2K[379/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:294:7 › Malformed / XSS input protection › XSS payload in member search does not execute script
+[1A[2K[380/906] [chromium] › specs\comprehensive\12-error-pages.spec.ts:309:7 › Malformed / XSS input protection › SQL injection payload in search does not crash the server
+[1A[2K[381/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/settings → 403 or redirect for member role
+[1A[2K[382/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/audit → 403 or redirect for member role
+[1A[2K[383/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/logs → 403 or redirect for member role
+[1A[2K[384/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/backups → 403 or redirect for member role
+[1A[2K[385/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/export → 403 or redirect for member role
+[1A[2K[386/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/reports → 403 or redirect for member role
+[1A[2K[387/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/terms → 403 or redirect for member role
+[1A[2K[388/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/notices → 403 or redirect for member role
+[1A[2K[389/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/languages → 403 or redirect for member role
+[1A[2K[390/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/updates → 403 or redirect for member role
+[1A[2K[391/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/roles → 403 or redirect for member role
+[1A[2K[392/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/roles/create → 403 or redirect for member role
+[1A[2K[393/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/achievements → 403 or redirect for member role
+[1A[2K[394/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/achievements/create → 403 or redirect for member role
+[1A[2K[395/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/events → 403 or redirect for member role
+[1A[2K[396/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/events/create → 403 or redirect for member role
+[1A[2K[397/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/articles → 403 or redirect for member role
+[1A[2K[398/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/articles/create → 403 or redirect for member role
+[1A[2K[399/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/email → 403 or redirect for member role
+[1A[2K[400/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/email/log → 403 or redirect for member role
+[1A[2K[401/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/org → 403 or redirect for member role
+[1A[2K[402/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/org/nodes/create → 403 or redirect for member role
+[1A[2K[403/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/org/levels → 403 or redirect for member role
+[1A[2K[404/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/registrations → 403 or redirect for member role
+[1A[2K[405/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/waiting-list → 403 or redirect for member role
+[1A[2K[406/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/invitations → 403 or redirect for member role
+[1A[2K[407/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/custom-fields → 403 or redirect for member role
+[1A[2K[408/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/bulk-import → 403 or redirect for member role
+[1A[2K[409/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/settings → accessible for admin
+[1A[2K[410/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/audit → accessible for admin
+[1A[2K[411/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/logs → accessible for admin
+[1A[2K[412/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/backups → accessible for admin
+[1A[2K[413/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/export → accessible for admin
+[1A[2K[414/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/reports → accessible for admin
+[1A[2K[415/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/terms → accessible for admin
+[1A[2K[416/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/notices → accessible for admin
+[1A[2K[417/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/languages → accessible for admin
+[1A[2K[418/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/updates → accessible for admin
+[1A[2K[419/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/roles → accessible for admin
+[1A[2K[420/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/roles/create → accessible for admin
+[1A[2K[421/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/achievements → accessible for admin
+[1A[2K[422/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/achievements/create → accessible for admin
+[1A[2K[423/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/events → accessible for admin
+[1A[2K[424/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/events/create → accessible for admin
+[1A[2K[425/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/articles → accessible for admin
+[1A[2K[426/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/articles/create → accessible for admin
+[1A[2K[427/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/email → accessible for admin
+[1A[2K[428/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/email/log → accessible for admin
+[1A[2K[429/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/org → accessible for admin
+[1A[2K[430/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/org/nodes/create → accessible for admin
+[1A[2K[431/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/org/levels → accessible for admin
+[1A[2K[432/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/registrations → accessible for admin
+[1A[2K[433/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/waiting-list → accessible for admin
+[1A[2K[434/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/invitations → accessible for admin
+[1A[2K[435/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/custom-fields → accessible for admin
+[1A[2K[436/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/bulk-import → accessible for admin
+[1A[2K[437/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:103:7 › Leader role access › leader can access member list
+[1A[2K[438/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:112:7 › Leader role access › leader can access events calendar
+[1A[2K[439/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:119:7 › Leader role access › leader can access articles
+[1A[2K[440/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:126:7 › Leader role access › leader can access directory
+[1A[2K[441/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:133:7 › Leader role access › leader dashboard does not show super-admin settings link
+[1A[2K[442/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:149:7 › Sidebar navigation visibility by role › admin sees all navigation groups
+[1A[2K[443/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:175:7 › Sidebar navigation visibility by role › member does not see admin-only nav links
+[1A[2K[444/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:194:7 › Sidebar navigation visibility by role › logout link always visible in nav
+[1A[2K  6) [chromium] › specs\comprehensive\13-rbac.spec.ts:194:7 › Sidebar navigation visibility by role › logout link always visible in nav 
+
+    Error: member should see logout in nav
+
+    [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('a[href="/logout"], form[action="/logout"], [data-logout]').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - member should see logout in nav with timeout 5000ms[22m
+    [2m  - waiting for locator('a[href="/logout"], form[action="/logout"], [data-logout]').first()[22m
+
+
+      208 |         'a[href="/logout"], form[action="/logout"], [data-logout]'
+      209 |       ).first();
+    > 210 |       await expect(logoutControl, `${role} should see logout in nav`).toBeVisible();
+          |                                                                       ^
+      211 |       await page.goto('/logout');
+      212 |     }
+      213 |   });
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\13-rbac.spec.ts:210:71
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-13-rbac-Side-d811e--link-always-visible-in-nav-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-13-rbac-Side-d811e--link-always-visible-in-nav-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-13-rbac-Side-d811e--link-always-visible-in-nav-chromium\error-context.md
+
+
+[1A[2K[445/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:221:7 › API endpoint access control › /api/health accessible without login
+[1A[2K[446/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:228:7 › API endpoint access control › /api/logs requires admin auth
+[1A[2K[447/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:236:7 › API endpoint access control › member search API requires auth
+[1A[2K[448/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:242:7 › API endpoint access control › admin can access member API with session
+[1A[2K[449/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:255:7 › 403 Forbidden page quality › 403 page shows helpful error message, not a blank page
+[1A[2K[450/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:268:7 › 403 Forbidden page quality › 403 page has a way to navigate back
+[1A[2K[451/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:286:7 › Pending member access › pending member can log in
+[1A[2K[452/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:291:7 › Pending member access › pending member cannot access admin routes
+[1A[2K[453/906] [chromium] › specs\comprehensive\13-rbac.spec.ts:309:7 › Data isolation › member user cannot edit another member directly
+[1A[2K[454/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/dashboard — no 404/500
+[1A[2K[455/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /members — no 404/500
+[1A[2K[456/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/registrations — no 404/500
+[1A[2K[457/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/custom-fields — no 404/500
+[1A[2K[458/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /events — no 404/500
+[1A[2K[459/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/events — no 404/500
+[1A[2K[460/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /articles — no 404/500
+[1A[2K[461/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/articles — no 404/500
+[1A[2K[462/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/email — no 404/500
+[1A[2K[463/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /directory — no 404/500
+[1A[2K[464/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /directory/contacts — no 404/500
+[1A[2K[465/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/org — no 404/500
+[1A[2K[466/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/org/levels — no 404/500
+[1A[2K[467/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/achievements — no 404/500
+[1A[2K[468/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/roles — no 404/500
+[1A[2K[469/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/reports — no 404/500
+[1A[2K[470/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/terms — no 404/500
+[1A[2K[471/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/notices — no 404/500
+[1A[2K[472/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/settings — no 404/500
+[1A[2K[473/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/audit — no 404/500
+[1A[2K[474/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/logs — no 404/500
+[1A[2K[475/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/export — no 404/500
+[1A[2K[476/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/backups — no 404/500
+[1A[2K[477/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/languages — no 404/500
+[1A[2K[478/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:39:9 › Sidebar navigation — all links reachable › GET /admin/updates — no 404/500
+[1A[2K[479/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:58:7 › Root route › GET / redirects to dashboard when logged in
+[1A[2K[480/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:67:7 › Root route › GET / redirects to login when logged out
+[1A[2K[481/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:83:7 › Logo link › clicking logo returns to dashboard
+[1A[2K[482/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:106:7 › Sidebar collapse/expand › sidebar toggle button exists and is clickable
+[1A[2K[483/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:130:7 › Theme toggle › clicking theme toggle changes data-bs-theme on <html>
+[1A[2K[484/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:160:7 › Dead-link scan › no dead links on admin dashboard
+[1A[2K[485/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:178:7 › Dead-link scan › no dead links on members list
+[1A[2K[486/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:206:7 › Breadcrumbs › member create page has breadcrumb back to members list
+[1A[2K[487/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:224:7 › Breadcrumbs › event create page breadcrumb links work
+[1A[2K[488/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:238:7 › Breadcrumbs › role create page breadcrumbs work
+[1A[2K[489/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:252:7 › Breadcrumbs › org node create page breadcrumbs work
+[1A[2K[490/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /members/create works
+[1A[2K[491/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/events/create works
+[1A[2K[492/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/articles/create works
+[1A[2K[493/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/roles/create works
+[1A[2K[494/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/achievements/create works
+[1A[2K[495/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/terms/create works
+[1A[2K[496/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/notices/create works
+[1A[2K[497/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/org/nodes/create works
+[1A[2K[498/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:289:9 › Cancel/back links on forms › cancel link on /admin/custom-fields/create works
+[1A[2K[499/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:311:7 › User account menu › logout link is present on every admin page
+[1A[2K[500/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:330:7 › User account menu › my data export link resolves
+[1A[2K[501/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:352:7 › Global topbar search › search input is present in the topbar (desktop)
+[1A[2K[502/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:363:7 › Global topbar search › /search route exists and returns non-404
+[1A[2K  7) [mobile] › specs\comprehensive\01-navigation.spec.ts:363:7 › Global topbar search › /search route exists and returns non-404 
+
+    Error: /search route returned 404 — route is not registered
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mnot[2m.[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: not [32m404[39m
+
+      365 |     // Currently FAILS: no /search route exists in any module.
+      366 |     const resp = await page.request.get('/search?q=test', { failOnStatusCode: false });
+    > 367 |     expect(resp.status(), '/search route returned 404 — route is not registered').not.toBe(404);
+          |                                                                                       ^
+      368 |     expect(resp.status(), '/search route returned 500').not.toBe(500);
+      369 |   });
+      370 |
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\01-navigation.spec.ts:367:87
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-01-navigatio-5daa7--exists-and-returns-non-404-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-01-navigatio-5daa7--exists-and-returns-non-404-mobile\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-01-navigatio-5daa7--exists-and-returns-non-404-mobile\error-context.md
+
+
+[1A[2K[503/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:371:7 › Global topbar search › typing and pressing Enter in the search bar produces visible output
+[1A[2K[504/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:386:7 › Global topbar search › search results appear below the input, not at the bottom of the page
+[1A[2K[505/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:409:7 › Global topbar search › mobile offcanvas search input has HTMX attributes wired up
+[1A[2K[506/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:434:7 › User menu links › logout link is inside the user dropdown and resolves
+[1A[2K[507/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:443:7 › User menu links › /account link in user dropdown resolves (not 404)
+[1A[2K[508/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:458:7 › Mobile navigation › login page renders on mobile without overflow errors
+[1A[2K[509/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:465:7 › Mobile navigation › admin dashboard renders on mobile
+[1A[2K[510/906] [mobile] › specs\comprehensive\01-navigation.spec.ts:472:7 › Mobile navigation › hamburger/nav-toggle is visible on mobile
+[1A[2K[511/906] [mobile] › specs\comprehensive\02-auth.spec.ts:28:7 › Login page — form anatomy › has email field, password field, and submit button
+[1A[2K[512/906] [mobile] › specs\comprehensive\02-auth.spec.ts:35:7 › Login page — form anatomy › has a link to forgot-password page
+[1A[2K[513/906] [mobile] › specs\comprehensive\02-auth.spec.ts:43:7 › Login page — form anatomy › login form contains a CSRF token or equivalent protection
+[1A[2K[514/906] [mobile] › specs\comprehensive\02-auth.spec.ts:64:7 › Successful login › admin login redirects away from /login
+[1A[2K[515/906] [mobile] › specs\comprehensive\02-auth.spec.ts:70:7 › Successful login › leader login works
+[1A[2K[516/906] [mobile] › specs\comprehensive\02-auth.spec.ts:75:7 › Successful login › member login works
+[1A[2K[517/906] [mobile] › specs\comprehensive\02-auth.spec.ts:86:7 › Failed login › wrong password shows error, stays on login
+[1A[2K[518/906] [mobile] › specs\comprehensive\02-auth.spec.ts:97:7 › Failed login › unknown email shows error, stays on login
+[1A[2K[519/906] [mobile] › specs\comprehensive\02-auth.spec.ts:108:7 › Failed login › empty email shows validation error
+[1A[2K[520/906] [mobile] › specs\comprehensive\02-auth.spec.ts:120:7 › Failed login › empty password shows validation error
+[1A[2K[521/906] [mobile] › specs\comprehensive\02-auth.spec.ts:137:7 › Already authenticated › visiting /login when already logged in redirects away
+[1A[2K[522/906] [mobile] › specs\comprehensive\02-auth.spec.ts:150:7 › Logout › GET /logout redirects to login page
+[1A[2K[523/906] [mobile] › specs\comprehensive\02-auth.spec.ts:156:7 › Logout › after logout, protected page redirects to login
+[1A[2K[524/906] [mobile] › specs\comprehensive\02-auth.spec.ts:163:7 › Logout › after logout, /members redirects to login
+[1A[2K[525/906] [mobile] › specs\comprehensive\02-auth.spec.ts:176:7 › Forgot password › page loads with email input and submit button
+[1A[2K[526/906] [mobile] › specs\comprehensive\02-auth.spec.ts:182:7 › Forgot password › submitting a real email address shows a success or info message
+[1A[2K[527/906] [mobile] › specs\comprehensive\02-auth.spec.ts:194:7 › Forgot password › submitting an unknown email still shows a message (no enumeration)
+[1A[2K[528/906] [mobile] › specs\comprehensive\02-auth.spec.ts:205:7 › Forgot password › submitting empty email does not crash
+[1A[2K[529/906] [mobile] › specs\comprehensive\02-auth.spec.ts:217:7 › Reset password › invalid token shows an error, not a 500
+[1A[2K[530/906] [mobile] › specs\comprehensive\02-auth.spec.ts:238:7 › Multi-factor authentication › MFA user sees TOTP input after password step
+[1A[2K[531/906] [mobile] › specs\comprehensive\02-auth.spec.ts:249:7 › Multi-factor authentication › wrong TOTP code shows an error
+[1A[2K  8) [mobile] › specs\comprehensive\02-auth.spec.ts:249:7 › Multi-factor authentication › wrong TOTP code shows an error 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('.alert-danger, [role="alert"], .text-danger')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('.alert-danger, [role="alert"], .text-danger')[22m
+
+
+      260 |     await expect(
+      261 |       page.locator('.alert-danger, [role="alert"], .text-danger')
+    > 262 |     ).toBeVisible({ timeout: 5_000 });
+          |       ^
+      263 |   });
+      264 |
+      265 |   test('MFA page has a CSRF token', async ({ page }) => {
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\02-auth.spec.ts:262:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-02-auth-Mult-94bd5-ng-TOTP-code-shows-an-error-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-02-auth-Mult-94bd5-ng-TOTP-code-shows-an-error-mobile\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-02-auth-Mult-94bd5-ng-TOTP-code-shows-an-error-mobile\error-context.md
+
+
+[1A[2K[532/906] [mobile] › specs\comprehensive\02-auth.spec.ts:265:7 › Multi-factor authentication › MFA page has a CSRF token
+[1A[2K[533/906] [mobile] › specs\comprehensive\02-auth.spec.ts:285:7 › Session persistence › admin stays authenticated across multiple page navigations
+[1A[2K[534/906] [mobile] › specs\comprehensive\03-members.spec.ts:37:7 › Member list › list page loads with a table or card list
+[1A[2K[535/906] [mobile] › specs\comprehensive\03-members.spec.ts:46:7 › Member list › shows multiple members from seeded data
+[1A[2K[536/906] [mobile] › specs\comprehensive\03-members.spec.ts:54:7 › Member list › page title / heading contains Members or similar
+[1A[2K[537/906] [mobile] › specs\comprehensive\03-members.spec.ts:60:7 › Member list › search input is present
+[1A[2K[538/906] [mobile] › specs\comprehensive\03-members.spec.ts:68:7 › Member list › searching by name filters results via HTMX
+[1A[2K[539/906] [mobile] › specs\comprehensive\03-members.spec.ts:85:7 › Member list › searching by partial email filters results
+[1A[2K[540/906] [mobile] › specs\comprehensive\03-members.spec.ts:96:7 › Member list › clearing search shows all members again
+[1A[2K[541/906] [mobile] › specs\comprehensive\03-members.spec.ts:111:7 › Member list › each member row has a clickable link to their profile
+[1A[2K[542/906] [mobile] › specs\comprehensive\03-members.spec.ts:120:7 › Member list › add member button is present and leads to create form
+[1A[2K[543/906] [mobile] › specs\comprehensive\03-members.spec.ts:140:7 › Create member › create form loads with required fields
+[1A[2K[544/906] [mobile] › specs\comprehensive\03-members.spec.ts:148:7 › Create member › form has date of birth, gender, or other expected fields
+[1A[2K[545/906] [mobile] › specs\comprehensive\03-members.spec.ts:158:7 › Create member › submitting empty form shows validation errors
+[1A[2K[546/906] [mobile] › specs\comprehensive\03-members.spec.ts:168:7 › Create member › submitting missing surname shows server validation error
+[1A[2K[547/906] [mobile] › specs\comprehensive\03-members.spec.ts:177:7 › Create member › valid submission creates member and redirects
+[1A[2K[548/906] [mobile] › specs\comprehensive\03-members.spec.ts:231:7 › Member profile tabs › profile page loads with tab navigation
+[1A[2K[549/906] [mobile] › specs\comprehensive\03-members.spec.ts:237:7 › Member profile tabs › Personal tab loads content
+[1A[2K[550/906] [mobile] › specs\comprehensive\03-members.spec.ts:251:7 › Member profile tabs › Contact tab loads content
+[1A[2K[551/906] [mobile] › specs\comprehensive\03-members.spec.ts:261:7 › Member profile tabs › Medical tab loads content
+[1A[2K[552/906] [mobile] › specs\comprehensive\03-members.spec.ts:271:7 › Member profile tabs › Roles tab loads content
+[1A[2K[553/906] [mobile] › specs\comprehensive\03-members.spec.ts:281:7 › Member profile tabs › Timeline tab loads content
+[1A[2K[554/906] [mobile] › specs\comprehensive\03-members.spec.ts:291:7 › Member profile tabs › Documents tab loads content
+[1A[2K[555/906] [mobile] › specs\comprehensive\03-members.spec.ts:301:7 › Member profile tabs › Additional/custom-fields tab loads content
+[1A[2K[556/906] [mobile] › specs\comprehensive\03-members.spec.ts:311:7 › Member profile tabs › clicking each visible tab does not produce a 500 error
+[1A[2K[557/906] [mobile] › specs\comprehensive\03-members.spec.ts:332:7 › Edit member › edit form is accessible from the profile page
+[1A[2K[558/906] [mobile] › specs\comprehensive\03-members.spec.ts:351:7 › Edit member › edit form fields are pre-filled with existing data
+[1A[2K[559/906] [mobile] › specs\comprehensive\03-members.spec.ts:368:7 › Edit member › updating first name and submitting succeeds
+[1A[2K[560/906] [mobile] › specs\comprehensive\03-members.spec.ts:405:7 › Member status change › status change control is visible on member profile
+[1A[2K[561/906] [mobile] › specs\comprehensive\03-members.spec.ts:429:7 › Member timeline › timeline tab shows add-entry form or button
+[1A[2K[562/906] [mobile] › specs\comprehensive\03-members.spec.ts:456:7 › Member timeline › adding a timeline entry succeeds
+[1A[2K[563/906] [mobile] › specs\comprehensive\03-members.spec.ts:489:7 › Member attachments › documents tab shows upload section
+[1A[2K[564/906] [mobile] › specs\comprehensive\03-members.spec.ts:514:7 › Pending member changes › pending changes page loads for admin
+[1A[2K[565/906] [mobile] › specs\comprehensive\03-members.spec.ts:532:7 › Member API partials › GET /members/api/search returns HTML partial, not 404
+[1A[2K[566/906] [mobile] › specs\comprehensive\03-members.spec.ts:538:7 › Member API partials › GET /members/api/{id}/card returns content for first member
+[1A[2K[567/906] [mobile] › specs\comprehensive\03-members.spec.ts:549:7 › Member API partials › GET /members/api/{id}/status-badge returns content
+[1A[2K[568/906] [mobile] › specs\comprehensive\04-registration.spec.ts:30:7 › Public registration form › GET /register loads without requiring login
+[1A[2K[569/906] [mobile] › specs\comprehensive\04-registration.spec.ts:38:7 › Public registration form › form has first_name, surname, email fields
+[1A[2K[570/906] [mobile] › specs\comprehensive\04-registration.spec.ts:46:7 › Public registration form › submitting empty form shows validation errors
+[1A[2K[571/906] [mobile] › specs\comprehensive\04-registration.spec.ts:56:7 › Public registration form › valid registration submit gives success feedback
+[1A[2K  9) [mobile] › specs\comprehensive\04-registration.spec.ts:56:7 › Public registration form › valid registration submit gives success feedback 
+
+    Error: Registration should give success feedback
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      86 |       bodyText?.toLowerCase().includes('received') ||
+      87 |       await page.locator('.alert-success').isVisible();
+    > 88 |     expect(ok, 'Registration should give success feedback').toBe(true);
+         |                                                             ^
+      89 |   });
+      90 |
+      91 |   test('form contains CSRF token', async ({ page }) => {
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\04-registration.spec.ts:88:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-89b5f-bmit-gives-success-feedback-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-89b5f-bmit-gives-success-feedback-mobile\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-04-registrat-89b5f-bmit-gives-success-feedback-mobile\error-context.md
+
+
+[1A[2K[572/906] [mobile] › specs\comprehensive\04-registration.spec.ts:91:7 › Public registration form › form contains CSRF token
+[1A[2K[573/906] [mobile] › specs\comprehensive\04-registration.spec.ts:106:7 › Public waiting list form › GET /waiting-list loads without login
+[1A[2K[574/906] [mobile] › specs\comprehensive\04-registration.spec.ts:113:7 › Public waiting list form › form has name and email fields
+[1A[2K[575/906] [mobile] › specs\comprehensive\04-registration.spec.ts:120:7 › Public waiting list form › submitting empty form does not crash
+[1A[2K[576/906] [mobile] › specs\comprehensive\04-registration.spec.ts:127:7 › Public waiting list form › valid submit gives success feedback
+[1A[2K[577/906] [mobile] › specs\comprehensive\04-registration.spec.ts:160:7 › Admin: pending registrations › pending registrations page loads
+[1A[2K[578/906] [mobile] › specs\comprehensive\04-registration.spec.ts:167:7 › Admin: pending registrations › approve button present if there are pending registrations
+[1A[2K[579/906] [mobile] › specs\comprehensive\04-registration.spec.ts:177:7 › Admin: pending registrations › reject button present alongside approve
+[1A[2K  10) [mobile] › specs\comprehensive\04-registration.spec.ts:177:7 › Admin: pending registrations › reject button present alongside approve 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('button:has-text("Reject"):not([data-bs-dismiss]), button:has-text("Decline"):not([data-bs-dismiss])').first()
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('button:has-text("Reject"):not([data-bs-dismiss]), button:has-text("Decline"):not([data-bs-dismiss])').first()[22m
+    [2m    9 × locator resolved to <button type="submit" class="btn btn-sm btn-danger">registration.reject</button>[22m
+    [2m      - unexpected value "hidden"[22m
+
+
+      184 |     );
+      185 |     if (await rejectBtn.count() > 0) {
+    > 186 |       await expect(rejectBtn.first()).toBeVisible();
+          |                                       ^
+      187 |     }
+      188 |   });
+      189 | });
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\04-registration.spec.ts:186:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-6cad5-n-present-alongside-approve-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-04-registrat-6cad5-n-present-alongside-approve-mobile\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-04-registrat-6cad5-n-present-alongside-approve-mobile\error-context.md
+
+
+[1A[2K[580/906] [mobile] › specs\comprehensive\04-registration.spec.ts:200:7 › Admin: invitations › invitations list page loads
+[1A[2K[581/906] [mobile] › specs\comprehensive\04-registration.spec.ts:207:7 › Admin: invitations › create invitation form has email field
+[1A[2K[582/906] [mobile] › specs\comprehensive\04-registration.spec.ts:214:7 › Admin: invitations › submitting invitation with valid email shows success or confirmation
+[1A[2K[583/906] [mobile] › specs\comprehensive\04-registration.spec.ts:238:7 › Admin: waiting list management › admin waiting list page loads
+[1A[2K[584/906] [mobile] › specs\comprehensive\04-registration.spec.ts:245:7 › Admin: waiting list management › status change / convert buttons present for waiting-list entries
+[1A[2K[585/906] [mobile] › specs\comprehensive\04-registration.spec.ts:258:7 › Admin: waiting list management › reorder section or drag handles present
+[1A[2K[586/906] [mobile] › specs\comprehensive\04-registration.spec.ts:283:7 › Admin: bulk import › bulk import form page loads
+[1A[2K[587/906] [mobile] › specs\comprehensive\04-registration.spec.ts:290:7 › Admin: bulk import › has file upload input
+[1A[2K[588/906] [mobile] › specs\comprehensive\04-registration.spec.ts:296:7 › Admin: bulk import › template download link is present and resolves
+[1A[2K[589/906] [mobile] › specs\comprehensive\04-registration.spec.ts:310:7 › Admin: bulk import › submitting without a file shows validation error
+[1A[2K[590/906] [mobile] › specs\comprehensive\04-registration.spec.ts:327:7 › Admin: custom fields › custom fields list loads
+[1A[2K[591/906] [mobile] › specs\comprehensive\04-registration.spec.ts:334:7 › Admin: custom fields › create custom field form loads
+[1A[2K[592/906] [mobile] › specs\comprehensive\04-registration.spec.ts:341:7 › Admin: custom fields › submitting empty create form shows validation errors
+[1A[2K[593/906] [mobile] › specs\comprehensive\04-registration.spec.ts:348:7 › Admin: custom fields › valid custom field creation succeeds
+[1A[2K[594/906] [mobile] › specs\comprehensive\04-registration.spec.ts:364:7 › Admin: custom fields › existing custom field can be edited
+[1A[2K[595/906] [mobile] › specs\comprehensive\04-registration.spec.ts:376:7 › Admin: custom fields › deactivate and activate buttons present on list
+[1A[2K[596/906] [mobile] › specs\comprehensive\04-registration.spec.ts:387:7 › Admin: custom fields › reorder section present when multiple fields exist
+[1A[2K[597/906] [mobile] › specs\comprehensive\04-registration.spec.ts:404:7 › Invitation-based registration › invalid invite token returns error, not 500
+[1A[2K[598/906] [mobile] › specs\comprehensive\05-events.spec.ts:36:7 › Events calendar (public/member view) › calendar page loads
+[1A[2K[599/906] [mobile] › specs\comprehensive\05-events.spec.ts:43:7 › Events calendar (public/member view) › has a heading or title
+[1A[2K[600/906] [mobile] › specs\comprehensive\05-events.spec.ts:49:7 › Events calendar (public/member view) › seeded events are visible
+[1A[2K[601/906] [mobile] › specs\comprehensive\05-events.spec.ts:57:7 › Events calendar (public/member view) › clicking an event link goes to detail page
+[1A[2K[602/906] [mobile] › specs\comprehensive\05-events.spec.ts:68:7 › Events calendar (public/member view) › /events requires authentication
+[1A[2K[603/906] [mobile] › specs\comprehensive\05-events.spec.ts:84:7 › Event detail page › detail page shows event title, date, description
+[1A[2K[604/906] [mobile] › specs\comprehensive\05-events.spec.ts:99:7 › Event detail page › non-existent event ID returns graceful error
+[1A[2K[605/906] [mobile] › specs\comprehensive\05-events.spec.ts:119:7 › Admin events list › admin events list loads
+[1A[2K[606/906] [mobile] › specs\comprehensive\05-events.spec.ts:126:7 › Admin events list › seeded events appear in admin list
+[1A[2K[607/906] [mobile] › specs\comprehensive\05-events.spec.ts:133:7 › Admin events list › create event button links to create form
+[1A[2K[608/906] [mobile] › specs\comprehensive\05-events.spec.ts:143:7 › Admin events list › each event row has edit link
+[1A[2K[609/906] [mobile] › specs\comprehensive\05-events.spec.ts:162:7 › Create event › create form loads with title and date fields
+[1A[2K[610/906] [mobile] › specs\comprehensive\05-events.spec.ts:172:7 › Create event › form has end date or time fields
+[1A[2K[611/906] [mobile] › specs\comprehensive\05-events.spec.ts:179:7 › Create event › submitting empty title shows validation error
+[1A[2K[612/906] [mobile] › specs\comprehensive\05-events.spec.ts:186:7 › Create event › valid event creation redirects or shows success
+[1A[2K[613/906] [mobile] › specs\comprehensive\05-events.spec.ts:221:7 › Edit event › edit form loads for first event
+[1A[2K[614/906] [mobile] › specs\comprehensive\05-events.spec.ts:233:7 › Edit event › edit form is pre-filled with existing title
+[1A[2K[615/906] [mobile] › specs\comprehensive\05-events.spec.ts:245:7 › Edit event › updating title and submitting succeeds
+[1A[2K[616/906] [mobile] › specs\comprehensive\05-events.spec.ts:273:7 › Event publish/unpublish › publish button visible on draft events
+[1A[2K[617/906] [mobile] › specs\comprehensive\05-events.spec.ts:284:7 › Event publish/unpublish › unpublish button visible on published events
+[1A[2K[618/906] [mobile] › specs\comprehensive\05-events.spec.ts:301:7 › Delete event › delete button or link present on event admin page
+[1A[2K[619/906] [mobile] › specs\comprehensive\05-events.spec.ts:323:7 › iCal integration › iCal management page loads
+[1A[2K[620/906] [mobile] › specs\comprehensive\05-events.spec.ts:330:7 › iCal integration › generate iCal token button or form is present
+[1A[2K[621/906] [mobile] › specs\comprehensive\05-events.spec.ts:341:7 › iCal integration › generating a token shows a feed URL
+[1A[2K[622/906] [mobile] › specs\comprehensive\05-events.spec.ts:360:7 › iCal integration › iCal feed URL with valid token returns ical content or 200
+[1A[2K[623/906] [mobile] › specs\comprehensive\05-events.spec.ts:389:7 › iCal integration › iCal feed with invalid token returns 404 or 403
+[1A[2K[624/906] [mobile] › specs\comprehensive\06-communications.spec.ts:36:7 › Articles list (member view) › articles index loads
+[1A[2K[625/906] [mobile] › specs\comprehensive\06-communications.spec.ts:43:7 › Articles list (member view) › has page heading
+[1A[2K[626/906] [mobile] › specs\comprehensive\06-communications.spec.ts:49:7 › Articles list (member view) › seeded published articles appear in list
+[1A[2K[627/906] [mobile] › specs\comprehensive\06-communications.spec.ts:57:7 › Articles list (member view) › /articles requires authentication
+[1A[2K[628/906] [mobile] › specs\comprehensive\06-communications.spec.ts:73:7 › Article detail page › clicking article link leads to detail page
+[1A[2K[629/906] [mobile] › specs\comprehensive\06-communications.spec.ts:86:7 › Article detail page › article detail shows title and body content
+[1A[2K[630/906] [mobile] › specs\comprehensive\06-communications.spec.ts:97:7 › Article detail page › non-existent article slug returns graceful error
+[1A[2K[631/906] [mobile] › specs\comprehensive\06-communications.spec.ts:114:7 › Admin articles list › admin articles list loads
+[1A[2K[632/906] [mobile] › specs\comprehensive\06-communications.spec.ts:121:7 › Admin articles list › shows both published and draft articles
+[1A[2K[633/906] [mobile] › specs\comprehensive\06-communications.spec.ts:130:7 › Admin articles list › create article button is present
+[1A[2K[634/906] [mobile] › specs\comprehensive\06-communications.spec.ts:139:7 › Admin articles list › each article row has edit and publish/unpublish actions
+[1A[2K[635/906] [mobile] › specs\comprehensive\06-communications.spec.ts:161:7 › Create article › create form loads with title and body fields
+[1A[2K[636/906] [mobile] › specs\comprehensive\06-communications.spec.ts:169:7 › Create article › submitting with empty title shows validation error
+[1A[2K[637/906] [mobile] › specs\comprehensive\06-communications.spec.ts:176:7 › Create article › valid article creation succeeds
+[1A[2K[638/906] [mobile] › specs\comprehensive\06-communications.spec.ts:207:7 › Edit article › edit form loads for first article
+[1A[2K[639/906] [mobile] › specs\comprehensive\06-communications.spec.ts:219:7 › Edit article › edit form title field is pre-filled
+[1A[2K[640/906] [mobile] › specs\comprehensive\06-communications.spec.ts:231:7 › Edit article › updating title and saving succeeds
+[1A[2K[641/906] [mobile] › specs\comprehensive\06-communications.spec.ts:259:7 › Article publish/unpublish › publish button visible on draft articles
+[1A[2K[642/906] [mobile] › specs\comprehensive\06-communications.spec.ts:270:7 › Article publish/unpublish › unpublish button visible on published articles
+[1A[2K[643/906] [mobile] › specs\comprehensive\06-communications.spec.ts:291:7 › Email compose › email compose page loads
+[1A[2K[644/906] [mobile] › specs\comprehensive\06-communications.spec.ts:298:7 › Email compose › compose form has subject and body fields
+[1A[2K[645/906] [mobile] › specs\comprehensive\06-communications.spec.ts:307:7 › Email compose › compose form has recipient selection
+[1A[2K[646/906] [mobile] › specs\comprehensive\06-communications.spec.ts:316:7 › Email compose › submitting empty form does not crash
+[1A[2K[647/906] [mobile] › specs\comprehensive\06-communications.spec.ts:324:7 › Email compose › form contains CSRF token
+[1A[2K[648/906] [mobile] › specs\comprehensive\06-communications.spec.ts:343:7 › Email log › email log page loads
+[1A[2K[649/906] [mobile] › specs\comprehensive\06-communications.spec.ts:350:7 › Email log › email log has a table or list structure
+[1A[2K[650/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:35:7 › Org structure index › org tree index loads
+[1A[2K[651/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:42:7 › Org structure index › has a heading
+[1A[2K[652/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:48:7 › Org structure index › seeded org nodes appear
+[1A[2K[653/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:55:7 › Org structure index › create node button is present and links correctly
+[1A[2K[654/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:78:7 › Org node detail › node detail page loads
+[1A[2K[655/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:90:7 › Org node detail › node detail shows teams section
+[1A[2K[656/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:101:7 › Org node detail › node detail has edit link
+[1A[2K[657/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:115:7 › Org node detail › non-existent node returns graceful error
+[1A[2K[658/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:132:7 › Create org node › create form loads
+[1A[2K[659/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:139:7 › Create org node › form has parent selector
+[1A[2K[660/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:147:7 › Create org node › submitting empty name shows validation error
+[1A[2K[661/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:154:7 › Create org node › valid node creation succeeds
+[1A[2K[662/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:179:7 › Edit org node › edit form loads for first node
+[1A[2K[663/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:191:7 › Edit org node › edit form is pre-filled with node name
+[1A[2K[664/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:203:7 › Edit org node › updating name and submitting succeeds
+[1A[2K[665/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:231:7 › Teams on org node › add team form is present on node detail page
+[1A[2K[666/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:248:7 › Teams on org node › adding a team to a node succeeds
+[1A[2K[667/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:267:7 › Teams on org node › delete team button present when teams exist
+[1A[2K[668/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:294:7 › Org level types › level types page loads
+[1A[2K[669/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:301:7 › Org level types › seeded level types appear
+[1A[2K[670/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:308:7 › Org level types › create level type form is present on the page
+[1A[2K[671/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:318:7 › Org level types › creating a level type succeeds
+[1A[2K[672/906] [mobile] › specs\comprehensive\07-org-structure.spec.ts:337:7 › Org level types › delete level type button is present
+[1A[2K[673/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:31:7 › Roles list › roles list page loads
+[1A[2K[674/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:38:7 › Roles list › has page heading
+[1A[2K[675/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:44:7 › Roles list › seeded roles appear in the list
+[1A[2K[676/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:51:7 › Roles list › create role button is present
+[1A[2K[677/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:62:7 › Roles list › each role has edit link
+[1A[2K[678/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:81:7 › Create role › create form loads with name field
+[1A[2K[679/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:88:7 › Create role › form has permission checkboxes or multi-select
+[1A[2K[680/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:98:7 › Create role › submitting empty name shows validation error
+[1A[2K[681/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:105:7 › Create role › valid role creation succeeds
+[1A[2K[682/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:124:7 › Create role › duplicate role name shows error
+[1A[2K[683/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:144:7 › Edit role › edit form loads for first role
+[1A[2K[684/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:156:7 › Edit role › edit form is pre-filled with role name
+[1A[2K[685/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:168:7 › Edit role › updating role and submitting succeeds
+[1A[2K[686/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:189:7 › Delete role › delete button or link is present on roles list
+[1A[2K[687/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:201:7 › Delete role › delete requires confirmation (modal or confirm dialog)
+[1A[2K[688/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:229:7 › Role assignments › assignments page loads for the admin user
+[1A[2K[689/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:253:7 › Role assignments › assignments page has assign form
+[1A[2K[690/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:285:7 › Role assignments › end assignment button present when assignments exist
+[1A[2K[691/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:311:7 › Permissions module nav visibility › admin sees Roles in sidebar
+[1A[2K[692/906] [mobile] › specs\comprehensive\08-permissions.spec.ts:326:7 › Permissions module nav visibility › regular member does not see Roles in sidebar
+[1A[2K[693/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:32:7 › Achievements list › achievements list page loads
+[1A[2K[694/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:39:7 › Achievements list › has a heading
+[1A[2K[695/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:45:7 › Achievements list › seeded achievements appear
+[1A[2K[696/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:52:7 › Achievements list › create achievement button is present
+[1A[2K[697/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:63:7 › Achievements list › each achievement has edit link
+[1A[2K[698/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:72:7 › Achievements list › achievements show active/inactive status
+[1A[2K[699/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:90:7 › Create achievement › create form loads with name field
+[1A[2K[700/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:97:7 › Create achievement › form has type/category selector
+[1A[2K[701/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:106:7 › Create achievement › form has description field
+[1A[2K[702/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:115:7 › Create achievement › submitting empty name shows validation error
+[1A[2K[703/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:122:7 › Create achievement › valid achievement creation succeeds
+[1A[2K[704/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:153:7 › Edit achievement › edit form loads for first achievement
+[1A[2K[705/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:165:7 › Edit achievement › edit form is pre-filled with achievement name
+[1A[2K[706/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:177:7 › Edit achievement › updating achievement name and submitting succeeds
+[1A[2K[707/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:205:7 › Achievement activation › deactivate button present on active achievements
+[1A[2K[708/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:216:7 › Achievement activation › activate button present on inactive achievements
+[1A[2K[709/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:243:7 › Award achievement to member › achievements section visible on member profile
+[1A[2K[710/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:267:7 › Award achievement to member › award achievement form is accessible
+[1A[2K[711/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:292:7 › Award achievement to member › awarding an achievement succeeds
+[1A[2K[712/906] [mobile] › specs\comprehensive\09-achievements.spec.ts:323:7 › Award achievement to member › revoke achievement button present when member has achievements
+[1A[2K[713/906] [mobile] › specs\comprehensive\10-admin.spec.ts:36:7 › Admin dashboard › dashboard page loads
+[1A[2K[714/906] [mobile] › specs\comprehensive\10-admin.spec.ts:42:7 › Admin dashboard › dashboard shows member count or statistics
+[1A[2K[715/906] [mobile] › specs\comprehensive\10-admin.spec.ts:50:7 › Admin dashboard › dashboard has navigation links to modules
+[1A[2K[716/906] [mobile] › specs\comprehensive\10-admin.spec.ts:57:7 › Admin dashboard › recent activity section visible
+[1A[2K[717/906] [mobile] › specs\comprehensive\10-admin.spec.ts:76:7 › Admin reports › reports index loads
+[1A[2K[718/906] [mobile] › specs\comprehensive\10-admin.spec.ts:83:7 › Admin reports › growth report loads
+[1A[2K[719/906] [mobile] › specs\comprehensive\10-admin.spec.ts:90:7 › Admin reports › status changes report loads
+[1A[2K[720/906] [mobile] › specs\comprehensive\10-admin.spec.ts:97:7 › Admin reports › member CSV export link resolves
+[1A[2K[721/906] [mobile] › specs\comprehensive\10-admin.spec.ts:103:7 › Admin reports › member XML export link resolves
+[1A[2K[722/906] [mobile] › specs\comprehensive\10-admin.spec.ts:109:7 › Admin reports › settings export link resolves
+[1A[2K[723/906] [mobile] › specs\comprehensive\10-admin.spec.ts:115:7 › Admin reports › reports index has links to sub-reports
+[1A[2K[724/906] [mobile] › specs\comprehensive\10-admin.spec.ts:136:7 › Admin settings › settings page loads
+[1A[2K[725/906] [mobile] › specs\comprehensive\10-admin.spec.ts:143:7 › Admin settings › settings form has save/update button
+[1A[2K[726/906] [mobile] › specs\comprehensive\10-admin.spec.ts:149:7 › Admin settings › submitting settings form succeeds
+[1A[2K[727/906] [mobile] › specs\comprehensive\10-admin.spec.ts:167:7 › Audit log › audit log page loads
+[1A[2K[728/906] [mobile] › specs\comprehensive\10-admin.spec.ts:174:7 › Audit log › audit log shows entries from seeded activity
+[1A[2K[729/906] [mobile] › specs\comprehensive\10-admin.spec.ts:181:7 › Audit log › audit log has user, action, and timestamp columns
+[1A[2K[730/906] [mobile] › specs\comprehensive\10-admin.spec.ts:189:7 › Audit log › entity audit trail page loads for a member
+[1A[2K[731/906] [mobile] › specs\comprehensive\10-admin.spec.ts:202:7 › Audit log › audit log has pagination if many entries
+[1A[2K[732/906] [mobile] › specs\comprehensive\10-admin.spec.ts:220:7 › System logs › system logs page loads
+[1A[2K[733/906] [mobile] › specs\comprehensive\10-admin.spec.ts:227:7 › System logs › log types (error, slow query, etc.) are shown
+[1A[2K[734/906] [mobile] › specs\comprehensive\10-admin.spec.ts:235:7 › System logs › clear log button is present
+[1A[2K[735/906] [mobile] › specs\comprehensive\10-admin.spec.ts:256:7 › Backups › backups page loads
+[1A[2K[736/906] [mobile] › specs\comprehensive\10-admin.spec.ts:263:7 › Backups › create backup button is present
+[1A[2K[737/906] [mobile] › specs\comprehensive\10-admin.spec.ts:274:7 › Backups › creating a backup succeeds
+[1A[2K[738/906] [mobile] › specs\comprehensive\10-admin.spec.ts:287:7 › Backups › download link present for existing backups
+[1A[2K[739/906] [mobile] › specs\comprehensive\10-admin.spec.ts:296:7 › Backups › delete button present for existing backups
+[1A[2K[740/906] [mobile] › specs\comprehensive\10-admin.spec.ts:317:7 › Data export › data export page loads
+[1A[2K[741/906] [mobile] › specs\comprehensive\10-admin.spec.ts:324:7 › Data export › export page shows CSV and XML options
+[1A[2K[742/906] [mobile] › specs\comprehensive\10-admin.spec.ts:331:7 › Data export › my data export resolves
+[1A[2K[743/906] [mobile] › specs\comprehensive\10-admin.spec.ts:347:7 › API monitoring endpoints › GET /api/health returns non-500 response
+[1A[2K[744/906] [mobile] › specs\comprehensive\10-admin.spec.ts:354:7 › API monitoring endpoints › /api/health response is JSON
+[1A[2K[745/906] [mobile] › specs\comprehensive\10-admin.spec.ts:360:7 › API monitoring endpoints › GET /api/logs returns non-500 response
+[1A[2K[746/906] [mobile] › specs\comprehensive\10-admin.spec.ts:376:7 › Terms and conditions › terms management page loads
+[1A[2K[747/906] [mobile] › specs\comprehensive\10-admin.spec.ts:383:7 › Terms and conditions › create terms form loads
+[1A[2K[748/906] [mobile] › specs\comprehensive\10-admin.spec.ts:390:7 › Terms and conditions › valid terms creation succeeds
+[1A[2K[749/906] [mobile] › specs\comprehensive\10-admin.spec.ts:409:7 › Terms and conditions › terms detail page loads
+[1A[2K[750/906] [mobile] › specs\comprehensive\10-admin.spec.ts:420:7 › Terms and conditions › publish button present on draft terms
+[1A[2K[751/906] [mobile] › specs\comprehensive\10-admin.spec.ts:441:7 › Notices › notices page loads
+[1A[2K[752/906] [mobile] › specs\comprehensive\10-admin.spec.ts:448:7 › Notices › create notice form loads
+[1A[2K[753/906] [mobile] › specs\comprehensive\10-admin.spec.ts:455:7 › Notices › valid notice creation succeeds
+[1A[2K[754/906] [mobile] › specs\comprehensive\10-admin.spec.ts:470:7 › Notices › edit notice form loads
+[1A[2K[755/906] [mobile] › specs\comprehensive\10-admin.spec.ts:482:7 › Notices › deactivate button present on active notices
+[1A[2K[756/906] [mobile] › specs\comprehensive\10-admin.spec.ts:493:7 › Notices › notice acknowledgements page loads
+[1A[2K[757/906] [mobile] › specs\comprehensive\10-admin.spec.ts:515:7 › Language management › languages list page loads
+[1A[2K[758/906] [mobile] › specs\comprehensive\10-admin.spec.ts:522:7 › Language management › English language appears in list
+[1A[2K[759/906] [mobile] › specs\comprehensive\10-admin.spec.ts:528:7 › Language management › language strings page loads for English
+[1A[2K[760/906] [mobile] › specs\comprehensive\10-admin.spec.ts:539:7 › Language management › strings page shows key-value pairs
+[1A[2K[761/906] [mobile] › specs\comprehensive\10-admin.spec.ts:546:7 › Language management › upload language file page loads
+[1A[2K[762/906] [mobile] › specs\comprehensive\10-admin.spec.ts:556:7 › Language management › export master language file resolves
+[1A[2K[763/906] [mobile] › specs\comprehensive\10-admin.spec.ts:572:7 › Updates › updates page loads
+[1A[2K[764/906] [mobile] › specs\comprehensive\10-admin.spec.ts:579:7 › Updates › current version is displayed
+[1A[2K[765/906] [mobile] › specs\comprehensive\10-admin.spec.ts:588:7 › Updates › check for updates button is present
+[1A[2K[766/906] [mobile] › specs\comprehensive\10-admin.spec.ts:599:7 › Updates › check updates endpoint resolves
+[1A[2K[767/906] [mobile] › specs\comprehensive\11-directory.spec.ts:26:7 › Organogram › organogram page loads
+[1A[2K[768/906] [mobile] › specs\comprehensive\11-directory.spec.ts:33:7 › Organogram › has page heading
+[1A[2K[769/906] [mobile] › specs\comprehensive\11-directory.spec.ts:39:7 › Organogram › organogram shows org nodes from seeded data
+[1A[2K[770/906] [mobile] › specs\comprehensive\11-directory.spec.ts:53:7 › Organogram › organogram shows hierarchical structure
+[1A[2K[771/906] [mobile] › specs\comprehensive\11-directory.spec.ts:63:7 › Organogram › organogram does not show member email addresses (privacy)
+[1A[2K[772/906] [mobile] › specs\comprehensive\11-directory.spec.ts:75:7 › Organogram › /directory requires authentication
+[1A[2K[773/906] [mobile] › specs\comprehensive\11-directory.spec.ts:91:7 › Contacts directory › contacts page loads
+[1A[2K[774/906] [mobile] › specs\comprehensive\11-directory.spec.ts:98:7 › Contacts directory › contacts page shows member names
+[1A[2K[775/906] [mobile] › specs\comprehensive\11-directory.spec.ts:106:7 › Contacts directory › contacts page has search or filter capability
+[1A[2K[776/906] [mobile] › specs\comprehensive\11-directory.spec.ts:116:7 › Contacts directory › /directory/contacts requires authentication
+[1A[2K[777/906] [mobile] › specs\comprehensive\11-directory.spec.ts:128:7 › Directory access by role › leader can access organogram
+[1A[2K[778/906] [mobile] › specs\comprehensive\11-directory.spec.ts:137:7 › Directory access by role › leader can access contacts
+[1A[2K[779/906] [mobile] › specs\comprehensive\11-directory.spec.ts:146:7 › Directory access by role › member can access organogram
+[1A[2K[780/906] [mobile] › specs\comprehensive\11-directory.spec.ts:155:7 › Directory access by role › member can access contacts
+[1A[2K[781/906] [mobile] › specs\comprehensive\11-directory.spec.ts:173:7 › Directory navigation › organogram page has link to contacts
+[1A[2K[782/906] [mobile] › specs\comprehensive\11-directory.spec.ts:182:7 › Directory navigation › contacts page has link back to organogram
+[1A[2K[783/906] [mobile] › specs\comprehensive\11-directory.spec.ts:192:7 › Directory navigation › directory pages appear in sidebar navigation
+[1A[2K[784/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:23:7 › 404 — unknown routes › completely unknown route shows 404 page (authenticated)
+[1A[2K[785/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:38:7 › 404 — unknown routes › unknown route shows 404 page (unauthenticated)
+[1A[2K[786/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:46:7 › 404 — unknown routes › unknown member ID returns 404
+[1A[2K[787/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:58:7 › 404 — unknown routes › unknown event ID returns 404
+[1A[2K[788/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:66:7 › 404 — unknown routes › unknown article ID returns graceful error
+[1A[2K[789/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:74:7 › 404 — unknown routes › unknown role ID returns graceful error
+[1A[2K[790/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:82:7 › 404 — unknown routes › unknown achievement ID returns graceful error
+[1A[2K[791/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:90:7 › 404 — unknown routes › unknown org node ID returns graceful error
+[1A[2K[792/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:98:7 › 404 — unknown routes › unknown custom field ID returns graceful error
+[1A[2K[793/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:106:7 › 404 — unknown routes › unknown terms ID returns graceful error
+[1A[2K[794/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:114:7 › 404 — unknown routes › unknown notice acknowledgements returns graceful error
+[1A[2K[795/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:132:7 › Error page quality › 404 page has a helpful message, not a blank page
+[1A[2K[796/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:139:7 › Error page quality › 404 page still has navigation (user not stranded)
+[1A[2K[797/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/dashboard redirects unauthenticated user to login
+[1A[2K[798/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/settings redirects unauthenticated user to login
+[1A[2K[799/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/audit redirects unauthenticated user to login
+[1A[2K[800/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/logs redirects unauthenticated user to login
+[1A[2K[801/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/backups redirects unauthenticated user to login
+[1A[2K[802/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/export redirects unauthenticated user to login
+[1A[2K[803/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/reports redirects unauthenticated user to login
+[1A[2K[804/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/terms redirects unauthenticated user to login
+[1A[2K[805/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/notices redirects unauthenticated user to login
+[1A[2K[806/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/languages redirects unauthenticated user to login
+[1A[2K[807/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/updates redirects unauthenticated user to login
+[1A[2K[808/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/roles redirects unauthenticated user to login
+[1A[2K[809/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/achievements redirects unauthenticated user to login
+[1A[2K[810/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/events redirects unauthenticated user to login
+[1A[2K[811/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/articles redirects unauthenticated user to login
+[1A[2K[812/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/email redirects unauthenticated user to login
+[1A[2K[813/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/email/log redirects unauthenticated user to login
+[1A[2K[814/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/org redirects unauthenticated user to login
+[1A[2K[815/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/registrations redirects unauthenticated user to login
+[1A[2K[816/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/waiting-list redirects unauthenticated user to login
+[1A[2K[817/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/invitations redirects unauthenticated user to login
+[1A[2K[818/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/custom-fields redirects unauthenticated user to login
+[1A[2K[819/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /admin/bulk-import redirects unauthenticated user to login
+[1A[2K[820/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /members redirects unauthenticated user to login
+[1A[2K[821/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /events redirects unauthenticated user to login
+[1A[2K[822/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /articles redirects unauthenticated user to login
+[1A[2K[823/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /directory redirects unauthenticated user to login
+[1A[2K[824/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:187:9 › Unauthenticated access redirects to login › GET /directory/contacts redirects unauthenticated user to login
+[1A[2K[825/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:202:7 › CSRF protection › POST to login without CSRF token is rejected or handled
+[1A[2K[826/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:219:7 › CSRF protection › login form always has CSRF token on page load
+[1A[2K[827/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:229:7 › CSRF protection › registration form has CSRF token
+[1A[2K[828/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:238:7 › CSRF protection › settings form has CSRF token
+[1A[2K[829/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:249:7 › CSRF protection › member create form has CSRF token
+[1A[2K[830/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:270:7 › API health endpoint › /api/health returns 200 with JSON body
+[1A[2K[831/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:277:7 › API health endpoint › /api/health JSON contains status field
+[1A[2K[832/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:294:7 › Malformed / XSS input protection › XSS payload in member search does not execute script
+[1A[2K[833/906] [mobile] › specs\comprehensive\12-error-pages.spec.ts:309:7 › Malformed / XSS input protection › SQL injection payload in search does not crash the server
+[1A[2K[834/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/settings → 403 or redirect for member role
+[1A[2K[835/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/audit → 403 or redirect for member role
+[1A[2K[836/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/logs → 403 or redirect for member role
+[1A[2K[837/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/backups → 403 or redirect for member role
+[1A[2K[838/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/export → 403 or redirect for member role
+[1A[2K[839/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/reports → 403 or redirect for member role
+[1A[2K[840/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/terms → 403 or redirect for member role
+[1A[2K[841/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/notices → 403 or redirect for member role
+[1A[2K[842/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/languages → 403 or redirect for member role
+[1A[2K[843/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/updates → 403 or redirect for member role
+[1A[2K[844/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/roles → 403 or redirect for member role
+[1A[2K[845/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/roles/create → 403 or redirect for member role
+[1A[2K[846/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/achievements → 403 or redirect for member role
+[1A[2K[847/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/achievements/create → 403 or redirect for member role
+[1A[2K[848/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/events → 403 or redirect for member role
+[1A[2K[849/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/events/create → 403 or redirect for member role
+[1A[2K[850/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/articles → 403 or redirect for member role
+[1A[2K[851/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/articles/create → 403 or redirect for member role
+[1A[2K[852/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/email → 403 or redirect for member role
+[1A[2K[853/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/email/log → 403 or redirect for member role
+[1A[2K[854/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/org → 403 or redirect for member role
+[1A[2K[855/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/org/nodes/create → 403 or redirect for member role
+[1A[2K[856/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/org/levels → 403 or redirect for member role
+[1A[2K[857/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/registrations → 403 or redirect for member role
+[1A[2K[858/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/waiting-list → 403 or redirect for member role
+[1A[2K[859/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/invitations → 403 or redirect for member role
+[1A[2K[860/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/custom-fields → 403 or redirect for member role
+[1A[2K[861/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:54:9 › Member cannot access admin-only routes › GET /admin/bulk-import → 403 or redirect for member role
+[1A[2K[862/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/settings → accessible for admin
+[1A[2K[863/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/audit → accessible for admin
+[1A[2K[864/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/logs → accessible for admin
+[1A[2K[865/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/backups → accessible for admin
+[1A[2K[866/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/export → accessible for admin
+[1A[2K[867/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/reports → accessible for admin
+[1A[2K[868/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/terms → accessible for admin
+[1A[2K[869/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/notices → accessible for admin
+[1A[2K[870/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/languages → accessible for admin
+[1A[2K[871/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/updates → accessible for admin
+[1A[2K[872/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/roles → accessible for admin
+[1A[2K[873/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/roles/create → accessible for admin
+[1A[2K[874/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/achievements → accessible for admin
+[1A[2K[875/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/achievements/create → accessible for admin
+[1A[2K[876/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/events → accessible for admin
+[1A[2K[877/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/events/create → accessible for admin
+[1A[2K[878/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/articles → accessible for admin
+[1A[2K[879/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/articles/create → accessible for admin
+[1A[2K[880/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/email → accessible for admin
+[1A[2K[881/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/email/log → accessible for admin
+[1A[2K[882/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/org → accessible for admin
+[1A[2K[883/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/org/nodes/create → accessible for admin
+[1A[2K[884/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/org/levels → accessible for admin
+[1A[2K[885/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/registrations → accessible for admin
+[1A[2K[886/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/waiting-list → accessible for admin
+[1A[2K[887/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/invitations → accessible for admin
+[1A[2K[888/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/custom-fields → accessible for admin
+[1A[2K[889/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:84:9 › Admin can access all admin routes › GET /admin/bulk-import → accessible for admin
+[1A[2K[890/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:103:7 › Leader role access › leader can access member list
+[1A[2K[891/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:112:7 › Leader role access › leader can access events calendar
+[1A[2K[892/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:119:7 › Leader role access › leader can access articles
+[1A[2K[893/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:126:7 › Leader role access › leader can access directory
+[1A[2K[894/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:133:7 › Leader role access › leader dashboard does not show super-admin settings link
+[1A[2K[895/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:149:7 › Sidebar navigation visibility by role › admin sees all navigation groups
+[1A[2K[896/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:175:7 › Sidebar navigation visibility by role › member does not see admin-only nav links
+[1A[2K[897/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:194:7 › Sidebar navigation visibility by role › logout link always visible in nav
+[1A[2K  11) [mobile] › specs\comprehensive\13-rbac.spec.ts:194:7 › Sidebar navigation visibility by role › logout link always visible in nav 
+
+    Error: member should see logout in nav
+
+    [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('a[href="/logout"], form[action="/logout"], [data-logout]').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - member should see logout in nav with timeout 5000ms[22m
+    [2m  - waiting for locator('a[href="/logout"], form[action="/logout"], [data-logout]').first()[22m
+
+
+      208 |         'a[href="/logout"], form[action="/logout"], [data-logout]'
+      209 |       ).first();
+    > 210 |       await expect(logoutControl, `${role} should see logout in nav`).toBeVisible();
+          |                                                                       ^
+      211 |       await page.goto('/logout');
+      212 |     }
+      213 |   });
+        at C:\Users\kevin\OneDrive - QuadNine Ltd\Claude\sk10\tests\e2e\specs\comprehensive\13-rbac.spec.ts:210:71
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\comprehensive-13-rbac-Side-d811e--link-always-visible-in-nav-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\comprehensive-13-rbac-Side-d811e--link-always-visible-in-nav-mobile\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\comprehensive-13-rbac-Side-d811e--link-always-visible-in-nav-mobile\error-context.md
+
+
+[1A[2K[898/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:221:7 › API endpoint access control › /api/health accessible without login
+[1A[2K[899/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:228:7 › API endpoint access control › /api/logs requires admin auth
+[1A[2K[900/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:236:7 › API endpoint access control › member search API requires auth
+[1A[2K[901/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:242:7 › API endpoint access control › admin can access member API with session
+[1A[2K[902/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:255:7 › 403 Forbidden page quality › 403 page shows helpful error message, not a blank page
+[1A[2K[903/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:268:7 › 403 Forbidden page quality › 403 page has a way to navigate back
+[1A[2K[904/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:286:7 › Pending member access › pending member can log in
+[1A[2K[905/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:291:7 › Pending member access › pending member cannot access admin routes
+[1A[2K[906/906] [mobile] › specs\comprehensive\13-rbac.spec.ts:309:7 › Data isolation › member user cannot edit another member directly
+[1A[2K  11 failed
+    [chromium] › specs\comprehensive\01-navigation.spec.ts:363:7 › Global topbar search › /search route exists and returns non-404 
+    [chromium] › specs\comprehensive\01-navigation.spec.ts:371:7 › Global topbar search › typing and pressing Enter in the search bar produces visible output 
+    [chromium] › specs\comprehensive\02-auth.spec.ts:249:7 › Multi-factor authentication › wrong TOTP code shows an error 
+    [chromium] › specs\comprehensive\04-registration.spec.ts:56:7 › Public registration form › valid registration submit gives success feedback 
+    [chromium] › specs\comprehensive\04-registration.spec.ts:177:7 › Admin: pending registrations › reject button present alongside approve 
+    [chromium] › specs\comprehensive\13-rbac.spec.ts:194:7 › Sidebar navigation visibility by role › logout link always visible in nav 
+    [mobile] › specs\comprehensive\01-navigation.spec.ts:363:7 › Global topbar search › /search route exists and returns non-404 
+    [mobile] › specs\comprehensive\02-auth.spec.ts:249:7 › Multi-factor authentication › wrong TOTP code shows an error 
+    [mobile] › specs\comprehensive\04-registration.spec.ts:56:7 › Public registration form › valid registration submit gives success feedback 
+    [mobile] › specs\comprehensive\04-registration.spec.ts:177:7 › Admin: pending registrations › reject button present alongside approve 
+    [mobile] › specs\comprehensive\13-rbac.spec.ts:194:7 › Sidebar navigation visibility by role › logout link always visible in nav 
+  25 skipped
+  870 passed (1.2h)

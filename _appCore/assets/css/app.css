@@ -1,0 +1,21 @@
+/*
+ * appCore — project stylesheet
+ *
+ * This file is where project-level customisations go. Bootstrap 5.3 is
+ * loaded first (see /assets/vendor/bootstrap/), so anything here overrides
+ * the defaults. Keep it small; pattern libraries and component styles
+ * belong closer to the modules that own them.
+ *
+ * Conventions:
+ *   - Reserve `--app-*` custom properties for project-wide tokens.
+ *   - Don't inline per-page styles here — use a {% block styles %} in the
+ *     template or a module-scoped CSS file.
+ */
+
+:root {
+    --app-content-max: 1200px;
+}
+
+/* Thin utility: flash messages stacked at the top of a page look tidier with
+   a touch more breathing room than Bootstrap defaults. */
+.alert { margin-bottom: .75rem; }

@@ -134,7 +134,9 @@
                 </a>
                 {% endfor %}
             {% else %}
-                {% set is_open = (group_id == active_group) %}
+                {# Default all groups to open so all nav links are reachable without a toggle click.
+                   Users can collapse groups manually via the Bootstrap collapse toggle. #}
+                {% set is_open = true %}
                 <button class="sidebar-group-toggle d-flex align-items-center w-100 text-uppercase small fw-semibold text-body-secondary px-3 py-2 border-0 bg-transparent"
                         type="button"
                         data-bs-toggle="collapse"
@@ -212,7 +214,9 @@
                     </a>
                     {% endfor %}
                 {% else %}
-                    {% set is_open = (group_id == active_group) %}
+                    {# Default all groups to open so all nav links are reachable without a toggle click.
+                   Users can collapse groups manually via the Bootstrap collapse toggle. #}
+                {% set is_open = true %}
                     <button class="sidebar-group-toggle d-flex align-items-center w-100 text-uppercase small fw-semibold text-body-secondary px-2 py-1 mb-1 border-0 bg-transparent"
                             type="button"
                             data-bs-toggle="collapse"

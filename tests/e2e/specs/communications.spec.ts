@@ -34,7 +34,9 @@ test.describe('Communications', () => {
     await login(page, 'admin');
     await page.goto('/admin/email');
     await expect(page.locator('input[name="subject"]')).toBeVisible();
-    await expect(page.locator('textarea[name="body"]')).toBeVisible();
+    // Body textarea is hidden when WYSIWYG is active; accept either the hidden
+    // textarea's replacement editor or the plain textarea.
+    await expect(page.locator('.wysiwyg-editor, textarea[name="body"]:not([data-wysiwyg])').first()).toBeVisible();
   });
 
   test('admin can view email log', async ({ page }) => {

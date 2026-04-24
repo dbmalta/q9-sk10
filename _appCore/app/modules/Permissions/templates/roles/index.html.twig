@@ -1,0 +1,56 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.roles') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">{{ t('nav.roles') }}</h1>
+        {% if has_permission('roles.write') %}
+        <a href="{{ route('permissions.roles.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>{{ t('permissions.create_role') }}
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>{{ t('permissions.name') }}</th>
+                    <th>{{ t('permissions.description') }}</th>
+                    <th>{{ t('permissions.system') }}</th>
+                    <th class="text-end">{{ t('common.actions') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr>
+                    <td><strong>{{ role.name }}</strong></td>
+                    <td class="small text-muted">{{ role.description }}</td>
+                    <td>{% if role.is_system %}<i class="bi bi-lock-fill text-body-secondary"></i>{% endif %}</td>
+                    <td class="text-end">
+                        {% if has_permission('roles.write') %}
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ route('permissions.roles.edit', {id: role.id}) }}">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% if not role.is_system %}
+                        <form method="post" action="{{ route('permissions.roles.delete', {id: role.id}) }}" class="d-inline">
+                            {{ csrf_field()|raw }}
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('{{ t('common.confirm_delete') }}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center text-muted py-3">{{ t('permissions.empty') }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

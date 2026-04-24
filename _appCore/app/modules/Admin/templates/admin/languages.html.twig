@@ -1,0 +1,47 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.languages') }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h3 mb-4">{{ t('nav.languages') }}</h1>
+
+    <div class="card">
+        <table class="table mb-0">
+            <thead><tr>
+                <th>{{ t('languages.code') }}</th>
+                <th>{{ t('languages.name') }}</th>
+                <th>{{ t('languages.completion') }}</th>
+                <th>{{ t('languages.default') }}</th>
+                <th>{{ t('languages.active') }}</th>
+                <th></th>
+            </tr></thead>
+            <tbody>
+            {% for l in languages %}
+                <tr>
+                    <td><code>{{ l.code }}</code></td>
+                    <td>{{ l.native_name }} <span class="text-muted small">({{ l.name }})</span></td>
+                    <td>{{ l.completion_pct }}%</td>
+                    <td>{% if l.is_default %}<i class="bi bi-check-circle text-success"></i>{% endif %}</td>
+                    <td>{% if l.is_active %}<i class="bi bi-check-circle text-success"></i>{% endif %}</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.languages.strings', {code: l.code}) }}">
+                            {{ t('languages.strings') }}
+                        </a>
+                        {% if l.is_active %}
+                        <form method="post" action="{{ route('admin.languages.deactivate', {code: l.code}) }}" class="d-inline">
+                            {{ csrf_field()|raw }}<button class="btn btn-sm btn-outline-warning">{{ t('languages.deactivate') }}</button>
+                        </form>
+                        {% else %}
+                        <form method="post" action="{{ route('admin.languages.activate', {code: l.code}) }}" class="d-inline">
+                            {{ csrf_field()|raw }}<button class="btn btn-sm btn-outline-success">{{ t('languages.activate') }}</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

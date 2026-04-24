@@ -1,0 +1,5 @@
+3. https://demo.scoutkeeper.net/account - page not found
+
+2. https://demo.scoutkeeper.net/admin/languages crashes
+
+1. The searchbar at the top of the page does not do anything when you enter text and then hit ENTER. There also is no search button to initiate the search.

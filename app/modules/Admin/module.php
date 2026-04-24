@@ -135,6 +135,8 @@ return [
 
         // Policies (list + CRUD)
         $router->get('/admin/terms', [TermsController::class, 'index'], 'admin.terms');
+        $router->get('/admin/terms/create', [TermsController::class, 'createAlias'], 'admin.terms.create_alias');
+        $router->post('/admin/terms', [TermsController::class, 'storeAlias'], 'admin.terms.store_alias');
         $router->get('/admin/terms/policies/create', [TermsController::class, 'createPolicyForm'], 'admin.policies.create');
         $router->post('/admin/terms/policies', [TermsController::class, 'storePolicy'], 'admin.policies.store');
         $router->get('/admin/terms/policies/{id:\d+}', [TermsController::class, 'showPolicy'], 'admin.policies.show');

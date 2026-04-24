@@ -1,0 +1,59 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% set isEdit = role is not null %}
+
+{% block title %}
+    {{ isEdit ? t('permissions.edit_role') : t('permissions.create_role') }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 800px;">
+    <h1 class="h3 mb-4">
+        {{ isEdit ? t('permissions.edit_role') : t('permissions.create_role') }}
+    </h1>
+
+    <form method="post" action="{{ isEdit
+        ? route('permissions.roles.update', {id: role.id})
+        : route('permissions.roles.store') }}">
+        {{ csrf_field()|raw }}
+
+        <div class="mb-3">
+            <label for="name" class="form-label">{{ t('permissions.name') }}</label>
+            <input type="text" class="form-control" id="name" name="name"
+                   value="{{ role.name|default('') }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">{{ t('permissions.description') }}</label>
+            <textarea class="form-control" id="description" name="description" rows="2">{{ role.description|default('') }}</textarea>
+        </div>
+
+        {% set currentPermissions = role ? role.permissions_decoded : {} %}
+
+        <h2 class="h5 mt-4 mb-3">{{ t('permissions.granted') }}</h2>
+
+        <div class="row">
+            {% for key, label in definitions %}
+            <div class="col-md-6 mb-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           id="perm_{{ key|replace({'.': '_'}) }}"
+                           name="permissions[{{ key }}]" value="1"
+                           {% if currentPermissions[key]|default(false) %}checked{% endif %}>
+                    <label class="form-check-label" for="perm_{{ key|replace({'.': '_'}) }}">
+                        <code class="small">{{ key }}</code> &mdash; {{ label }}
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ route('permissions.roles') }}" class="btn btn-outline-secondary">{{ t('common.cancel') }}</a>
+            <button type="submit" class="btn btn-primary">
+                {{ isEdit ? t('common.save') : t('common.create') }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

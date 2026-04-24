@@ -1,0 +1,33 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('languages.strings') }}: {{ code }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h3 mb-4">{{ t('languages.strings') }} &mdash; <code>{{ code }}</code></h1>
+
+    <div class="card">
+        <table class="table mb-0 small">
+            <thead><tr><th>Key</th><th>{{ t('languages.master') }}</th><th>{{ t('languages.override') }}</th><th></th></tr></thead>
+            <tbody>
+            {% for key, row in strings %}
+                <tr>
+                    <td><code>{{ key }}</code></td>
+                    <td>{{ row.master }}</td>
+                    <td>
+                        <form method="post" action="{{ route('admin.languages.save_override', {code: code}) }}" class="d-flex gap-2">
+                            {{ csrf_field()|raw }}
+                            <input type="hidden" name="key" value="{{ key }}">
+                            <input type="text" class="form-control form-control-sm" name="value"
+                                   value="{{ row.override|default('') }}">
+                            <button class="btn btn-sm btn-outline-primary">{{ t('common.save') }}</button>
+                        </form>
+                    </td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

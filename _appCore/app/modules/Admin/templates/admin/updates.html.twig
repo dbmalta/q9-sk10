@@ -1,0 +1,24 @@
+{% extends "layouts/admin.html.twig" %}
+
+{% block title %}{{ t('nav.updates') }}{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 720px;">
+    <h1 class="h3 mb-4">{{ t('nav.updates') }}</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <p class="mb-2">{{ t('updates.current_version') }}: <code>{{ current_version }}</code></p>
+            <p class="text-muted small">{{ t('updates.intro') }}</p>
+
+            <form method="post" action="{{ route('admin.updates.apply') }}">
+                {{ csrf_field()|raw }}
+                <button class="btn btn-primary"
+                        onclick="return confirm('{{ t('updates.confirm_apply') }}')">
+                    <i class="bi bi-arrow-repeat me-1"></i>{{ t('updates.apply') }}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -163,7 +163,7 @@ test.describe('Create article', () => {
     await page.waitForLoadState('networkidle');
     await expectPageOk(page);
     await expect(page.locator('input[name="title"]')).toBeVisible();
-    await expect(page.locator('textarea[name="body"], textarea[name="content"], .ck-editor__editable, [contenteditable]')).toBeVisible();
+    await expect(page.locator('textarea[name="body"], textarea[name="content"], .ck-editor__editable, [contenteditable]').first()).toBeVisible();
   });
 
   test('submitting with empty title shows validation error', async ({ page }) => {
@@ -300,7 +300,7 @@ test.describe('Email compose', () => {
     await page.waitForLoadState('networkidle');
     await expect(page.locator('input[name="subject"]')).toBeVisible();
     await expect(
-      page.locator('textarea[name="body"], textarea[name="message"], [contenteditable]')
+      page.locator('textarea[name="body"], textarea[name="message"], [contenteditable]').first()
     ).toBeVisible();
   });
 

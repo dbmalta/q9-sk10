@@ -1,0 +1,31 @@
+{
+    "name": "appcore/appcore",
+    "description": "appCore — a lean, modular, self-hostable PHP 8.2 application framework.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "nikic/fast-route": "^1.3",
+        "twig/twig": "^3.0",
+        "phpmailer/phpmailer": "^6.9",
+        "pragmarx/google2fa": "^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "AppCore\\": "app/src/",
+            "AppCore\\Modules\\": "app/modules/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
+}

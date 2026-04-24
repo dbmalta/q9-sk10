@@ -1,0 +1,9 @@
+{# Usage: {% include 'components/_empty_state.html.twig' with {icon: 'bi-inbox', title: '...', message: '...'} %} #}
+<div class="text-center py-5">
+    {% if icon is defined %}<i class="bi {{ icon }} display-3 text-body-secondary"></i>{% endif %}
+    <h3 class="h5 mt-3">{{ title|default('') }}</h3>
+    {% if message is defined %}<p class="text-body-secondary">{{ message }}</p>{% endif %}
+    {% if action_url is defined and action_label is defined %}
+        <a href="{{ action_url }}" class="btn btn-primary">{{ action_label }}</a>
+    {% endif %}
+</div>

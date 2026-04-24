@@ -384,7 +384,7 @@ test.describe('Terms and conditions', () => {
     await page.goto('/admin/terms/create');
     await page.waitForLoadState('networkidle');
     await expectPageOk(page);
-    await expect(page.locator('textarea[name="content"], [contenteditable], textarea[name="body"]')).toBeVisible();
+    await expect(page.locator('textarea[name="content"], [contenteditable], textarea[name="body"]').first()).toBeVisible();
   });
 
   test('valid terms creation succeeds', async ({ page }) => {

@@ -640,6 +640,7 @@
     "policies.name": "Policy name",
     "policies.description": "Description",
     "policies.name_required": "Policy name is required.",
+    "policies.default_name": "Terms & Conditions",
     "policies.none": "No policies yet.",
     "policies.versions": "Versions",
     "policies.required": "Required",
