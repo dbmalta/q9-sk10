@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<div x-data="eventCalendar({{ events_json|e('html_attr') }}, {{ year }}, {{ month }})" class="card border-0 shadow-sm">
+<div x-data="eventCalendar({{ events_json|e('html_attr') }}, {{ year }}, {{ month }})" class="card border-0 shadow-sm" data-calendar>
     <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
         <a :href="prevMonthUrl()" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-chevron-left"></i>
@@ -55,6 +55,8 @@
                                     <span class="badge bg-primary-subtle text-primary-emphasis text-start d-block"
                                           style="font-size: 0.7rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                                           :title="event.title"
+                                          data-event-item
+                                          :data-event-id="event.id"
                                           x-text="event.title"></span>
                                 </template>
                             </div>
