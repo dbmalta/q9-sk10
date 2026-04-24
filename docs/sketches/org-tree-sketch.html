@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Org tree — sketch</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+<style>
+  :root {
+    --sk-accent-50:  #F8F4FC;
+    --sk-accent-100: #ECE0F5;
+    --sk-accent-200: #D9C2EA;
+    --sk-accent-500: #6B3FA0;
+    --sk-accent-700: #46256D;
+    --sk-accent-soft: rgba(107,63,160,0.10);
+  }
+  body { background: #faf9fb; font-size: 14px; }
+  .app-shell { display: grid; grid-template-columns: 1fr 380px; gap: 1rem; }
+  .tree-card, .detail-card {
+    background: #fff; border: 1px solid #e8e6ec; border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(20,18,28,0.04);
+  }
+  .tree-header {
+    padding: 0.75rem 1rem; border-bottom: 1px solid #f0eef3;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .tree-search { max-width: 260px; }
+  .tree-body { padding: 0.25rem 0; max-height: 640px; overflow: auto; }
+
+  /* Tree row */
+  .tree-row {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.35rem 0.75rem; border-radius: 4px; cursor: pointer;
+    position: relative;
+  }
+  .tree-row:hover { background: var(--sk-accent-soft); }
+  .tree-row.selected { background: var(--sk-accent-100); }
+  .tree-row.selected::before {
+    content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 3px; border-radius: 2px; background: var(--sk-accent-500);
+  }
+  .tree-row .caret {
+    width: 18px; text-align: center; color: #8a8590; transition: transform .12s;
+    flex-shrink: 0;
+  }
+  .tree-row.expanded > .caret { transform: rotate(90deg); }
+  .tree-row.leaf .caret { visibility: hidden; }
+  .tree-row .node-icon { color: var(--sk-accent-500); flex-shrink: 0; }
+  .tree-row .node-name { flex: 1; font-weight: 500; color: #1c1b1f; }
+  .tree-row .level-badge {
+    font-size: 11px; padding: 1px 8px; border-radius: 999px;
+    background: #f0eef3; color: #605d67; text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .tree-row .count { color: #8a8590; font-variant-numeric: tabular-nums; min-width: 44px; text-align: right; }
+  .tree-row .actions { opacity: 0; transition: opacity .1s; }
+  .tree-row:hover .actions, .tree-row.selected .actions { opacity: 1; }
+  .tree-row .actions .btn { padding: 0 6px; height: 22px; line-height: 1; border: none; background: transparent; color: #605d67; }
+  .tree-row .actions .btn:hover { background: rgba(0,0,0,0.06); color: var(--sk-accent-700); }
+  .tree-children { padding-left: 20px; border-left: 1px dashed #e8e6ec; margin-left: 16px; }
+
+  /* Drag affordance */
+  .tree-row.drop-target {
+    background: var(--sk-accent-100);
+    outline: 2px dashed var(--sk-accent-500);
+  }
+
+  /* Detail panel */
+  .detail-card { padding: 1rem; }
+  .detail-card h2 { font-size: 1.1rem; margin: 0; }
+  .detail-meta { color: #605d67; font-size: 13px; margin-bottom: 1rem; }
+  .kv { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 13px; }
+  .kv .k { color: #8a8590; }
+  .pill-group .btn { font-size: 12px; padding: 3px 10px; }
+
+  /* Toolbar */
+  .toolbar .btn-accent {
+    background: var(--sk-accent-500); color: #fff; border: none;
+  }
+  .toolbar .btn-accent:hover { background: var(--sk-accent-700); color: #fff; }
+
+  /* Sketch banner */
+  .sketch-banner {
+    background: #fff7cc; border: 1px solid #e8d77a; border-radius: 6px;
+    padding: 8px 12px; font-size: 13px; margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body class="p-4">
+
+<div class="container-fluid" x-data="orgTree()">
+
+  <div class="sketch-banner">
+    <strong>Sketch preview</strong> — click rows to expand/collapse and select. Hover a row for actions. Drag behaviour is shown visually only (not wired).
+  </div>
+
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h1 class="h4 mb-0">Organisation Structure</h1>
+      <div class="text-body-secondary small">Scouts of Northland · 24 nodes · 128 members</div>
+    </div>
+    <div class="toolbar d-flex gap-2">
+      <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrows-expand me-1"></i>Expand all</button>
+      <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrows-collapse me-1"></i>Collapse all</button>
+      <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-diagram-3 me-1"></i>Chart view</button>
+      <button class="btn btn-sm btn-accent"><i class="bi bi-plus-lg me-1"></i>Add top-level</button>
+    </div>
+  </div>
+
+  <div class="app-shell">
+
+    <!-- TREE -->
+    <div class="tree-card">
+      <div class="tree-header">
+        <div class="input-group input-group-sm tree-search">
+          <span class="input-group-text bg-body border-end-0"><i class="bi bi-search"></i></span>
+          <input type="search" class="form-control border-start-0" placeholder="Find node…" x-model="filter">
+        </div>
+        <div class="ms-auto text-body-secondary small">
+          <i class="bi bi-info-circle"></i> Drag a node onto another to reparent
+        </div>
+      </div>
+      <div class="tree-body">
+        <template x-for="node in visibleNodes(tree)" :key="node.id">
+          <div class="tree-row"
+               :class="{ expanded: expanded[node.id], leaf: !node.children.length, selected: selected === node.id, 'drop-target': dropTarget === node.id }"
+               :style="`padding-left: ${0.75 + node.depth * 1.25}rem`"
+               @click="toggle(node); selected = node.id"
+               @mouseenter="if (demoDrag) dropTarget = node.id"
+               @mouseleave="if (demoDrag) dropTarget = null">
+            <span class="caret"><i class="bi bi-chevron-right"></i></span>
+            <i class="node-icon" :class="iconFor(node.level)"></i>
+            <span class="node-name" x-text="node.name"></span>
+            <span class="level-badge" x-text="node.level"></span>
+            <span class="count" x-text="node.members + ' ✦'"></span>
+            <span class="actions d-flex gap-1" @click.stop>
+              <button class="btn" title="Add child"><i class="bi bi-plus-lg"></i></button>
+              <button class="btn" title="Edit"><i class="bi bi-pencil"></i></button>
+              <button class="btn" title="More"><i class="bi bi-three-dots-vertical"></i></button>
+            </span>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- DETAIL -->
+    <div class="detail-card" x-show="selectedNode()">
+      <template x-if="selectedNode()">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i :class="iconFor(selectedNode().level)" style="color: var(--sk-accent-500)"></i>
+            <h2 x-text="selectedNode().name"></h2>
+          </div>
+          <div class="detail-meta" x-text="breadcrumb(selectedNode())"></div>
+
+          <div class="kv mb-3">
+            <span class="k">Level</span><span x-text="selectedNode().level"></span>
+            <span class="k">Members</span><span x-text="selectedNode().members"></span>
+            <span class="k">Children</span><span x-text="selectedNode().children.length"></span>
+            <span class="k">Status</span><span><span class="badge bg-success">Active</span></span>
+          </div>
+
+          <div class="pill-group d-flex flex-wrap gap-1 mb-3">
+            <button class="btn btn-outline-secondary"><i class="bi bi-people me-1"></i>View members</button>
+            <button class="btn btn-outline-secondary"><i class="bi bi-person-badge me-1"></i>Leaders</button>
+            <button class="btn btn-outline-secondary"><i class="bi bi-calendar-event me-1"></i>Events</button>
+          </div>
+
+          <hr>
+          <h3 class="h6">Quick actions</h3>
+          <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-outline-secondary text-start"><i class="bi bi-plus-lg me-2"></i>Add child section/group</button>
+            <button class="btn btn-sm btn-outline-secondary text-start"><i class="bi bi-pencil me-2"></i>Edit this node</button>
+            <button class="btn btn-sm btn-outline-secondary text-start"><i class="bi bi-arrows-move me-2"></i>Move to another parent</button>
+            <button class="btn btn-sm btn-outline-danger text-start"><i class="bi bi-trash me-2"></i>Archive…</button>
+          </div>
+        </div>
+      </template>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function orgTree() {
+  // Real seeded data (Scouts of Northland)
+  const raw = [
+    { id: 1,  parent: null, name: 'Scouts of Northland', level: 'National' },
+    { id: 2,  parent: 1,    name: 'Northern Region',      level: 'Region' },
+    { id: 3,  parent: 1,    name: 'Southern Region',      level: 'Region' },
+    { id: 4,  parent: 2,    name: 'Frostdale District',   level: 'District' },
+    { id: 5,  parent: 2,    name: 'Pinewood District',    level: 'District' },
+    { id: 6,  parent: 3,    name: 'Coastview District',   level: 'District' },
+    { id: 7,  parent: 4,    name: '1st Frostdale',        level: 'Group' },
+    { id: 8,  parent: 4,    name: '2nd Frostdale',        level: 'Group' },
+    { id: 9,  parent: 5,    name: '1st Pinewood',         level: 'Group' },
+    { id: 10, parent: 6,    name: '1st Coastview',        level: 'Group' },
+    { id: 11, parent: 7,    name: 'Beaver Colony',        level: 'Section' },
+    { id: 12, parent: 7,    name: 'Cub Pack',             level: 'Section' },
+    { id: 13, parent: 7,    name: 'Scout Troop',          level: 'Section' },
+    { id: 14, parent: 7,    name: 'Venture Unit',         level: 'Section' },
+    { id: 15, parent: 8,    name: 'Cub Pack',             level: 'Section' },
+    { id: 16, parent: 8,    name: 'Scout Troop',          level: 'Section' },
+    { id: 17, parent: 9,    name: 'Beaver Colony',        level: 'Section' },
+    { id: 18, parent: 9,    name: 'Cub Pack',             level: 'Section' },
+    { id: 19, parent: 9,    name: 'Scout Troop',          level: 'Section' },
+    { id: 20, parent: 10,   name: 'Cub Pack',             level: 'Section' },
+    { id: 21, parent: 10,   name: 'Scout Troop',          level: 'Section' },
+    { id: 22, parent: 10,   name: 'Venture Unit',         level: 'Section' },
+  ];
+  // fake member counts per node
+  const counts = { 1:128, 2:78, 3:50, 4:42, 5:36, 6:50, 7:24, 8:18, 9:36, 10:50,
+                   11:6, 12:7, 13:8, 14:3, 15:9, 16:9, 17:10, 18:12, 19:14, 20:18, 21:22, 22:10 };
+  // build tree
+  const byId = Object.fromEntries(raw.map(n => [n.id, { ...n, children: [], members: counts[n.id] || 0, depth: 0 }]));
+  const roots = [];
+  raw.forEach(n => {
+    const node = byId[n.id];
+    if (n.parent) { byId[n.parent].children.push(node); node.depth = byId[n.parent].depth + 1; }
+    else roots.push(node);
+  });
+  // depth pass (children added after parent depth set above; recompute safely)
+  const setDepth = (n, d) => { n.depth = d; n.children.forEach(c => setDepth(c, d+1)); };
+  roots.forEach(r => setDepth(r, 0));
+
+  return {
+    tree: roots,
+    expanded: { 1: true, 2: true, 4: true, 7: true },
+    selected: 7,
+    filter: '',
+    demoDrag: false,
+    dropTarget: null,
+
+    toggle(node) { this.expanded[node.id] = !this.expanded[node.id]; },
+
+    visibleNodes(nodes) {
+      const out = [];
+      const matches = (n) => !this.filter || n.name.toLowerCase().includes(this.filter.toLowerCase());
+      const walk = (list, parentMatch) => {
+        for (const n of list) {
+          const self = matches(n);
+          const childHit = this.filter && n.children.some(function deep(c){ return matches(c) || c.children.some(deep); });
+          if (!this.filter || self || parentMatch || childHit) out.push(n);
+          const isOpen = this.filter ? (self || childHit || parentMatch) : !!this.expanded[n.id];
+          if (isOpen) walk(n.children, parentMatch || self);
+        }
+      };
+      walk(nodes, false);
+      return out;
+    },
+
+    selectedNode() {
+      const find = (list) => {
+        for (const n of list) { if (n.id === this.selected) return n; const f = find(n.children); if (f) return f; }
+        return null;
+      };
+      return find(this.tree);
+    },
+
+    breadcrumb(node) {
+      const path = [];
+      const find = (list, trail) => {
+        for (const n of list) {
+          const t = [...trail, n.name];
+          if (n.id === node.id) { path.push(...t); return true; }
+          if (find(n.children, t)) return true;
+        }
+        return false;
+      };
+      find(this.tree, []);
+      return path.slice(0, -1).join(' › ');
+    },
+
+    iconFor(level) {
+      return {
+        'National': 'bi bi-globe2',
+        'Region':   'bi bi-geo-alt',
+        'District': 'bi bi-diagram-3',
+        'Group':    'bi bi-house-door',
+        'Section':  'bi bi-people',
+      }[level] || 'bi bi-circle';
+    },
+  };
+}
+</script>
+</body>
+</html>

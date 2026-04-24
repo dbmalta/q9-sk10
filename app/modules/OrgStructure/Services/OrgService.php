@@ -209,7 +209,57 @@ class OrgService
         $sql .= " ORDER BY n.sort_order, n.name";
         $nodes = $this->db->fetchAll($sql);
 
+        $counts = $this->getMemberCountsByNode();
+        foreach ($nodes as &$n) {
+            $id = (int) $n['id'];
+            $n['member_count_direct'] = $counts['direct'][$id] ?? 0;
+            $n['member_count_total']  = $counts['total'][$id]  ?? 0;
+        }
+        unset($n);
+
         return $this->buildTree($nodes);
+    }
+
+    /**
+     * Count active members per org node — both directly assigned and
+     * rolled up via the closure table. A member is counted at a node if
+     * their linked user has a currently-active role assignment scoped to
+     * that node (direct) or any descendant of it (total).
+     *
+     * @return array{direct: array<int,int>, total: array<int,int>}
+     */
+    private function getMemberCountsByNode(): array
+    {
+        $direct = [];
+        $rows = $this->db->fetchAll(
+            "SELECT ras.node_id AS node_id, COUNT(DISTINCT m.id) AS cnt
+             FROM role_assignment_scopes ras
+             JOIN role_assignments ra ON ra.id = ras.assignment_id
+              AND ra.start_date <= CURRENT_DATE
+              AND (ra.end_date IS NULL OR ra.end_date >= CURRENT_DATE)
+             JOIN members m ON m.user_id = ra.user_id AND m.status = 'active'
+             GROUP BY ras.node_id"
+        );
+        foreach ($rows as $r) {
+            $direct[(int) $r['node_id']] = (int) $r['cnt'];
+        }
+
+        $total = [];
+        $rows = $this->db->fetchAll(
+            "SELECT c.ancestor_id AS node_id, COUNT(DISTINCT m.id) AS cnt
+             FROM org_closure c
+             JOIN role_assignment_scopes ras ON ras.node_id = c.descendant_id
+             JOIN role_assignments ra ON ra.id = ras.assignment_id
+              AND ra.start_date <= CURRENT_DATE
+              AND (ra.end_date IS NULL OR ra.end_date >= CURRENT_DATE)
+             JOIN members m ON m.user_id = ra.user_id AND m.status = 'active'
+             GROUP BY c.ancestor_id"
+        );
+        foreach ($rows as $r) {
+            $total[(int) $r['node_id']] = (int) $r['cnt'];
+        }
+
+        return ['direct' => $direct, 'total' => $total];
     }
 
     /**

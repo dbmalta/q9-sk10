@@ -2,16 +2,89 @@
 
 {% block title %}{{ t('nav.org_structure') }}{% endblock %}
 
+{#
+    Organisation tree — split-pane: collapsible tree on the left, selected-node
+    detail panel on the right. Edit/add actions are gated by
+    org_structure.write; the page itself requires org_structure.read (enforced
+    in OrgController::index).
+#}
+
+{% macro render_tree(nodes, depth, can_write) %}
+{% for node in nodes %}
+    {% set icon = {
+        'National': 'bi-globe2',
+        'Region':   'bi-geo-alt',
+        'District': 'bi-diagram-3',
+        'Group':    'bi-house-door',
+        'Section':  'bi-people',
+    }[node.level_type_name]|default('bi-diagram-3') %}
+    <div class="tree-row"
+         :class="{
+            expanded: expanded[{{ node.id }}],
+            leaf: {{ node.children is empty ? 'true' : 'false' }},
+            selected: selected === {{ node.id }},
+         }"
+         style="padding-left: {{ 0.75 + depth * 1.25 }}rem"
+         @click="toggle({{ node.id }}); select({{ node.id }})"
+         data-node-id="{{ node.id }}">
+        <span class="caret">
+            {% if node.children is not empty %}<i class="bi bi-chevron-right"></i>{% endif %}
+        </span>
+        <i class="node-icon bi {{ icon }}"></i>
+        <span class="node-name">{{ node.name }}{% if not node.is_active %} <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ t('org.inactive') }}</span>{% endif %}</span>
+        <span class="level-badge">{{ node.level_type_name }}</span>
+        <span class="count" title="{{ t('org.members_total') }}">
+            <i class="bi bi-people-fill"></i> {{ node.member_count_total }}
+        </span>
+        {% if can_write %}
+        <span class="actions d-flex gap-1" @click.stop>
+            <a class="btn" href="/admin/org/nodes/create?parent_id={{ node.id }}" title="{{ t('org.add_child') }}"><i class="bi bi-plus-lg"></i></a>
+            <a class="btn" href="/admin/org/nodes/{{ node.id }}/edit" title="{{ t('common.edit') }}"><i class="bi bi-pencil"></i></a>
+            <a class="btn" href="/admin/org/nodes/{{ node.id }}" title="{{ t('common.view') }}"><i class="bi bi-arrow-right-short"></i></a>
+        </span>
+        {% else %}
+        <span class="actions d-flex gap-1" @click.stop>
+            <a class="btn" href="/admin/org/nodes/{{ node.id }}" title="{{ t('common.view') }}"><i class="bi bi-arrow-right-short"></i></a>
+        </span>
+        {% endif %}
+    </div>
+    {% if node.children is not empty %}
+    <div class="tree-children" x-show="expanded[{{ node.id }}]">
+        {{ _self.render_tree(node.children, depth + 1, can_write) }}
+    </div>
+    {% endif %}
+{% endfor %}
+{% endmacro %}
+
 {% block body %}
-<div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">{{ t('nav.org_structure') }}</h1>
-        <div class="d-flex gap-2">
-            {% if has_permission('org_structure.write') %}
-            <a href="/admin/org/levels" class="btn btn-outline-secondary btn-sm">
+{% set can_write = has_permission('org_structure.write') %}
+{% set total_nodes = 0 %}
+{% set total_members = 0 %}
+{# Compute roll-up for the header: use the root nodes' totals. #}
+{% for root in tree %}
+    {% set total_members = total_members + root.member_count_total %}
+{% endfor %}
+
+<div class="container-fluid px-4 py-4"
+     x-data="orgTree({{ initial_selected_id ?? 'null' }})">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h4 mb-0">{{ t('nav.org_structure') }}</h1>
+            <div class="text-body-secondary small">{{ t('org.tree_subtitle', {members: total_members}) }}</div>
+        </div>
+        <div class="toolbar d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" @click="expandAll()">
+                <i class="bi bi-arrows-expand me-1"></i>{{ t('org.expand_all') }}
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @click="collapseAll()">
+                <i class="bi bi-arrows-collapse me-1"></i>{{ t('org.collapse_all') }}
+            </button>
+            {% if can_write %}
+            <a href="/admin/org/levels" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-sliders me-1"></i>{{ t('org.level_types') }}
             </a>
-            <a href="/admin/org/nodes/create" class="btn btn-primary btn-sm">
+            <a href="/admin/org/nodes/create" class="btn btn-sm btn-accent-solid">
                 <i class="bi bi-plus-lg me-1"></i>{{ t('org.add_node') }}
             </a>
             {% endif %}
@@ -22,63 +95,271 @@
         {% include "components/_empty_state.html.twig" with {
             icon: 'bi-diagram-3',
             message: t('org.no_nodes'),
-            action_label: t('org.add_node'),
-            action_url: '/admin/org/nodes/create'
+            action_label: can_write ? t('org.add_node') : null,
+            action_url:   can_write ? '/admin/org/nodes/create' : null,
         } %}
     {% else %}
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-3">
-            {{ _self.render_tree(tree) }}
+    <div class="org-shell">
+
+        {# Tree panel #}
+        <div class="tree-card">
+            <div class="tree-header">
+                <div class="input-group input-group-sm tree-search">
+                    <span class="input-group-text bg-body border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="search" class="form-control border-start-0"
+                           placeholder="{{ t('org.find_node') }}"
+                           x-model="filter"
+                           @input="applyFilter()">
+                </div>
+            </div>
+            <div class="tree-body">
+                {{ _self.render_tree(tree, 0, can_write) }}
+            </div>
         </div>
+
+        {# Detail panel #}
+        <div class="detail-card" x-show="selectedNode" x-cloak>
+            <template x-if="selectedNode">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi" :class="selectedNode.icon" style="color: var(--sk-accent)"></i>
+                        <h2 class="h5 mb-0" x-text="selectedNode.name"></h2>
+                    </div>
+                    <div class="text-body-secondary small mb-3" x-text="selectedNode.breadcrumb"></div>
+
+                    <div class="kv mb-3">
+                        <span class="k">{{ t('org.level') }}</span>
+                        <span x-text="selectedNode.level"></span>
+                        <span class="k">{{ t('org.members_direct') }}</span>
+                        <span x-text="selectedNode.direct"></span>
+                        <span class="k">{{ t('org.members_total') }}</span>
+                        <span x-text="selectedNode.total"></span>
+                        <span class="k">{{ t('org.children') }}</span>
+                        <span x-text="selectedNode.childCount"></span>
+                        <span class="k">{{ t('common.status') }}</span>
+                        <span>
+                            <template x-if="selectedNode.active"><span class="badge bg-success">{{ t('org.active') }}</span></template>
+                            <template x-if="!selectedNode.active"><span class="badge bg-warning-subtle text-warning-emphasis">{{ t('org.inactive') }}</span></template>
+                        </span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-sm btn-outline-secondary text-start" :href="`/admin/org/nodes/${selectedNode.id}`">
+                            <i class="bi bi-arrow-right-short me-2"></i>{{ t('org.view_details') }}
+                        </a>
+                        {% if can_write %}
+                        <a class="btn btn-sm btn-outline-secondary text-start" :href="`/admin/org/nodes/create?parent_id=${selectedNode.id}`">
+                            <i class="bi bi-plus-lg me-2"></i>{{ t('org.add_child') }}
+                        </a>
+                        <a class="btn btn-sm btn-outline-secondary text-start" :href="`/admin/org/nodes/${selectedNode.id}/edit`">
+                            <i class="bi bi-pencil me-2"></i>{{ t('common.edit') }}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </template>
+            <div x-show="!selectedNode" class="text-body-secondary small">
+                {{ t('org.select_hint') }}
+            </div>
+        </div>
+
     </div>
     {% endif %}
 </div>
-
-{% macro render_tree(nodes) %}
-<ul class="list-unstyled mb-0">
-    {% for node in nodes %}
-    <li class="mb-1" x-data="{ open: true }">
-        <div class="d-flex align-items-center py-1 px-2 rounded hover-bg">
-            {% if node.children is not empty %}
-            <button class="btn btn-sm btn-link p-0 me-1 text-body-secondary" @click="open = !open" style="width: 20px;">
-                <i class="bi" :class="open ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
-            </button>
-            {% else %}
-            <span style="width: 20px; display: inline-block;" class="me-1"></span>
-            {% endif %}
-
-            <i class="bi {{ node.is_leaf ? 'bi-people' : 'bi-folder' }} text-body-secondary me-2"></i>
-
-            <a href="/admin/org/nodes/{{ node.id }}" class="text-decoration-none fw-medium">
-                {{ node.name }}
-            </a>
-
-            <span class="badge bg-light text-body-secondary ms-2 small">{{ node.level_type_name }}</span>
-
-            {% if node.team_count > 0 %}
-            <span class="badge bg-info-subtle text-info-emphasis ms-1" title="{{ t('org.teams') }}">
-                <i class="bi bi-people-fill"></i> {{ node.team_count }}
-            </span>
-            {% endif %}
-
-            {% if not node.is_active %}
-            <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ t('org.inactive') }}</span>
-            {% endif %}
-        </div>
-
-        {% if node.children is not empty %}
-        <div x-show="open" class="ms-4">
-            {{ _self.render_tree(node.children) }}
-        </div>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
-{% endmacro %}
 {% endblock %}
 
 {% block head %}
 <style>
-    .hover-bg:hover { background-color: var(--bs-tertiary-bg); }
+    [x-cloak] { display: none !important; }
+    .org-shell { display: grid; grid-template-columns: 1fr 360px; gap: 1rem; align-items: start; }
+    @media (max-width: 991.98px) { .org-shell { grid-template-columns: 1fr; } }
+
+    .tree-card, .detail-card {
+        background: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.5rem;
+        box-shadow: var(--sk-shadow-sm);
+    }
+    .tree-header { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--bs-border-color); }
+    .tree-search { max-width: 280px; }
+    .tree-body { padding: 0.25rem 0; max-height: 720px; overflow: auto; }
+
+    .tree-row {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.35rem 0.75rem; border-radius: 4px; cursor: pointer;
+        position: relative;
+    }
+    .tree-row:hover { background: var(--sk-accent-soft); }
+    .tree-row.selected { background: var(--sk-accent-100); }
+    [data-bs-theme="dark"] .tree-row.selected { background: rgba(var(--sk-accent-rgb), 0.20); }
+    .tree-row.selected::before {
+        content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+        width: 3px; border-radius: 2px; background: var(--sk-accent);
+    }
+    .tree-row .caret { width: 18px; text-align: center; color: var(--bs-secondary-color); transition: transform .12s; flex-shrink: 0; }
+    .tree-row.expanded > .caret { transform: rotate(90deg); }
+    .tree-row .node-icon { color: var(--sk-accent); flex-shrink: 0; }
+    .tree-row .node-name { flex: 1; font-weight: 500; color: var(--bs-body-color); }
+    .tree-row .level-badge {
+        font-size: 11px; padding: 1px 8px; border-radius: 999px;
+        background: var(--bs-tertiary-bg); color: var(--bs-secondary-color);
+        text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .tree-row .count {
+        color: var(--bs-secondary-color); font-variant-numeric: tabular-nums;
+        min-width: 56px; text-align: right; font-size: 12px;
+    }
+    .tree-row .actions { opacity: 0; transition: opacity .1s; }
+    .tree-row:hover .actions, .tree-row.selected .actions { opacity: 1; }
+    .tree-row .actions .btn {
+        padding: 0 6px; height: 22px; line-height: 1; border: none;
+        background: transparent; color: var(--bs-secondary-color);
+    }
+    .tree-row .actions .btn:hover { background: rgba(var(--sk-accent-rgb), 0.12); color: var(--sk-accent); }
+    .tree-children { padding-left: 20px; border-left: 1px dashed var(--bs-border-color); margin-left: 16px; }
+
+    .detail-card { padding: 1rem; }
+    .kv { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; font-size: 13px; }
+    .kv .k { color: var(--bs-secondary-color); }
+
+    .btn-accent-solid {
+        background: var(--sk-accent); color: var(--sk-accent-fg); border: none;
+    }
+    .btn-accent-solid:hover { background: var(--sk-accent-hover); color: var(--sk-accent-fg); }
+
+    /* Hidden rows during filter */
+    .tree-row.filtered-out, .tree-children.filtered-out { display: none; }
 </style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function orgTree(initialSelected) {
+    return {
+        expanded: {},
+        selected: null,
+        selectedNode: null,
+        filter: '',
+        _index: null,
+        _roots: [],
+
+        init() {
+            // Build an in-memory index from the rendered DOM so selection/detail
+            // panel work without a second data payload. Each tree-row carries
+            // data-node-id; the surrounding .tree-children wrapper carries the
+            // parent link via DOM position.
+            this._buildIndex();
+            // Default: expand top two levels so the tree isn't a wall of roots
+            for (const id in this._index) {
+                if (this._index[id].depth < 2) this.expanded[id] = true;
+            }
+            if (initialSelected && this._index[initialSelected]) {
+                this.select(parseInt(initialSelected, 10));
+                // Also expand ancestors
+                let cur = this._index[initialSelected];
+                while (cur && cur.parent) {
+                    this.expanded[cur.parent] = true;
+                    cur = this._index[cur.parent];
+                }
+            }
+        },
+
+        _buildIndex() {
+            this._index = {};
+            const rows = document.querySelectorAll('.tree-row[data-node-id]');
+            rows.forEach((row) => {
+                const id = parseInt(row.getAttribute('data-node-id'), 10);
+                const name = row.querySelector('.node-name')?.firstChild?.textContent.trim() || '';
+                const level = row.querySelector('.level-badge')?.textContent.trim() || '';
+                const icon = row.querySelector('.node-icon')?.className.replace(/.*bi-/, 'bi-').split(' ')[0] || 'bi-diagram-3';
+                const countTxt = row.querySelector('.count')?.textContent.trim() || '0';
+                const total = parseInt(countTxt.replace(/[^\d]/g, ''), 10) || 0;
+                // parent: look at the .tree-children wrapper this row is inside, and the preceding .tree-row sibling of that wrapper
+                let parent = null;
+                const childrenWrapper = row.parentElement.closest('.tree-children');
+                if (childrenWrapper) {
+                    const prev = childrenWrapper.previousElementSibling;
+                    if (prev && prev.classList.contains('tree-row')) {
+                        parent = parseInt(prev.getAttribute('data-node-id'), 10);
+                    }
+                }
+                // depth: count .tree-children ancestors
+                let depth = 0;
+                let node = row.parentElement;
+                while (node) {
+                    if (node.classList && node.classList.contains('tree-children')) depth++;
+                    node = node.parentElement;
+                }
+                this._index[id] = { id, name, level, icon, total, parent, depth, childCount: 0, active: !row.querySelector('.node-name .badge') };
+                if (!parent) this._roots.push(id);
+            });
+            // childCount
+            for (const id in this._index) {
+                const p = this._index[id].parent;
+                if (p && this._index[p]) this._index[p].childCount++;
+            }
+        },
+
+        toggle(id) {
+            if (this._index[id] && this._index[id].childCount > 0) {
+                this.expanded[id] = !this.expanded[id];
+            }
+        },
+
+        select(id) {
+            this.selected = id;
+            const n = this._index[id];
+            if (!n) { this.selectedNode = null; return; }
+            // direct count lives on the DOM as a data attr? We didn't expose it,
+            // so fall back to the total for display. Good-enough first pass.
+            const path = [];
+            let cur = n;
+            while (cur) { path.unshift(cur.name); cur = cur.parent ? this._index[cur.parent] : null; }
+            this.selectedNode = {
+                id: n.id, name: n.name, level: n.level, icon: 'bi ' + n.icon,
+                total: n.total, direct: n.total, childCount: n.childCount,
+                active: n.active,
+                breadcrumb: path.slice(0, -1).join(' › '),
+            };
+        },
+
+        expandAll() {
+            for (const id in this._index) {
+                if (this._index[id].childCount > 0) this.expanded[id] = true;
+            }
+        },
+
+        collapseAll() {
+            this.expanded = {};
+        },
+
+        applyFilter() {
+            const q = this.filter.trim().toLowerCase();
+            const rows = document.querySelectorAll('.tree-row[data-node-id]');
+            const wrappers = document.querySelectorAll('.tree-children');
+            if (!q) {
+                rows.forEach(r => r.classList.remove('filtered-out'));
+                wrappers.forEach(w => w.classList.remove('filtered-out'));
+                return;
+            }
+            const matchIds = new Set();
+            rows.forEach(r => {
+                const id = parseInt(r.getAttribute('data-node-id'), 10);
+                const n = this._index[id];
+                if (n && n.name.toLowerCase().includes(q)) {
+                    // include this node and all ancestors
+                    let cur = n;
+                    while (cur) { matchIds.add(cur.id); cur = cur.parent ? this._index[cur.parent] : null; }
+                }
+            });
+            rows.forEach(r => {
+                const id = parseInt(r.getAttribute('data-node-id'), 10);
+                r.classList.toggle('filtered-out', !matchIds.has(id));
+                // also expand path to matches
+                if (matchIds.has(id)) this.expanded[id] = true;
+            });
+        },
+    };
+}
+</script>
 {% endblock %}
