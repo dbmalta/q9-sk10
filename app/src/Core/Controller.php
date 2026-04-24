@@ -164,7 +164,13 @@ abstract class Controller
      */
     protected function validateCsrf(Request $request): ?Response
     {
-        $token = $request->getParam('_csrf', $request->getParam('_csrf_token', ''));
+        $token = $request->getParam(
+            '_csrf',
+            $request->getParam(
+                '_csrf_token',
+                $request->getParam('_lang_csrf', $request->getParam('_ctx_csrf', ''))
+            )
+        );
         $csrf = new Csrf($this->app->getSession());
         if (!$csrf->validateToken((string) $token)) {
             return Response::html('CSRF token mismatch.', 403);

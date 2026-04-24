@@ -54,7 +54,7 @@
                     {% for lang in available_languages() %}
                     <li>
                         <form method="POST" action="/language/switch" class="m-0">
-                            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                            <input type="hidden" name="_lang_csrf" value="{{ csrf_token }}">
                             <input type="hidden" name="lang_code" value="{{ lang.code }}">
                             <input type="hidden" name="redirect_to" value="{{ current_uri }}">
                             <button type="button" onclick="this.closest('form').submit()" class="dropdown-item language-switch-item d-flex align-items-center {{ lang.code == app_lang ? 'active' : '' }}">

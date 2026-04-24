@@ -16,11 +16,11 @@
     <div class="btn-group btn-group-sm" role="group" aria-label="{{ t('view.mode.aria') }}">
         {% for target in ['member', 'admin'] %}
         <form method="POST" action="/context/mode" class="m-0" x-on:submit="maybeConfirm($event)">
-            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
             <input type="hidden" name="mode" value="{{ target }}">
             <input type="hidden" name="redirect_to" value="{{ current_uri }}">
-            <button type="submit"
-                    class="btn btn-outline-secondary {{ view.mode == target ? 'active' : '' }}"
+            <button type="button" onclick="this.closest('form').requestSubmit()"
+                    class="btn btn-outline-secondary view-mode-btn {{ view.mode == target ? 'active' : '' }}"
                     aria-pressed="{{ view.mode == target ? 'true' : 'false' }}">
                 <i class="bi {{ target == 'admin' ? 'bi-shield-check' : 'bi-person' }} me-1"></i>{{ t('view.mode.' ~ target) }}
             </button>
@@ -42,10 +42,10 @@
         <ul class="dropdown-menu">
             <li>
                 <form method="POST" action="/context/scope" class="m-0" x-on:submit="maybeConfirm($event)">
-                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
                     <input type="hidden" name="node_id" value="all">
                     <input type="hidden" name="redirect_to" value="{{ current_uri }}">
-                    <button type="submit" class="dropdown-item {{ view.active_scope_node_id is null ? 'active' : '' }}">
+                    <button type="button" onclick="this.closest('form').requestSubmit()" class="dropdown-item view-scope-btn {{ view.active_scope_node_id is null ? 'active' : '' }}">
                         <i class="bi bi-globe me-2"></i>{{ t('view.scope.all') }}
                     </button>
                 </form>
@@ -54,10 +54,10 @@
             {% for scope in view.available_scopes %}
             <li>
                 <form method="POST" action="/context/scope" class="m-0" x-on:submit="maybeConfirm($event)">
-                    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
                     <input type="hidden" name="node_id" value="{{ scope.node_id }}">
                     <input type="hidden" name="redirect_to" value="{{ current_uri }}">
-                    <button type="submit" class="dropdown-item {{ view.active_scope_node_id == scope.node_id ? 'active' : '' }}"
+                    <button type="button" onclick="this.closest('form').requestSubmit()" class="dropdown-item view-scope-btn {{ view.active_scope_node_id == scope.node_id ? 'active' : '' }}"
                             title="{{ scope.path }}">
                         {{ scope.path }}
                     </button>

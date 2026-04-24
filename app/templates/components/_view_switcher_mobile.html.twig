@@ -8,11 +8,11 @@
     <div class="btn-group btn-group-sm w-100 mb-2" role="group" aria-label="{{ t('view.mode.aria') }}">
         {% for target in ['member', 'admin'] %}
         <form method="POST" action="/context/mode" class="m-0 flex-fill" x-on:submit="maybeConfirm($event)">
-            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
             <input type="hidden" name="mode" value="{{ target }}">
             <input type="hidden" name="redirect_to" value="{{ current_uri }}">
-            <button type="submit"
-                    class="btn btn-outline-secondary w-100 {{ view.mode == target ? 'active' : '' }}"
+            <button type="button" onclick="this.closest('form').requestSubmit()"
+                    class="btn btn-outline-secondary w-100 view-mode-btn {{ view.mode == target ? 'active' : '' }}"
                     aria-pressed="{{ view.mode == target ? 'true' : 'false' }}">
                 <i class="bi {{ target == 'admin' ? 'bi-shield-check' : 'bi-person' }} me-1"></i>{{ t('view.mode.' ~ target) }}
             </button>
@@ -32,7 +32,7 @@
         {% endfor %}
     </select>
     <form id="view-scope-mobile-form" method="POST" action="/context/scope" class="d-none">
-        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
         <input type="hidden" name="node_id" value="{{ view.active_scope_node_id ?? 'all' }}">
         <input type="hidden" name="redirect_to" value="{{ current_uri }}">
     </form>
