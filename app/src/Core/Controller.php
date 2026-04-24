@@ -48,7 +48,7 @@ abstract class Controller
             'breadcrumbs' => $data['breadcrumbs'] ?? [],
             'view' => $view->toArray(),
             'org_accent' => $this->resolveOrgAccent(),
-            'app_version' => trim(@file_get_contents(dirname(__DIR__, 2) . '/VERSION') ?: ''),
+            'app_version' => trim(@file_get_contents(dirname(__DIR__, 3) . '/VERSION') ?: ''),
         ], $data);
 
         // HTMX requests get only the partial content, not the full layout

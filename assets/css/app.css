@@ -289,6 +289,12 @@ h1, .h1, h2, .h2 {
     height: var(--sk-topbar-height);
     z-index: 1046; /* above offcanvas (1045) and its backdrop (1040) so hamburger stays clickable */
     box-shadow: var(--sk-shadow-sm);
+    background-color: var(--sk-accent-100) !important;
+    border-bottom-color: var(--sk-accent-200) !important;
+}
+[data-bs-theme="dark"] .topbar {
+    background-color: var(--sk-accent-950) !important;
+    border-bottom-color: var(--sk-accent-800) !important;
 }
 
 /* Global topbar search dropdown */
@@ -558,6 +564,26 @@ h1, .h1, h2, .h2 {
 .topbar.mode-admin  { box-shadow: inset 0 -2px 0 var(--sk-accent); }
 .topbar.mode-member { box-shadow: inset 0 -2px 0 var(--bs-success); }
 .view-switcher form { display: inline-block; }
+.view-switcher .view-mode-btn {
+    height: 26px;
+    min-height: 26px;
+    padding: 0 0.5rem;
+    font-size: 0.8125rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+.view-switcher .view-mode-btn i { font-size: 0.875rem; }
+.topbar-search .input-group-sm > .form-control,
+.topbar-search .input-group-sm > .input-group-text {
+    height: 26px;
+    min-height: 26px;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1;
+    box-sizing: border-box;
+}
 .view-switcher .dropdown-item.active,
 .view-switcher .dropdown-item:active { background-color: var(--sk-accent); color: var(--sk-accent-fg); }
 

@@ -227,9 +227,17 @@ class I18n
             return;
         }
 
-        // Try cache first
+        // Try cache first — but only if newer than the source JSON files.
+        // Stale caches silently hide newly-added keys, which is worse than
+        // re-parsing two small JSON files per request.
         $cacheFile = ROOT_PATH . '/var/cache/i18n_' . $this->language . '.json';
-        if (file_exists($cacheFile)) {
+        $masterFile = $this->langPath . '/en.json';
+        $targetFile = $this->langPath . '/' . $this->language . '.json';
+        $sourceMtime = max(
+            is_file($masterFile) ? (int) filemtime($masterFile) : 0,
+            is_file($targetFile) ? (int) filemtime($targetFile) : 0
+        );
+        if (file_exists($cacheFile) && (int) filemtime($cacheFile) >= $sourceMtime && $sourceMtime > 0) {
             $this->translations = json_decode(file_get_contents($cacheFile), true) ?? [];
             $this->loaded = true;
             return;

@@ -591,6 +591,8 @@
     "dashboard.error_count": "Error Count",
     "dashboard.app_version": "App Version",
     "dashboard.members_by_status": "Members by Status",
+    "dashboard.organisation_growth": "Organisation Growth",
+    "dashboard.growth_subtitle": "Active members, last 12 months",
     "dashboard.view_all": "View All",
     "dashboard.never": "Never",
 

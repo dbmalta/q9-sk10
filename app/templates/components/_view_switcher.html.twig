@@ -16,7 +16,7 @@
     <div class="btn-group btn-group-sm" role="group" aria-label="{{ t('view.mode.aria') }}">
         {% for target in ['member', 'admin'] %}
         <form method="POST" action="/context/mode" class="m-0" x-on:submit="maybeConfirm($event)">
-            <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
             <input type="hidden" name="mode" value="{{ target }}">
             <input type="hidden" name="redirect_to" value="{{ current_uri }}">
             <button type="button" onclick="this.closest('form').requestSubmit()"
@@ -42,7 +42,7 @@
         <ul class="dropdown-menu">
             <li>
                 <form method="POST" action="/context/scope" class="m-0" x-on:submit="maybeConfirm($event)">
-                    <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
                     <input type="hidden" name="node_id" value="all">
                     <input type="hidden" name="redirect_to" value="{{ current_uri }}">
                     <button type="button" onclick="this.closest('form').requestSubmit()" class="dropdown-item view-scope-btn {{ view.active_scope_node_id is null ? 'active' : '' }}">
@@ -54,7 +54,7 @@
             {% for scope in view.available_scopes %}
             <li>
                 <form method="POST" action="/context/scope" class="m-0" x-on:submit="maybeConfirm($event)">
-                    <input type="hidden" name="_ctx_csrf" value="{{ csrf_token }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
                     <input type="hidden" name="node_id" value="{{ scope.node_id }}">
                     <input type="hidden" name="redirect_to" value="{{ current_uri }}">
                     <button type="button" onclick="this.closest('form').requestSubmit()" class="dropdown-item view-scope-btn {{ view.active_scope_node_id == scope.node_id ? 'active' : '' }}"

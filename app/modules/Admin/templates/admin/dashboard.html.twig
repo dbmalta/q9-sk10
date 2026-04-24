@@ -77,6 +77,64 @@
     </div>
 </div>
 
+{# ── Growth line chart (last 12 months) ─────────────────────── #}
+{% if stats.growth_12m is not empty %}
+{% set _g = stats.growth_12m %}
+{% set _counts = _g|map(p => p.count) %}
+{% set _max = max(_counts) %}
+{% set _min = min(_counts) %}
+{% set _w = 1000 %}
+{% set _h = 220 %}
+{% set _pl = 40 %}
+{% set _pr = 16 %}
+{% set _pt = 16 %}
+{% set _pb = 36 %}
+{% set _iw = _w - _pl - _pr %}
+{% set _ih = _h - _pt - _pb %}
+{% set _range = (_max - _min) > 0 ? (_max - _min) : 1 %}
+{% set _n = _g|length %}
+{% set _step = _n > 1 ? (_iw / (_n - 1)) : 0 %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+        <h2 class="h6 mb-0">{{ t('dashboard.organisation_growth') }}</h2>
+        <span class="small text-body-secondary">{{ t('dashboard.growth_subtitle') }}</span>
+    </div>
+    <div class="card-body">
+        <svg viewBox="0 0 {{ _w }} {{ _h }}" class="w-100" role="img" aria-label="{{ t('dashboard.organisation_growth') }}" style="max-height: 260px;">
+            {# Y-axis gridlines + labels (4 bands) #}
+            {% for i in 0..4 %}
+                {% set y = _pt + (_ih * i / 4) %}
+                {% set val = (_max - ((_max - _min) * i / 4))|round %}
+                <line x1="{{ _pl }}" y1="{{ y }}" x2="{{ _w - _pr }}" y2="{{ y }}" stroke="currentColor" stroke-opacity="0.1" stroke-width="1"/>
+                <text x="{{ _pl - 6 }}" y="{{ y + 4 }}" font-size="11" text-anchor="end" fill="currentColor" fill-opacity="0.55">{{ val }}</text>
+            {% endfor %}
+
+            {# Line path #}
+            {% set _path = '' %}
+            {% for p in _g %}
+                {% set x = _pl + (loop.index0 * _step) %}
+                {% set y = _pt + _ih - (((p.count - _min) / _range) * _ih) %}
+                {% set _path = _path ~ (loop.first ? 'M' : ' L') ~ x|round(1) ~ ',' ~ y|round(1) %}
+            {% endfor %}
+            {# Area fill under the line #}
+            {% set _area = _path ~ ' L' ~ (_pl + ((_n - 1) * _step))|round(1) ~ ',' ~ (_pt + _ih) ~ ' L' ~ _pl ~ ',' ~ (_pt + _ih) ~ ' Z' %}
+            <path d="{{ _area }}" fill="var(--sk-accent)" fill-opacity="0.12"/>
+            <path d="{{ _path }}" fill="none" stroke="var(--sk-accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+
+            {# Data points + X-axis labels #}
+            {% for p in _g %}
+                {% set x = _pl + (loop.index0 * _step) %}
+                {% set y = _pt + _ih - (((p.count - _min) / _range) * _ih) %}
+                <circle cx="{{ x|round(1) }}" cy="{{ y|round(1) }}" r="3" fill="var(--sk-accent)">
+                    <title>{{ p.label }}: {{ p.count }}</title>
+                </circle>
+                <text x="{{ x|round(1) }}" y="{{ _h - 12 }}" font-size="11" text-anchor="middle" fill="currentColor" fill-opacity="0.55">{{ p.label|slice(0, 3) }}</text>
+            {% endfor %}
+        </svg>
+    </div>
+</div>
+{% endif %}
+
 {# ── Two-column layout ──────────────────────────────────────── #}
 <div class="row g-4 mb-4">
     {# Recent Registrations #}

@@ -33,6 +33,7 @@ class DashboardService
      *     upcoming_events: array,
      *     waiting_list_count: int,
      *     pending_changes_count: int,
+     *     growth_12m: list<array{month: string, label: string, count: int}>,
      * }
      */
     public function getStats(): array
@@ -45,7 +46,37 @@ class DashboardService
             'upcoming_events' => $this->getUpcomingEvents(),
             'waiting_list_count' => $this->getWaitingListCount(),
             'pending_changes_count' => $this->getPendingChangesCount(),
+            'growth_12m' => $this->getGrowthLast12Months(),
         ];
+    }
+
+    /**
+     * Active member count at the end of each of the last 12 months.
+     * "Active" = joined on/before month-end and not yet left at month-end.
+     *
+     * @return list<array{month: string, label: string, count: int}>
+     */
+    private function getGrowthLast12Months(): array
+    {
+        $result = [];
+        $today = new \DateTimeImmutable('today');
+        for ($i = 11; $i >= 0; $i--) {
+            $monthStart = $today->modify("first day of -{$i} months");
+            $monthEnd = $monthStart->modify('last day of this month')->format('Y-m-d');
+            $count = (int) $this->db->fetchColumn(
+                "SELECT COUNT(*) FROM `members`
+                 WHERE `joined_date` IS NOT NULL
+                   AND `joined_date` <= :end_join
+                   AND (`left_date` IS NULL OR `left_date` > :end_left)",
+                ['end_join' => $monthEnd, 'end_left' => $monthEnd]
+            );
+            $result[] = [
+                'month' => $monthStart->format('Y-m'),
+                'label' => $monthStart->format('M Y'),
+                'count' => $count,
+            ];
+        }
+        return $result;
     }
 
     /**
