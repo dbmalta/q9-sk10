@@ -305,7 +305,7 @@ class LanguageController extends Controller
             return $csrfCheck;
         }
 
-        $code = trim((string) $request->getParam('code', ''));
+        $code = trim((string) $request->getParam('lang_code', $request->getParam('code', '')));
         $redirectTo = (string) $request->getParam('redirect_to', '/');
         // Only accept relative paths to prevent open-redirect
         if ($redirectTo === '' || $redirectTo[0] !== '/' || str_starts_with($redirectTo, '//')) {
