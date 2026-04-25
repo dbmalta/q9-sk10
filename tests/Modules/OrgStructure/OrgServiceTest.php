@@ -34,7 +34,10 @@ class OrgServiceTest extends TestCase
         $this->db->query("DROP TABLE IF EXISTS `medical_access_log`");
         $this->db->query("DROP TABLE IF EXISTS `member_pending_changes`");
         $this->db->query("DROP TABLE IF EXISTS `member_nodes`");
+        $this->db->query("DROP TABLE IF EXISTS `role_assignment_scopes`");
+        $this->db->query("DROP TABLE IF EXISTS `role_assignments`");
         $this->db->query("DROP TABLE IF EXISTS `members`");
+        $this->db->query("DROP TABLE IF EXISTS `users`");
         $this->db->query("DROP TABLE IF EXISTS `org_teams`");
         $this->db->query("DROP TABLE IF EXISTS `org_closure`");
         $this->db->query("DROP TABLE IF EXISTS `org_nodes`");
@@ -98,6 +101,32 @@ class OrgServiceTest extends TestCase
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
 
+        // Member-count rollup added to getTree() depends on these tables.
+        // No rows are inserted; queries should simply return 0 counts.
+        $this->db->query("CREATE TABLE `users` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `email` VARCHAR(255) NOT NULL UNIQUE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $this->db->query("CREATE TABLE `members` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT UNSIGNED NULL,
+            `first_name` VARCHAR(100) NOT NULL,
+            `surname` VARCHAR(100) NOT NULL,
+            `status` VARCHAR(20) NOT NULL DEFAULT 'active'
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $this->db->query("CREATE TABLE `role_assignments` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `user_id` INT UNSIGNED NOT NULL,
+            `role_id` INT UNSIGNED NOT NULL DEFAULT 1,
+            `start_date` DATE NOT NULL,
+            `end_date` DATE NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $this->db->query("CREATE TABLE `role_assignment_scopes` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `assignment_id` INT UNSIGNED NOT NULL,
+            `node_id` INT UNSIGNED NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
         // Seed level types
         $this->db->insert('org_level_types', ['name' => 'National', 'depth' => 0, 'sort_order' => 0]);
         $this->db->insert('org_level_types', ['name' => 'Region', 'depth' => 1, 'sort_order' => 1]);
@@ -111,6 +140,10 @@ class OrgServiceTest extends TestCase
     {
         if ($this->db) {
             $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+            $this->db->query("DROP TABLE IF EXISTS `role_assignment_scopes`");
+            $this->db->query("DROP TABLE IF EXISTS `role_assignments`");
+            $this->db->query("DROP TABLE IF EXISTS `members`");
+            $this->db->query("DROP TABLE IF EXISTS `users`");
             $this->db->query("DROP TABLE IF EXISTS `org_teams`");
             $this->db->query("DROP TABLE IF EXISTS `org_closure`");
             $this->db->query("DROP TABLE IF EXISTS `org_nodes`");
