@@ -12,25 +12,16 @@ return [
     'nav' => [
         [
             'label' => 'nav.directory',
-            'icon' => 'bi-diagram-3',
+            'icon' => 'bi-person-lines-fill',
             'route' => '/directory',
             'group' => 'members',
             'order' => 60,
             'requires_auth' => true,
         ],
-        [
-            'label' => 'nav.contacts',
-            'icon' => 'bi-person-lines-fill',
-            'route' => '/directory/contacts',
-            'group' => 'members',
-            'order' => 70,
-            'requires_auth' => true,
-        ],
     ],
 
     'routes' => function (\App\Core\Router $router): void {
-        $router->get('/directory', [DirectoryController::class, 'organogram'], 'directory.organogram');
-        $router->get('/directory/contacts', [DirectoryController::class, 'contacts'], 'directory.contacts');
+        $router->get('/directory', [DirectoryController::class, 'index'], 'directory.index');
     },
 
     'permissions' => [

@@ -1,19 +1,19 @@
 {% extends "layouts/admin.html.twig" %}
 
-{% block title %}{{ t('directory.contacts') }}{% endblock %}
+{% block title %}{{ t('nav.directory') }}{% endblock %}
 
 {% block body %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">{{ t('directory.contacts') }}</h1>
-    <a href="/directory" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-diagram-3 me-1"></i>{{ t('directory.organogram') }}
-    </a>
+    <h1 class="h3 mb-0">{{ t('nav.directory') }}</h1>
+    <span class="text-body-secondary small">
+        {{ members|length }} {{ members|length == 1 ? t('directory.person') : t('directory.people') }}
+    </span>
 </div>
 
 {# Search and filter bar #}
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
-        <form method="GET" action="/directory/contacts" class="row g-3 align-items-end">
+        <form method="GET" action="/directory" class="row g-3 align-items-end">
             <div class="col-md-5">
                 <label for="search" class="form-label">{{ t('common.search') }}</label>
                 <input type="text" name="search" id="search" class="form-control"
@@ -32,62 +32,78 @@
                     <i class="bi bi-search me-1"></i>{{ t('common.search') }}
                 </button>
                 {% if current_search or current_node_id %}
-                <a href="/directory/contacts" class="btn btn-outline-secondary">{{ t('common.clear') }}</a>
+                <a href="/directory" class="btn btn-outline-secondary">{{ t('common.clear') }}</a>
                 {% endif %}
             </div>
         </form>
     </div>
 </div>
 
-{# Results table #}
-{% if contacts is empty %}
+{# Results: card grid #}
+{% if members is empty %}
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
             <i class="bi bi-person-lines-fill text-body-secondary" style="font-size: 2.5rem;"></i>
-            <p class="mt-3 text-body-secondary">{{ t('directory.no_contacts') }}</p>
+            <p class="mt-3 text-body-secondary">{{ t('directory.no_members') }}</p>
         </div>
     </div>
 {% else %}
-<div class="card border-0 shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr>
-                    <th class="ps-3">{{ t('common.name') }}</th>
-                    <th>{{ t('directory.role') }}</th>
-                    <th>{{ t('common.email') }}</th>
-                    <th>{{ t('common.phone') }}</th>
-                    <th class="pe-3">{{ t('directory.node') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for contact in contacts %}
-                <tr>
-                    <td class="ps-3 fw-medium">{{ contact.member_name }}</td>
-                    <td>{{ contact.role_name }}</td>
-                    <td>
-                        {% if contact.email %}
-                        <a href="mailto:{{ contact.email }}" class="text-decoration-none">{{ contact.email }}</a>
+    <div class="row g-3">
+        {% for m in members %}
+        <div class="col-12 col-sm-6 col-lg-4 col-xxl-3">
+            <div class="card border-0 shadow-sm h-100 directory-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        {% if m.photo_path %}
+                            <img src="{{ m.photo_path }}" alt=""
+                                 class="rounded-circle flex-shrink-0"
+                                 style="width: 48px; height: 48px; object-fit: cover;">
                         {% else %}
-                        <span class="text-body-secondary">&mdash;</span>
+                            <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0 fw-semibold"
+                                 style="width: 48px; height: 48px; font-size: 1rem;">
+                                {{ m.first_name|first|upper }}{{ m.surname|first|upper }}
+                            </div>
                         {% endif %}
-                    </td>
-                    <td>
-                        {% if contact.phone %}
-                        <a href="tel:{{ contact.phone }}" class="text-decoration-none">{{ contact.phone }}</a>
-                        {% else %}
-                        <span class="text-body-secondary">&mdash;</span>
+                        <div class="flex-grow-1 min-w-0">
+                            <a href="/members/{{ m.id }}" class="text-decoration-none text-body fw-semibold d-block text-truncate">
+                                {{ m.member_name }}
+                            </a>
+                            {% if m.primary_node_name %}
+                                <div class="text-body-secondary small text-truncate">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ m.primary_node_name }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if m.role_names %}
+                        <div class="mb-3">
+                            {% for role in m.role_names|split(', ') %}
+                                <span class="badge bg-secondary-subtle text-secondary me-1 mb-1">{{ role }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex flex-column gap-1 small">
+                        {% if m.email %}
+                            <a href="mailto:{{ m.email }}" class="text-decoration-none text-truncate" title="{{ m.email }}">
+                                <i class="bi bi-envelope me-1"></i>{{ m.email }}
+                            </a>
                         {% endif %}
-                    </td>
-                    <td class="pe-3">
-                        <span class="badge bg-secondary-subtle text-secondary">{{ contact.node_name }}</span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        {% if m.phone %}
+                            <a href="tel:{{ m.phone }}" class="text-decoration-none">
+                                <i class="bi bi-telephone me-1"></i>{{ m.phone }}
+                            </a>
+                        {% endif %}
+                        {% if not m.email and not m.phone %}
+                            <span class="text-body-secondary">{{ t('directory.no_contact_info') }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-</div>
 {% endif %}
 
 {% macro render_node_options(nodes, prefix, selected) %}

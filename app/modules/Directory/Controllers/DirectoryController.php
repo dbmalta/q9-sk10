@@ -12,10 +12,9 @@ use App\Modules\Directory\Services\DirectoryService;
 use App\Modules\OrgStructure\Services\OrgService;
 
 /**
- * Directory controller.
- *
- * Organogram: visual org tree with key role holders.
- * Contacts: searchable flat list of directory-visible role holders.
+ * Directory controller — searchable contact directory of members
+ * within the caller's scope. The visual org tree lives in the
+ * OrgStructure module (/admin/org).
  */
 class DirectoryController extends Controller
 {
@@ -29,30 +28,7 @@ class DirectoryController extends Controller
         $this->orgService = new OrgService($app->getDb());
     }
 
-    /**
-     * GET /directory — visual organogram with key role holders.
-     */
-    public function organogram(Request $request, array $vars): Response
-    {
-        $guard = $this->requirePermission('directory.read');
-        if ($guard !== null) {
-            return $guard;
-        }
-
-        $tree = $this->directoryService->getOrganogram();
-
-        return $this->render('@directory/directory/organogram.html.twig', [
-            'tree' => $tree,
-            'breadcrumbs' => [
-                ['label' => $this->t('nav.directory')],
-            ],
-        ]);
-    }
-
-    /**
-     * GET /directory/contacts — searchable flat contact list.
-     */
-    public function contacts(Request $request, array $vars): Response
+    public function index(Request $request, array $vars): Response
     {
         $guard = $this->requirePermission('directory.read');
         if ($guard !== null) {
@@ -65,17 +41,17 @@ class DirectoryController extends Controller
         $ctx = $this->resolveViewContext();
         $memberSvc = new \App\Modules\Members\Services\MemberService($this->app->getDb());
         $scopeNodeIds = $memberSvc->expandNodeSubtree($ctx->scopeNodeIds());
-        $contacts = $this->directoryService->getContactDirectory($nodeId, $search, $scopeNodeIds);
+
+        $members = $this->directoryService->getDirectoryMembers($scopeNodeIds, $search, $nodeId);
         $nodes = $this->orgService->getTree();
 
         return $this->render('@directory/directory/contacts.html.twig', [
-            'contacts' => $contacts,
+            'members' => $members,
             'nodes' => $nodes,
             'current_node_id' => $nodeId,
             'current_search' => $search ?? '',
             'breadcrumbs' => [
-                ['label' => $this->t('nav.directory'), 'url' => '/directory'],
-                ['label' => $this->t('directory.contacts')],
+                ['label' => $this->t('nav.directory')],
             ],
         ]);
     }
