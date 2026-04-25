@@ -282,6 +282,77 @@ class OrgServiceTest extends TestCase
         $this->assertSame('New Name', $node['name']);
     }
 
+    // ──── Node move (drag-to-reparent) ────
+
+    public function testMoveNodeUpdatesParentAndClosure(): void
+    {
+        // Tree: A → A1, B (root)
+        $a  = $this->service->createNode(['name' => 'A',  'level_type_id' => 1]);
+        $a1 = $this->service->createNode(['name' => 'A1', 'parent_id' => $a, 'level_type_id' => 2]);
+        $b  = $this->service->createNode(['name' => 'B',  'level_type_id' => 1]);
+
+        $this->service->moveNode($a1, $b);
+
+        $moved = $this->service->getNode($a1);
+        $this->assertSame($b, (int) $moved['parent_id']);
+
+        // Old ancestor (A) must no longer link to A1
+        $oldLink = $this->db->fetchColumn(
+            "SELECT COUNT(*) FROM org_closure WHERE ancestor_id = :a AND descendant_id = :d",
+            ['a' => $a, 'd' => $a1]
+        );
+        $this->assertSame('0', (string) $oldLink);
+
+        // New ancestor (B) must link to A1 at depth 1
+        $newDepth = $this->db->fetchColumn(
+            "SELECT depth FROM org_closure WHERE ancestor_id = :a AND descendant_id = :d",
+            ['a' => $b, 'd' => $a1]
+        );
+        $this->assertSame(1, (int) $newDepth);
+    }
+
+    public function testMoveSubtreeKeepsInternalClosure(): void
+    {
+        // Tree: A → A1 → A1a, plus B (root)
+        $a    = $this->service->createNode(['name' => 'A',    'level_type_id' => 1]);
+        $a1   = $this->service->createNode(['name' => 'A1',   'parent_id' => $a,  'level_type_id' => 2]);
+        $a1a  = $this->service->createNode(['name' => 'A1a',  'parent_id' => $a1, 'level_type_id' => 3]);
+        $b    = $this->service->createNode(['name' => 'B',    'level_type_id' => 1]);
+
+        $this->service->moveNode($a1, $b);
+
+        // A1 is now under B; A1a remains under A1
+        $a1Parent = (int) $this->service->getNode($a1)['parent_id'];
+        $this->assertSame($b, $a1Parent);
+        $a1aParent = (int) $this->service->getNode($a1a)['parent_id'];
+        $this->assertSame($a1, $a1aParent);
+
+        // B → A1a (depth 2) must exist via closure
+        $bToA1a = $this->db->fetchColumn(
+            "SELECT depth FROM org_closure WHERE ancestor_id = :a AND descendant_id = :d",
+            ['a' => $b, 'd' => $a1a]
+        );
+        $this->assertSame(2, (int) $bToA1a);
+
+        // A → A1a (old ancestor) must be gone
+        $oldLink = $this->db->fetchColumn(
+            "SELECT COUNT(*) FROM org_closure WHERE ancestor_id = :a AND descendant_id = :d",
+            ['a' => $a, 'd' => $a1a]
+        );
+        $this->assertSame('0', (string) $oldLink);
+    }
+
+    public function testMoveRejectsCycle(): void
+    {
+        // A → A1 → A1a — moving A under A1a would create a cycle
+        $a   = $this->service->createNode(['name' => 'A',   'level_type_id' => 1]);
+        $a1  = $this->service->createNode(['name' => 'A1',  'parent_id' => $a,  'level_type_id' => 2]);
+        $a1a = $this->service->createNode(['name' => 'A1a', 'parent_id' => $a1, 'level_type_id' => 3]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->service->moveNode($a, $a1a);
+    }
+
     // ──── Node deletion ────
 
     public function testDeleteLeafNode(): void

@@ -23,10 +23,20 @@
             expanded: expanded[{{ node.id }}],
             leaf: {{ node.children is empty ? 'true' : 'false' }},
             selected: selected === {{ node.id }},
+            'drop-target': dropTarget === {{ node.id }},
+            'drag-source': dragSource === {{ node.id }},
          }"
          style="padding-left: {{ 0.75 + depth * 1.25 }}rem"
          @click="toggle({{ node.id }}); select({{ node.id }})"
-         data-node-id="{{ node.id }}">
+         data-node-id="{{ node.id }}"
+         {% if can_write %}
+         draggable="true"
+         @dragstart="startDrag($event, {{ node.id }})"
+         @dragover.prevent="overTarget($event, {{ node.id }})"
+         @dragleave="leaveTarget({{ node.id }})"
+         @drop.prevent="dropOn({{ node.id }})"
+         @dragend="endDrag()"
+         {% endif %}>
         <span class="caret">
             {% if node.children is not empty %}<i class="bi bi-chevron-right"></i>{% endif %}
         </span>
@@ -90,6 +100,14 @@
             {% endif %}
         </div>
     </div>
+
+    {% if can_write %}
+    {# Hidden form used by drag-drop reparenting. JS fills in node id + parent_id and submits. #}
+    <form id="org-move-form" method="POST" action="" class="d-none">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="parent_id" value="">
+    </form>
+    {% endif %}
 
     {% if tree is empty %}
         {% include "components/_empty_state.html.twig" with {
@@ -229,6 +247,16 @@
 
     /* Hidden rows during filter */
     .tree-row.filtered-out, .tree-children.filtered-out { display: none; }
+
+    /* Drag-and-drop affordances */
+    .tree-row[draggable="true"] { cursor: grab; }
+    .tree-row.drag-source { opacity: 0.45; }
+    .tree-row.drop-target {
+        background: var(--sk-accent-100);
+        outline: 2px dashed var(--sk-accent);
+        outline-offset: -2px;
+    }
+    [data-bs-theme="dark"] .tree-row.drop-target { background: rgba(var(--sk-accent-rgb), 0.25); }
 </style>
 {% endblock %}
 
@@ -242,6 +270,10 @@ function orgTree(initialSelected) {
         filter: '',
         _index: null,
         _roots: [],
+
+        // Drag-and-drop state
+        dragSource: null,
+        dropTarget: null,
 
         init() {
             // Build an in-memory index from the rendered DOM so selection/detail
@@ -331,6 +363,50 @@ function orgTree(initialSelected) {
 
         collapseAll() {
             this.expanded = {};
+        },
+
+        // ── Drag-and-drop reparent ────────────────────────────────
+        startDrag(ev, id) {
+            this.dragSource = id;
+            try {
+                ev.dataTransfer.effectAllowed = 'move';
+                ev.dataTransfer.setData('text/plain', String(id));
+            } catch (e) { /* some browsers throw on hidden iframes */ }
+        },
+        overTarget(ev, id) {
+            if (this.dragSource === null || this.dragSource === id) return;
+            // Reject drops onto the source's own descendants — that would be a cycle.
+            if (this._isDescendantOf(id, this.dragSource)) return;
+            ev.dataTransfer.dropEffect = 'move';
+            this.dropTarget = id;
+        },
+        leaveTarget(id) {
+            if (this.dropTarget === id) this.dropTarget = null;
+        },
+        endDrag() {
+            this.dragSource = null;
+            this.dropTarget = null;
+        },
+        dropOn(targetId) {
+            const sourceId = this.dragSource;
+            this.endDrag();
+            if (sourceId === null || sourceId === targetId) return;
+            if (this._isDescendantOf(targetId, sourceId)) return;
+            const src = this._index[sourceId];
+            if (src && src.parent === targetId) return; // already child of target — no-op
+            const form = document.getElementById('org-move-form');
+            if (!form) return;
+            form.action = '/admin/org/nodes/' + sourceId + '/move';
+            form.querySelector('input[name="parent_id"]').value = String(targetId);
+            form.submit();
+        },
+        _isDescendantOf(candidateId, ancestorId) {
+            let cur = this._index[candidateId];
+            while (cur && cur.parent) {
+                if (cur.parent === ancestorId) return true;
+                cur = this._index[cur.parent];
+            }
+            return false;
         },
 
         applyFilter() {

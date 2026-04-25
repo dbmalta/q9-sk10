@@ -223,6 +223,9 @@
     "org.children": "Children",
     "org.view_details": "View details",
     "org.select_hint": "Select a node on the left to see its details.",
+    "org.move.success": "Node moved.",
+    "org.move.parent_not_found": "The selected new parent no longer exists.",
+    "org.move.drag_hint": "Drag a node onto another to make it the new parent.",
 
     "members.add_member": "Add Member",
     "members.edit_member": "Edit Member",

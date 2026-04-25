@@ -289,6 +289,94 @@ class OrgController extends Controller
     }
 
     /**
+     * POST /admin/org/nodes/{id}/move — reparent a node.
+     *
+     * Body: parent_id (int) or empty/'' for top-level.
+     * Rejects: missing/forbidden permission, CSRF, source/target outside
+     * the user's write scope, no-op moves, cycles (handled in OrgService).
+     * Top-level moves (parent_id null) are super-admin-only.
+     */
+    public function move(Request $request, array $vars): Response
+    {
+        $guard = $this->requirePermission('org_structure.write');
+        if ($guard !== null) {
+            return $guard;
+        }
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
+
+        $nodeId = (int) $vars['id'];
+        $node = $this->orgService->getNode($nodeId);
+        if ($node === null) {
+            return $this->render('errors/404.html.twig', [], 404);
+        }
+
+        $writeAllowed = $this->resolveWriteAllowedNodeIds();
+        $scopeGuard = $this->assertNodeInAllowed($nodeId, $writeAllowed);
+        if ($scopeGuard !== null) {
+            return $scopeGuard;
+        }
+
+        $rawParent = $this->getParam('parent_id', null);
+        $newParentId = ($rawParent === null || $rawParent === '' || $rawParent === '0')
+            ? null
+            : (int) $rawParent;
+
+        // Top-level moves are reserved for super admins. A scoped admin
+        // dropping a node "above" their scope would create a node they
+        // can no longer see.
+        if ($newParentId === null && $writeAllowed !== null) {
+            return $this->render('errors/403.html.twig', [], 403);
+        }
+
+        // Target parent must be in scope.
+        if ($newParentId !== null) {
+            $parent = $this->orgService->getNode($newParentId);
+            if ($parent === null) {
+                $this->flash('error', $this->t('org.move.parent_not_found'));
+                return $this->redirect('/admin/org');
+            }
+            $scopeGuard = $this->assertNodeInAllowed($newParentId, $writeAllowed);
+            if ($scopeGuard !== null) {
+                return $scopeGuard;
+            }
+        }
+
+        $oldParentId = $node['parent_id'] !== null ? (int) $node['parent_id'] : null;
+        if ($oldParentId === $newParentId) {
+            // No-op — accept silently so refreshes don't toast a noisy error.
+            return $this->redirect('/admin/org');
+        }
+
+        try {
+            $this->orgService->moveNode($nodeId, $newParentId);
+        } catch (\RuntimeException $e) {
+            // Cycle or other domain error.
+            $this->flash('error', $e->getMessage());
+            return $this->redirect('/admin/org');
+        }
+
+        $audit = new \App\Modules\Admin\Services\AuditService($this->app->getDb());
+        $audit->log(
+            'move',
+            'org_node',
+            $nodeId,
+            ['parent_id' => $oldParentId],
+            ['parent_id' => $newParentId],
+            (int) ($this->app->getSession()->get('user')['id'] ?? 0) ?: null,
+            $this->app->getRequest()->getClientIp(),
+            null,
+            $nodeId,
+            $this->resolveViewContext()->mode
+        );
+
+        $this->flash('success', $this->t('org.move.success'));
+        return $this->redirect('/admin/org');
+    }
+
+    /**
      * POST /admin/org/nodes/{id}/teams — create a team for a node.
      */
     public function storeTeam(Request $request, array $vars): Response

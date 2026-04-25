@@ -30,6 +30,7 @@ return [
         $router->get('/admin/org/nodes/{id:\d+}/edit', [OrgController::class, 'edit'], 'org.nodes.edit');
         $router->post('/admin/org/nodes/{id:\d+}', [OrgController::class, 'update'], 'org.nodes.update');
         $router->post('/admin/org/nodes/{id:\d+}/delete', [OrgController::class, 'delete'], 'org.nodes.delete');
+        $router->post('/admin/org/nodes/{id:\d+}/move', [OrgController::class, 'move'], 'org.nodes.move');
 
         // Teams
         $router->post('/admin/org/nodes/{id:\d+}/teams', [OrgController::class, 'storeTeam'], 'org.teams.store');
