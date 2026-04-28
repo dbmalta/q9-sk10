@@ -125,7 +125,7 @@ Previous versions of ScoutKeeper have been used by Scout organisations since the
 
 **Sustainability:** ScoutKeeper is an actively maintained project. The codebase is publicly hosted at [github.com/quadninemt/scoutkeeper](https://github.com/quadninemt/scoutkeeper) under the AGPL v3 licence. In the event that QuadNine Ltd is unable to continue development, the repository will remain public and the community is free to fork and continue the project independently.
 
-A **paid hosted version** of ScoutKeeper is available for organisations that prefer a fully managed solution. Hosting fees fund ongoing development of the open-source project.
+A **paid hosted version** of ScoutKeeper may be made available in future for organisations that prefer a fully managed solution.
 
 ---
 
