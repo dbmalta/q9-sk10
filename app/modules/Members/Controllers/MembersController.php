@@ -324,6 +324,41 @@ class MembersController extends Controller
     }
 
     /**
+     * POST /members/{id}/create-account — create a login account for a member who has none.
+     */
+    public function createAccount(Request $request, array $vars): Response
+    {
+        $guard = $this->requirePermission('roles.write');
+        if ($guard !== null) {
+            return $guard;
+        }
+
+        $csrfGuard = $this->validateCsrf($request);
+        if ($csrfGuard !== null) {
+            return $csrfGuard;
+        }
+
+        $memberId = (int) $vars['id'];
+        $member = $this->memberService->getById($memberId);
+
+        if ($member === null) {
+            return $this->render('errors/404.html.twig', [], 404);
+        }
+
+        $email = trim((string) $this->getParam('email', $member['email'] ?? ''));
+        $password = (string) $this->getParam('password', '');
+
+        try {
+            $userId = $this->memberService->createUserAccount($memberId, $email, $password);
+            $this->flash('success', $this->t('members.account_created'));
+            return $this->redirect("/admin/roles/assignments/$userId");
+        } catch (\InvalidArgumentException $e) {
+            $this->flash('error', $e->getMessage());
+            return $this->redirect("/members/$memberId");
+        }
+    }
+
+    /**
      * GET /members/pending-changes — list pending changes.
      */
     public function pendingChanges(Request $request, array $vars): Response

@@ -147,8 +147,12 @@ class MemberTabsController extends Controller
             );
         }
 
+        $canWriteRoles = $this->app->getPermissionResolver()->can('roles.write');
+
         return $this->render('@members/partials/tabs/_roles.html.twig', [
+            'member' => $member,
             'assignments' => $assignments,
+            'can_write_roles' => $canWriteRoles,
         ]);
     }
 

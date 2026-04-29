@@ -134,6 +134,54 @@ class MemberService
         return $memberId;
     }
 
+    /**
+     * Create a login account for an existing member who has none.
+     *
+     * @param int $memberId
+     * @param string $email Email for the new account (falls back to member's email)
+     * @param string $password Plaintext password (min 8 chars)
+     * @return int The new user ID
+     * @throws \InvalidArgumentException
+     */
+    public function createUserAccount(int $memberId, string $email, string $password): int
+    {
+        $member = $this->db->fetchOne(
+            "SELECT id, user_id, email FROM `members` WHERE `id` = ?",
+            [$memberId]
+        );
+        if (!$member) {
+            throw new \InvalidArgumentException("Member not found.");
+        }
+        if (!empty($member['user_id'])) {
+            throw new \InvalidArgumentException("This member already has a login account.");
+        }
+
+        $email = strtolower(trim($email ?: (string) $member['email']));
+        if ($email === '') {
+            throw new \InvalidArgumentException("An email address is required to create a login account.");
+        }
+
+        if (strlen($password) < 8) {
+            throw new \InvalidArgumentException("Password must be at least 8 characters.");
+        }
+
+        $existing = $this->db->fetchOne("SELECT id FROM `users` WHERE `email` = ?", [$email]);
+        if ($existing) {
+            throw new \InvalidArgumentException("A login account with this email address already exists.");
+        }
+
+        $userId = $this->db->insert('users', [
+            'email' => $email,
+            'password_hash' => password_hash($password, PASSWORD_BCRYPT),
+            'is_active' => 1,
+            'password_changed_at' => gmdate('Y-m-d H:i:s'),
+        ]);
+
+        $this->db->update('members', ['user_id' => $userId], ['id' => $memberId]);
+
+        return $userId;
+    }
+
     // ──── Read ────
 
     /**

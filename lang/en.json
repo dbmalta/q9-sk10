@@ -281,6 +281,11 @@
     "members.approve": "Approve",
     "members.reject": "Reject",
     "members.no_results_for": "No members found for \"{query}\".",
+    "members.account_created": "Login account created. You can now assign roles.",
+    "members.manage_roles": "Manage Roles",
+    "members.create_login_account": "Create Login Account",
+    "members.no_login_account": "This member does not have a login account yet. Create one below to enable role assignments and system access.",
+    "members.no_login_account_readonly": "This member does not have a login account.",
     "members.view_all_results": "View all {count} results",
 
     "custom_fields.title": "Custom Fields",

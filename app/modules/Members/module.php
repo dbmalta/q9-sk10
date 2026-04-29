@@ -119,6 +119,7 @@ return [
         $router->get('/members/{id:\d+}/edit', [MembersController::class, 'edit'], 'members.edit');
         $router->post('/members/{id:\d+}', [MembersController::class, 'update'], 'members.update');
         $router->post('/members/{id:\d+}/status', [MembersController::class, 'changeStatus'], 'members.change_status');
+        $router->post('/members/{id:\d+}/create-account', [MembersController::class, 'createAccount'], 'members.create_account');
 
         // HTMX API partials
         $router->get('/members/api/search', [MemberApiController::class, 'searchResults'], 'members.api.search');
