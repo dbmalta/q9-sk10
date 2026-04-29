@@ -17,6 +17,9 @@ class AuditService
 {
     private Database $db;
 
+    /** @var bool|null Cached result of whether audit_log has the node_id column */
+    private ?bool $hasNodeIdColumn = null;
+
     /** @var array Substrings that trigger value redaction in old/new values */
     private const SENSITIVE_PATTERNS = [
         'password',
@@ -126,7 +129,7 @@ class AuditService
             $params['date_to'] = $dateTo . ' 23:59:59';
         }
 
-        if (!empty($scopeNodeIds)) {
+        if (!empty($scopeNodeIds) && $this->auditLogHasNodeIdColumn()) {
             // Scope-aware filter (plan Q23): keep rows whose node_id is in
             // the user's subtree OR which are unscoped system-level entries
             // (null node_id — only visible at "All nodes"). The controller
@@ -254,6 +257,25 @@ class AuditService
      * @param array $data Key-value pairs to inspect
      * @return array Redacted copy
      */
+    private function auditLogHasNodeIdColumn(): bool
+    {
+        if ($this->hasNodeIdColumn === null) {
+            try {
+                $row = $this->db->fetchOne(
+                    "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+                     WHERE TABLE_SCHEMA = DATABASE()
+                       AND TABLE_NAME = 'audit_log'
+                       AND COLUMN_NAME = 'node_id'
+                     LIMIT 1"
+                );
+                $this->hasNodeIdColumn = $row !== null;
+            } catch (\Throwable) {
+                $this->hasNodeIdColumn = false;
+            }
+        }
+        return $this->hasNodeIdColumn;
+    }
+
     private function redact(array $data): array
     {
         $redacted = [];

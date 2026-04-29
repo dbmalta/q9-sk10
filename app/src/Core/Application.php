@@ -214,7 +214,11 @@ class Application
         foreach ($response->getHeaders() as $name => $value) {
             header("$name: $value");
         }
-        echo $response->getBody();
+        if ($response->isFileResponse()) {
+            readfile((string) $response->getFilePath());
+        } else {
+            echo $response->getBody();
+        }
     }
 
     /**
