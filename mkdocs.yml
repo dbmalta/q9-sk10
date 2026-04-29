@@ -1,0 +1,95 @@
+site_name: ScoutKeeper Documentation
+site_description: User documentation for ScoutKeeper — the free, open-source membership management system for Scout organisations.
+site_url: https://quadninemt.github.io/scoutkeeper/
+repo_url: https://github.com/quadninemt/scoutkeeper
+repo_name: quadninemt/scoutkeeper
+edit_uri: edit/main/user-docs/
+
+docs_dir: user-docs
+site_dir: site
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.action.edit
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Requirements: getting-started/requirements.md
+    - Installation: getting-started/installation.md
+    - Setup Wizard: getting-started/setup-wizard.md
+    - First Login: getting-started/first-login.md
+  - Members:
+    - Managing Members: members/managing-members.md
+    - Adding Members: members/adding-members.md
+    - Bulk Import: members/bulk-import.md
+    - Custom Fields: members/custom-fields.md
+    - Waiting List: members/waiting-list.md
+    - Member Registration: members/registration.md
+  - Organisation Structure:
+    - Overview: org-structure/overview.md
+    - Groups & Sections: org-structure/groups-and-sections.md
+    - Teams: org-structure/teams.md
+  - Events:
+    - Managing Events: events/managing-events.md
+    - Calendar: events/calendar.md
+    - iCal Feed: events/ical-feed.md
+  - Achievements:
+    - Overview: achievements/overview.md
+    - Defining Achievements: achievements/defining-achievements.md
+    - Awarding Achievements: achievements/awarding-achievements.md
+  - Communications:
+    - Articles: communications/articles.md
+    - Email: communications/email.md
+  - Directory:
+    - Organogram: directory/organogram.md
+    - Contact Directory: directory/contact-directory.md
+  - Administration:
+    - Roles & Permissions: admin/roles-permissions.md
+    - Settings: admin/settings.md
+    - Users & Logins: admin/users-logins.md
+    - Backup & Export: admin/backup-export.md
+    - Audit Log: admin/audit-log.md
+    - Language Management: admin/language-management.md
+  - Reference:
+    - Changelog: reference/changelog.md
+    - Licence: reference/licence.md
