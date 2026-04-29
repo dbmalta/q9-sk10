@@ -89,7 +89,11 @@ class ViewContextService
             throw new \InvalidArgumentException("Invalid mode: {$mode}");
         }
         $this->session->set('view_mode', $mode);
-        $this->db->update('users', ['view_mode_last' => $mode], ['id' => $userId]);
+        try {
+            $this->db->update('users', ['view_mode_last' => $mode], ['id' => $userId]);
+        } catch (\Throwable) {
+            // Session already updated; column may not exist yet if migration is pending
+        }
     }
 
     /**
@@ -127,23 +131,27 @@ class ViewContextService
     {
         // Display path is built from org_closure: join ancestor names in
         // depth order so "District A > Group 1 > Patrol Blue" renders cleanly.
-        $rows = $this->db->fetchAll(
-            "SELECT s.node_id, n.name AS leaf,
-                    (
-                        SELECT GROUP_CONCAT(a.name ORDER BY c.depth DESC SEPARATOR ' > ')
-                        FROM org_closure c
-                        INNER JOIN org_nodes a ON a.id = c.ancestor_id
-                        WHERE c.descendant_id = s.node_id
-                    ) AS path
-             FROM role_assignment_scopes s
-             INNER JOIN role_assignments ra ON ra.id = s.assignment_id
-             INNER JOIN org_nodes n ON n.id = s.node_id
-             WHERE ra.user_id = :uid
-               AND (ra.end_date IS NULL OR ra.end_date >= CURRENT_DATE)
-             GROUP BY s.node_id, n.name
-             ORDER BY path",
-            ['uid' => $userId]
-        );
+        try {
+            $rows = $this->db->fetchAll(
+                "SELECT s.node_id, n.name AS leaf,
+                        (
+                            SELECT GROUP_CONCAT(a.name ORDER BY c.depth DESC SEPARATOR ' > ')
+                            FROM org_closure c
+                            INNER JOIN org_nodes a ON a.id = c.ancestor_id
+                            WHERE c.descendant_id = s.node_id
+                        ) AS path
+                 FROM role_assignment_scopes s
+                 INNER JOIN role_assignments ra ON ra.id = s.assignment_id
+                 INNER JOIN org_nodes n ON n.id = s.node_id
+                 WHERE ra.user_id = :uid
+                   AND (ra.end_date IS NULL OR ra.end_date >= CURRENT_DATE)
+                 GROUP BY s.node_id, n.name
+                 ORDER BY path",
+                ['uid' => $userId]
+            );
+        } catch (\Throwable) {
+            return [];
+        }
 
         return array_map(fn(array $r) => [
             'node_id' => (int) $r['node_id'],

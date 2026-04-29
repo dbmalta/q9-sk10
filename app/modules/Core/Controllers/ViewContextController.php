@@ -32,7 +32,7 @@ class ViewContextController extends Controller
 
         try {
             $service->setMode((int) $user['id'], $mode);
-        } catch (\InvalidArgumentException $e) {
+        } catch (\Throwable) {
             $this->flash('error', $this->app->getI18n()->t('view.mismatch.body'));
             return $this->redirect($this->safeRedirectTarget());
         }
