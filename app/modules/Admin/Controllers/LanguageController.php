@@ -36,6 +36,12 @@ class LanguageController extends Controller
             return $guard;
         }
 
+        // Reconcile DB with the filesystem before listing.
+        // This auto-heals after system updates: adds newly-deployed language files
+        // to the DB, refreshes completion percentages, and removes orphan records
+        // (e.g. fr-FR left behind when the bundled file was renamed to fr.json).
+        $this->service->syncFromFilesystem();
+
         $languages = $this->service->getLanguages();
 
         // Calculate completion for each language

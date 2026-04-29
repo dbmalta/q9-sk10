@@ -138,23 +138,19 @@ class I18n
                 $dbLanguages = $this->db->fetchAll("SELECT * FROM languages");
                 foreach ($dbLanguages as $row) {
                     if (isset($languages[$row['code']])) {
+                        // Overlay DB metadata for languages that have a translation file.
                         $languages[$row['code']]['name'] = $row['name'];
                         $languages[$row['code']]['native_name'] = $row['native_name'];
                         $languages[$row['code']]['is_active'] = (bool) $row['is_active'];
                         $languages[$row['code']]['is_default'] = (bool) $row['is_default'];
-                    } else {
-                        // Language registered in DB but JSON file not found by glob() — include it
-                        // so it appears in the switcher even if the translation file is unavailable
-                        // (falls back to English strings at runtime).
-                        $languages[$row['code']] = [
-                            'code'           => $row['code'],
-                            'name'           => $row['name'],
-                            'native_name'    => $row['native_name'],
-                            'is_active'      => (bool) $row['is_active'],
-                            'is_default'     => (bool) $row['is_default'],
-                            'completion_pct' => (float) ($row['completion_pct'] ?? 0),
-                        ];
                     }
+                    // DB records with no matching file are intentionally skipped.
+                    // A language with no translation file serves only English fallback
+                    // strings — showing it in the switcher confuses users and causes
+                    // duplicate entries when stale regional-code records (e.g. fr-FR)
+                    // coexist with a newer bundled base-code file (e.g. fr.json).
+                    // The admin language page calls syncFromFilesystem() to clean up
+                    // such orphan records automatically.
                 }
             } catch (\PDOException) {
                 // Table may not exist yet during setup

@@ -141,6 +141,80 @@ class LanguageService
         $this->db->update('languages', ['is_active' => 0], ['code' => $code]);
     }
 
+    // ──── Filesystem sync ────
+
+    /**
+     * Reconcile the languages DB table with the lang/ filesystem.
+     *
+     * Called on every admin languages page load so the two sources of truth
+     * stay in sync automatically after system updates:
+     *
+     *  - For every *.json file found: upsert a DB record with live-calculated
+     *    completion percentage (preserving admin settings like is_active/is_default
+     *    for rows that already exist).
+     *  - Delete any DB records whose translation file no longer exists, so
+     *    stale orphan codes (e.g. fr-FR left over after migrating to fr) stop
+     *    appearing on the admin page.
+     *
+     * Overrides (i18n_overrides) for deleted language codes are removed
+     * automatically by the ON DELETE CASCADE FK constraint.
+     */
+    public function syncFromFilesystem(): void
+    {
+        $masterStrings = $this->getMasterStrings();
+        $totalKeys     = count($masterStrings);
+
+        $files     = glob($this->langPath . '/*.json') ?: [];
+        $fileCodes = [];
+
+        foreach ($files as $file) {
+            $code        = pathinfo($file, PATHINFO_FILENAME);
+            $fileCodes[] = $code;
+
+            if ($code === 'en') {
+                $completion = 100.0;
+            } else {
+                $langStrings = json_decode(file_get_contents($file), true) ?? [];
+                $completion  = $totalKeys > 0
+                    ? round((count(array_intersect_key($langStrings, $masterStrings)) / $totalKeys) * 100, 2)
+                    : 0.0;
+            }
+
+            $existing = $this->db->fetchOne(
+                "SELECT code FROM languages WHERE code = :code",
+                ['code' => $code]
+            );
+
+            if ($existing !== null) {
+                // Update only the completion percentage — do not touch admin-managed
+                // fields (is_active, is_default, name, native_name, source).
+                $this->db->update('languages', ['completion_pct' => $completion], ['code' => $code]);
+            } else {
+                // Register a language that exists on the filesystem but has no DB record.
+                // Use the code as a placeholder name; the admin can edit it.
+                $this->db->insert('languages', [
+                    'code'           => $code,
+                    'name'           => strtoupper($code),
+                    'native_name'    => strtoupper($code),
+                    'is_active'      => 1,
+                    'is_default'     => 0,
+                    'completion_pct' => $completion,
+                    'source'         => 'bundled',
+                ]);
+            }
+        }
+
+        // Remove DB records whose translation file no longer exists.
+        // English is kept as a safety net even if en.json were ever missing.
+        if (!empty($fileCodes)) {
+            $placeholders = implode(',', array_fill(0, count($fileCodes), '?'));
+            $this->db->query(
+                "DELETE FROM languages WHERE code NOT IN ($placeholders) AND code != 'en'",
+                $fileCodes
+            );
+        }
+    }
+
     // ──── Upload / import ────
 
     /**
