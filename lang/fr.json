@@ -214,6 +214,7 @@
 "members.node": "Unité / Section",
 "members.nodes": "Nœuds organisationnels",
 "members.assign_to_nodes": "Affecter aux nœuds",
+"members.nodes_scroll_hint": "Faites défiler pour voir tous les nœuds, ou tapez ci-dessus pour filtrer",
 "members.primary": "Principal",
 "members.quick_info": "Informations rapides",
 "members.no_members": "Aucun membre trouvé. Commencez par ajouter votre premier membre.",

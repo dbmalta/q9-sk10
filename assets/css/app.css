@@ -616,3 +616,23 @@ h1, .h1, h2, .h2 {
 
 /* Skip-to-content pill uses accent instead of raw bg-primary blue */
 a.visually-hidden-focusable.bg-primary { background-color: var(--sk-accent) !important; }
+
+/* ===========================
+   Org node tree (member edit)
+   =========================== */
+
+.node-tree-scroll {
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    padding: 0.5rem;
+}
+
+.node-item {
+    padding: 1px 0;
+}
+
+.node-tree-hint {
+    font-size: 0.75rem;
+}

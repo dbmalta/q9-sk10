@@ -214,6 +214,7 @@
     "members.node": "Unità \/ Sezione",
     "members.nodes": "Nodi Organizzativi",
     "members.assign_to_nodes": "Assegna ai Nodi",
+    "members.nodes_scroll_hint": "Scorri per vedere tutti i nodi, oppure digita sopra per filtrare",
     "members.primary": "Principale",
     "members.quick_info": "Informazioni Rapide",
     "members.no_members": "Nessun membro trovato. Inizia aggiungendo il tuo primo membro.",

@@ -268,6 +268,7 @@
     "members.node": "Unit / Section",
     "members.nodes": "Org Nodes",
     "members.assign_to_nodes": "Assign to Nodes",
+    "members.nodes_scroll_hint": "Scroll to see all nodes, or type above to filter",
     "members.primary": "Primary",
     "members.quick_info": "Quick Info",
     "members.no_members": "No members found. Start by adding your first member.",

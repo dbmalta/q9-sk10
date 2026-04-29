@@ -285,6 +285,7 @@
     "members.node": "Unidad / Sección",
     "members.nodes": "Nodos organizativos",
     "members.assign_to_nodes": "Asignar a nodos",
+    "members.nodes_scroll_hint": "Desplázate para ver todos los nodos o escribe arriba para filtrar",
     "members.primary": "Principal",
     "members.quick_info": "Información rápida",
     "members.no_members": "No se encontraron miembros. Comience agregando su primer miembro.",

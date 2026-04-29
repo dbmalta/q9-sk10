@@ -140,14 +140,24 @@
             </div>
 
             {# Node assignments #}
-            <div class="card border-0 shadow-sm mb-4">
+            <div class="card border-0 shadow-sm mb-4"
+                 x-data="{
+                     nodeSearch: '',
+                     get filteredMode() { return this.nodeSearch.trim().length > 0; }
+                 }">
                 <div class="card-header bg-transparent border-bottom">
                     <h5 class="card-title mb-0">{{ t('members.nodes') }}</h5>
                 </div>
-                <div class="card-body" x-data="{ nodes: {{ member and member.node_ids is defined ? member.node_ids|json_encode : '[]' }} }">
-                    <div class="mb-3">
-                        <label class="form-label">{{ t('members.assign_to_nodes') }}</label>
+                <div class="card-body pb-2">
+                    <input type="text" class="form-control form-control-sm mb-2"
+                           placeholder="{{ t('common.search') }}…"
+                           x-model="nodeSearch"
+                           autocomplete="off">
+                    <div class="node-tree-scroll">
                         {{ _self.render_node_checkboxes(nodes, member) }}
+                    </div>
+                    <div class="text-muted small mt-2 px-1 node-tree-hint">
+                        <i class="bi bi-info-circle me-1"></i>{{ t('members.nodes_scroll_hint') }}
                     </div>
                 </div>
             </div>
@@ -179,11 +189,16 @@
 {% macro render_node_checkboxes(nodes, member, depth) %}
     {% set depth = depth|default(0) %}
     {% for node in nodes %}
-    <div class="form-check ms-{{ depth * 3 }}">
-        <input type="checkbox" name="node_ids[]" value="{{ node.id }}" id="node_{{ node.id }}"
-               class="form-check-input"
-               {{ member and member.node_ids is defined and node.id in member.node_ids ? 'checked' : '' }}>
-        <label for="node_{{ node.id }}" class="form-check-label small">{{ node.name }}</label>
+    <div class="node-item ms-{{ depth * 3 }}"
+         data-name="{{ node.name|lower }}"
+         x-show="!filteredMode || $el.dataset.name.includes(nodeSearch.toLowerCase())"
+         x-transition.opacity>
+        <div class="form-check">
+            <input type="checkbox" name="node_ids[]" value="{{ node.id }}" id="node_{{ node.id }}"
+                   class="form-check-input"
+                   {{ member and member.node_ids is defined and node.id in member.node_ids ? 'checked' : '' }}>
+            <label for="node_{{ node.id }}" class="form-check-label small">{{ node.name }}</label>
+        </div>
     </div>
     {% if node.children is defined and node.children is not empty %}
         {{ _self.render_node_checkboxes(node.children, member, depth + 1) }}
