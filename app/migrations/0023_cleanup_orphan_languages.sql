@@ -16,26 +16,35 @@
 -- admin languages page load, which keeps DB and filesystem in sync going forward.
 
 -- ── Step 1: migrate overrides from regional → base code ──────────────────────
--- Only copy rows that do not already exist for the base code; on conflict, the
--- existing base-code override wins (it was set more recently / intentionally).
+-- Only insert rows whose base-code language exists.  ON DUPLICATE KEY id=id is
+-- a deliberate no-op: if the base code already has an override for that key,
+-- keep the existing value (it was set more recently / intentionally).
 
 INSERT INTO `i18n_overrides` (`language_code`, `string_key`, `value`)
-SELECT `base`.`code`, `orphan`.`string_key`, `orphan`.`value`
+SELECT
+    LEFT(`orphan`.`language_code`, 2) AS `language_code`,
+    `orphan`.`string_key`,
+    `orphan`.`value`
 FROM `i18n_overrides` AS `orphan`
-JOIN `languages`       AS `orphan_lang` ON `orphan_lang`.`code` = `orphan`.`language_code`
-JOIN `languages`       AS `base`        ON `base`.`code` = LEFT(`orphan`.`language_code`, 2)
-WHERE LENGTH(`orphan`.`language_code`) = 5          -- regional format: xx-XX
-  AND `base`.`code` != `orphan`.`language_code`     -- different from the orphan
-ON DUPLICATE KEY UPDATE `value` = `i18n_overrides`.`value`; -- keep existing base-code value
+WHERE LENGTH(`orphan`.`language_code`) = 5
+  AND LEFT(`orphan`.`language_code`, 2) IN (
+      SELECT `code` FROM `languages` WHERE LENGTH(`code`) = 2
+  )
+ON DUPLICATE KEY UPDATE `id` = `id`;
 
 -- ── Step 2: delete orphan regional-code records ───────────────────────────────
--- Removes language records whose code is in regional format (xx-XX) AND whose
--- base code (first two characters) exists as a separate bundled record.
+-- Uses a derived-table subquery to avoid MySQL's restriction on reading and
+-- modifying the same table in one statement.
 -- The ON DELETE CASCADE on i18n_overrides.language_code removes remaining
 -- overrides for the orphan automatically.
 
-DELETE `orphan_lang`
-FROM `languages` AS `orphan_lang`
-JOIN `languages` AS `base_lang` ON `base_lang`.`code` = LEFT(`orphan_lang`.`code`, 2)
-WHERE LENGTH(`orphan_lang`.`code`) = 5
-  AND `base_lang`.`code` != `orphan_lang`.`code`;
+DELETE FROM `languages`
+WHERE LENGTH(`code`) = 5
+  AND LEFT(`code`, 2) IN (
+      SELECT `base_code`
+      FROM (
+          SELECT `code` AS `base_code`
+          FROM `languages`
+          WHERE LENGTH(`code`) = 2
+      ) AS `base_codes`
+  );
