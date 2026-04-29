@@ -92,4 +92,5 @@ nav:
     - Language Management: admin/language-management.md
   - Reference:
     - Changelog: reference/changelog.md
+    - History: reference/history.md
     - Licence: reference/licence.md
