@@ -8,6 +8,7 @@
     "nav.group.admin": "Admin",
     "nav.group.config": "Config",
 
+    "nav.documentation": "Documentation",
     "nav.dashboard": "Dashboard",
     "nav.members": "Members",
     "nav.events": "Calendar",

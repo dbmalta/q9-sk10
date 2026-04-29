@@ -160,6 +160,15 @@
             {% endif %}
         </div>
         {% endfor %}
+        <div class="sidebar-group mt-auto">
+            <hr class="mx-3 my-1 opacity-25">
+            <a href="https://quadninemt.github.io/scoutkeeper/" target="_blank" rel="noopener"
+               class="sidebar-link d-flex align-items-center px-3 py-2 text-decoration-none rounded-2 text-body-secondary">
+                <i class="bi bi-book sidebar-icon"></i>
+                <span class="sidebar-label">{{ t('nav.documentation')|default('Documentation') }}</span>
+                <i class="bi bi-box-arrow-up-right ms-auto sidebar-label opacity-50" style="font-size: 0.7rem;"></i>
+            </a>
+        </div>
     </nav>
 </aside>
 
@@ -240,6 +249,15 @@
                 {% endif %}
             </div>
             {% endfor %}
+            <div class="px-3 py-1">
+                <hr class="my-1 opacity-25">
+                <a href="https://quadninemt.github.io/scoutkeeper/" target="_blank" rel="noopener"
+                   class="d-flex align-items-center px-2 py-2 text-decoration-none rounded-2 text-body-secondary">
+                    <i class="bi bi-book me-2"></i>
+                    <span>{{ t('nav.documentation')|default('Documentation') }}</span>
+                    <i class="bi bi-box-arrow-up-right ms-auto opacity-50" style="font-size: 0.7rem;"></i>
+                </a>
+            </div>
         </nav>
     </div>
 </div>
