@@ -16,11 +16,10 @@
 -- admin languages page load, which keeps DB and filesystem in sync going forward.
 
 -- ── Step 1: migrate overrides from regional → base code ──────────────────────
--- Only insert rows whose base-code language exists.  ON DUPLICATE KEY id=id is
--- a deliberate no-op: if the base code already has an override for that key,
--- keep the existing value (it was set more recently / intentionally).
+-- INSERT IGNORE skips any row whose (language_code, string_key) already exists,
+-- so an existing base-code override is never overwritten.
 
-INSERT INTO `i18n_overrides` (`language_code`, `string_key`, `value`)
+INSERT IGNORE INTO `i18n_overrides` (`language_code`, `string_key`, `value`)
 SELECT
     LEFT(`orphan`.`language_code`, 2) AS `language_code`,
     `orphan`.`string_key`,
@@ -29,8 +28,7 @@ FROM `i18n_overrides` AS `orphan`
 WHERE LENGTH(`orphan`.`language_code`) = 5
   AND LEFT(`orphan`.`language_code`, 2) IN (
       SELECT `code` FROM `languages` WHERE LENGTH(`code`) = 2
-  )
-ON DUPLICATE KEY UPDATE `id` = `id`;
+  );
 
 -- ── Step 2: delete orphan regional-code records ───────────────────────────────
 -- Uses a derived-table subquery to avoid MySQL's restriction on reading and
