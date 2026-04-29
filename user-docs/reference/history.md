@@ -28,7 +28,7 @@ Over the following years, the system went through several revisions with feature
 
 ## 2014 — Incorporation
 
-QuadNine Ltd was incorporated in 2014, with Lynx as a development partner. Ownership of ScoutKeeper was transferred to QuadNine, ending more than seven years of private funding for the system's hosting, maintenance, and upgrades. TSAM began paying a token licence fee to partly cover the costs of running the platform.
+[QuadNine](https://quadnine.mt) Ltd was incorporated in 2014. Ownership of ScoutKeeper was transferred to [QuadNine](https://quadnine.mt), ending more than seven years of private funding for the system's hosting, maintenance, and upgrades. TSAM began paying a token licence fee to partly cover the costs of running the platform.
 
 ## 2020 — End of Life
 
@@ -48,4 +48,4 @@ The vision behind ScoutKeeper 10 has two sides. The first is practical: a Scout 
 
 The second is less direct. The Scout movement has well-established policies and recommended practices for how organisations should be run — but translating those into day-to-day reality can be daunting, particularly for smaller groups without dedicated administrative support. ScoutKeeper 10 is designed with those processes built in, making it easier to simply do things the right way. For organisations that choose not to use the system at all, it can still serve as a working reference — a concrete example of how good governance practices can be implemented in practice, not just described in a policy document.
 
-Development began in earnest at the start of 2026. ScoutKeeper 10 is a personal project by Kevin Camilleri, funded through QuadNine and developed with support from Lynx.
+Development began in earnest at the start of 2026. ScoutKeeper 10 is a personal project by Kevin Camilleri, funded through [QuadNine](https://quadnine.mt).
